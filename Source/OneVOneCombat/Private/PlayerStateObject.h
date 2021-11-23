@@ -29,4 +29,6 @@ public:
 	virtual bool IsStateSwitchable_Implementation(int state) override { return true; }
 
 	virtual bool TryToExecuteState_Implementation(int state) override { return true; }
+
+	virtual EPlayerState GetPlayerState_Implementation() override { return EPlayerState::END_OF_ENUM; }
 };

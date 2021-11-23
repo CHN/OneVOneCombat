@@ -11,7 +11,7 @@
 #include "PlayerComboSystem.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UPlayerComboSystem : public UActorComponent
 {
 	GENERATED_BODY()
@@ -20,10 +20,16 @@ public:
 	// Sets default values for this component's properties
 	UPlayerComboSystem();
 
-private:
+	UFUNCTION(BlueprintCallable)
+	void ConsumeInputs();
 
+	void SetPlayerInputPollingSystem(UPlayerInputPollingSystem* inInputPollingSystem);
+	UPlayerInputPollingSystem* GetPlayerInputPollingSystem() const;
+
+private:
+	
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UPlayerInputPollingSystem> inputPollingSystem;
+	UPlayerInputPollingSystem* inputPollingSystem;
 
 	UPROPERTY(EditAnywhere)
 	TArray<UComboDataAsset*> activeComboList;

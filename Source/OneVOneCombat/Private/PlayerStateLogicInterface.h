@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-//#include "PlayerMainState.h"
+#include "EPlayerState.h"
 
 #include "PlayerStateLogicInterface.generated.h"
 
@@ -38,4 +38,9 @@ public:
 	bool TryToExecuteState(int state);
 
 	virtual bool TryToExecuteState_Implementation(int state) = 0;
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	EPlayerState GetPlayerState();
+
+	virtual EPlayerState GetPlayerState_Implementation() = 0;
 };

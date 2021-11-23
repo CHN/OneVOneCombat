@@ -11,16 +11,24 @@ UPlayerInputPollingSystem::UPlayerInputPollingSystem()
 }
 
 
-void UPlayerInputPollingSystem::AddActionToUserInputPollingQueue(EPlayerState targetState, TEnumAsByte<ActionMappingState> actionMapState)
+void UPlayerInputPollingSystem::AddActionToUserInputPollingQueue(UserInputType inputType, TEnumAsByte<ActionMappingState> actionMapState)
 {
-	FUserInput userInput = UserInputUtilities::ConvertActionToUserInput(targetState, actionMapState);
+	FUserInput userInput = UserInputUtilities::ConvertActionToUserInput(inputType, actionMapState);
 
-	inputPoll.Enqueue(std::move(userInput));
-	++currentPollCount;
+	inputPoll.Insert(std::move(userInput), 0);
 
-	if (currentPollCount == maxPollSize)
+	if (inputPoll.Num() == maxPollSize)
 	{
-		inputPoll.Pop();
-		--currentPollCount;
+		inputPoll.RemoveAt(inputPoll.Num() - 1);
 	}
+}
+
+const TArray<FUserInput>& UPlayerInputPollingSystem::GetInputPoll() const
+{
+	return inputPoll;
+}
+
+void UPlayerInputPollingSystem::RemoveFromPolling(int32 inputSequenceCount)
+{
+	inputPoll.RemoveAt(0, inputSequenceCount);
 }

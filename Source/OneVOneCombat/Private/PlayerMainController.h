@@ -5,13 +5,18 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 
-#include "UserInput.h"
+#include "UserActionInputHandler.h"
 #include "PlayerStateObject.h"
+#include "MainCharacter.h"
 
 #include "PlayerMainController.generated.h"
 
+class UPlayerComboSystem;
+class UPlayerInputPollingSystem;
+
+
 UCLASS()
-class APlayerMainController : public APawn
+class APlayerMainController : public APlayerController
 {
 	GENERATED_BODY()
 
@@ -22,14 +27,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	UFUNCTION(BlueprintCallable)
 	void HandleUserInput(FUserInput userInput);
-
-	UFUNCTION(BlueprintCallable)
-	void SetMovementInput(float xAxis, float yAxis);
 
 protected:
 	// Called when the game starts or when spawned
@@ -37,6 +36,9 @@ protected:
 
 private:
 
-	UPROPERTY(VisibleAnywhere)
-	FVector2D movementInput;
+	UPROPERTY(EditAnywhere)
+	UUserActionInputHandler* horizontalMovementInputHandler;
+
+	UPROPERTY(EditAnywhere)
+	UUserActionInputHandler* verticalMovementInputHandler;
 };

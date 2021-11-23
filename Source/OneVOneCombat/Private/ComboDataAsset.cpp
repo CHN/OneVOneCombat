@@ -8,3 +8,13 @@ UComboDataAsset::UComboDataAsset(const FObjectInitializer& ObjectInitializer)
 {
 
 }
+
+const TArray<UserInputType>& UComboDataAsset::GetInputSequence() const
+{
+	return inputSequence;
+}
+
+EPlayerState UComboDataAsset::GetTargetPlayerState() const
+{
+	return targetPlayerState;
+}

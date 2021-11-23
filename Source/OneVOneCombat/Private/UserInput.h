@@ -22,15 +22,15 @@ enum class ActionMappingState : uint8
 UENUM(BlueprintType)
 enum class UserInputType : uint8
 {
-	ATTACK,
-	JUMP,
-	CROUCH
+	ATTACK_INPUT,
+	JUMP_INPUT,
+	CROUCH_INPUT
 };
 
 USTRUCT(BlueprintType)
 struct FUserInput
 {
-	EPlayerState state;
+	UserInputType inputType;
 	float inputValue;
 	FDateTime timeStamp;
 
@@ -41,5 +41,7 @@ class UserInputUtilities
 {
 public:
 
-	static FUserInput ConvertActionToUserInput(EPlayerState targetState, ActionMappingState actionMapState);
+	static FUserInput ConvertActionToUserInput(UserInputType inputType, ActionMappingState actionMapState);
+	static float ConvertActionToAxisInput(EInputEvent negativeInputEvent, EInputEvent positiveInputEvent);
+	static float ConvertActionToAxisInputByBools(bool negativeInputEvent, bool positiveInputEvent);
 };

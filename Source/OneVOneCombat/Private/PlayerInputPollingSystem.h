@@ -11,7 +11,7 @@
 #include "PlayerInputPollingSystem.generated.h"
 
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UPlayerInputPollingSystem : public UActorComponent
 {
 	GENERATED_BODY()
@@ -21,14 +21,16 @@ public:
 	UPlayerInputPollingSystem();
 
 	UFUNCTION(BlueprintCallable, meta = (ExpandEnumAsExecs = actionMapState))
-	void AddActionToUserInputPollingQueue(EPlayerState targetState, TEnumAsByte<ActionMappingState> actionMapState);
+	void AddActionToUserInputPollingQueue(UserInputType inputType, TEnumAsByte<ActionMappingState> actionMapState);
+
+	const TArray<FUserInput>& GetInputPoll() const;
+
+	void RemoveFromPolling(int32 inputSequenceCount);
 
 private:
 
-	TQueue<FUserInput, EQueueMode::Spsc> inputPoll;
+	TArray<FUserInput> inputPoll;
 
 	UPROPERTY(EditAnywhere)
 	int8 maxPollSize = 8;
-
-	int8 currentPollCount = 0;
 };
