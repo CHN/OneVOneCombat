@@ -30,14 +30,14 @@ class IPlayerStateLogicInterface
 public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	bool IsStateSwitchable(int state);
+	bool IsStateSwitchable(EPlayerState previousState);
 
-	virtual bool IsStateSwitchable_Implementation(int state) = 0;
+	virtual bool IsStateSwitchable_Implementation(EPlayerState previousState) = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	bool TryToExecuteState(int state);
+	bool TryToExecuteState(EPlayerState previousState);
 
-	virtual bool TryToExecuteState_Implementation(int state) = 0;
+	virtual bool TryToExecuteState_Implementation(EPlayerState previousState) = 0;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	EPlayerState GetPlayerState();

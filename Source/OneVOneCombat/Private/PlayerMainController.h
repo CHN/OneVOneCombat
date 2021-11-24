@@ -21,11 +21,10 @@ class APlayerMainController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
+
 	APlayerMainController();
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	void PreInitializeComponents() override;
 
 	UFUNCTION(BlueprintCallable)
 	void HandleUserInput(FUserInput userInput);

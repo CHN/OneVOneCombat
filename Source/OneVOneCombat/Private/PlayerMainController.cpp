@@ -11,14 +11,17 @@
 APlayerMainController::APlayerMainController()
 	: Super()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	horizontalMovementInputHandler = CreateDefaultSubobject<UUserActionInputHandler>(TEXT("HorizontalAxisHandler"));
-	verticalMovementInputHandler = CreateDefaultSubobject<UUserActionInputHandler>(TEXT("VerticalAxisHandler"));
 }
 
-// Called when the game starts or when spawned
+void APlayerMainController::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
+
+	horizontalMovementInputHandler = NewObject<UUserActionInputHandler>();
+	verticalMovementInputHandler = NewObject<UUserActionInputHandler>();
+}
+
 void APlayerMainController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -42,13 +45,6 @@ void APlayerMainController::BeginPlay()
 
 	InputComponent->BindAxis(TEXT("Move_Horizontal"), horizontalMovementInputHandler, &UUserActionInputHandler::HandleAxisInput);
 	InputComponent->BindAxis(TEXT("Move_Vertical"), verticalMovementInputHandler, &UUserActionInputHandler::HandleAxisInput);
-}
-
-// Called every frame
-void APlayerMainController::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 void APlayerMainController::HandleUserInput(FUserInput userInput)

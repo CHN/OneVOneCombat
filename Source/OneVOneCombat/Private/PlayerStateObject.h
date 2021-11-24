@@ -26,9 +26,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void FireState(EPlayerState state);
 
-	virtual bool IsStateSwitchable_Implementation(int state) override { return true; }
+	virtual bool IsStateSwitchable_Implementation(EPlayerState previousState) override { return true; }
 
-	virtual bool TryToExecuteState_Implementation(int state) override { return true; }
+	virtual bool TryToExecuteState_Implementation(EPlayerState previousState) override { return true; }
 
-	virtual EPlayerState GetPlayerState_Implementation() override { return EPlayerState::END_OF_ENUM; }
+	virtual EPlayerState GetPlayerState_Implementation() override { return EPlayerState::FREE_STATE; }
 };
+ 

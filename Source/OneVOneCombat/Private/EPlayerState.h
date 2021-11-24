@@ -7,6 +7,7 @@
 UENUM(BlueprintType)
 enum class EPlayerState : uint8
 {
+	FREE_STATE,
 	WALK_PLAYER_STATE,
 	JUMP_PLAYER_STATE,
 	CROUCH_PLAYER_STATE,

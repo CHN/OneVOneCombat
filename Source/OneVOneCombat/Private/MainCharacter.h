@@ -23,8 +23,12 @@ public:
 	void SetHorizontalMoveAxis(float value);
 	void SetVerticalMoveAxis(float value);
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FVector2D movementInput;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPlayerStateController* playerStateController;
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -32,6 +36,4 @@ protected:
 
 private:
 
-	UPROPERTY(VisibleAnywhere)
-	UPlayerStateController* playerStateController;
 };
