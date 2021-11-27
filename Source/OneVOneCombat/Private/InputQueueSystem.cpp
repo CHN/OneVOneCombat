@@ -1,16 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PlayerComboSystem.h"
+#include "InputQueueSystem.h"
 
 // Sets default values for this component's properties
-UPlayerComboSystem::UPlayerComboSystem()
+UInputQueueSystem::UInputQueueSystem()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UPlayerComboSystem::ConsumeInputs()
+void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSystem)
 {
+	GEngine->AddOnScreenDebugMessage(rand(), 1.f, FColor::Blue, TEXT("XXXX"));
 	const auto& currentInputPoll = inputPollingSystem->GetInputPoll();
 
 	if (currentInputPoll.IsEmpty())
@@ -48,14 +49,4 @@ void UPlayerComboSystem::ConsumeInputs()
 			break;
 		}
 	}
-}
-
-void UPlayerComboSystem::SetPlayerInputPollingSystem(UPlayerInputPollingSystem* inInputPollingSystem)
-{
-	inputPollingSystem = inInputPollingSystem;
-}
-
-UPlayerInputPollingSystem* UPlayerComboSystem::GetPlayerInputPollingSystem() const
-{
-	return inputPollingSystem;
 }

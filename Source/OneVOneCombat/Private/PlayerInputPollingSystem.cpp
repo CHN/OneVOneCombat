@@ -21,6 +21,8 @@ void UPlayerInputPollingSystem::AddActionToUserInputPollingQueue(UserInputType i
 	{
 		inputPoll.RemoveAt(inputPoll.Num() - 1);
 	}
+
+	onAnInputTriggered.ExecuteIfBound(this);
 }
 
 const TArray<FUserInput>& UPlayerInputPollingSystem::GetInputPoll() const

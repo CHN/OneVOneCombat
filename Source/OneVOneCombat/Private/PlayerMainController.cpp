@@ -5,7 +5,6 @@
 
 #include "UserInput.h"
 #include "MainCharacter.h"
-#include "PlayerInputPollingSystem.h"
 
 // Sets default values
 APlayerMainController::APlayerMainController()

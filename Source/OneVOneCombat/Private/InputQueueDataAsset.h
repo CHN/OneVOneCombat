@@ -8,19 +8,19 @@
 #include "UserInput.h"
 #include "EPlayerState.h"
 
-#include "ComboDataAsset.generated.h"
+#include "InputQueueDataAsset.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UComboDataAsset : public UDataAsset
+class UInputQueueDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
 
-	UComboDataAsset(const FObjectInitializer& ObjectInitializer);
+	UInputQueueDataAsset(const FObjectInitializer& ObjectInitializer);
 
 	const TArray<UserInputType>& GetInputSequence() const;
 	EPlayerState GetTargetPlayerState() const;

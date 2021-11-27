@@ -11,10 +11,6 @@
 
 #include "PlayerMainController.generated.h"
 
-class UPlayerComboSystem;
-class UPlayerInputPollingSystem;
-
-
 UCLASS()
 class APlayerMainController : public APlayerController
 {

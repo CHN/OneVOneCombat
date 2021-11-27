@@ -9,8 +9,6 @@
 
 #include "PlayerStateController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(Ftestx);
-
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UPlayerStateController : public UActorComponent
 {
@@ -29,12 +27,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool TryToSwitchState(EPlayerState targetStateEnum);
 
-	UPROPERTY(BlueprintCallable, BlueprintAssignable)
-	Ftestx testx;
-
 private:
 
+	UPROPERTY(VisibleAnywhere)
 	TArray<UPlayerStateObject*> playerStates;
+
+	UPROPERTY(VisibleAnywhere)
 	UPlayerStateObject* currentActiveState;
 
 	void InitPlayerStates();

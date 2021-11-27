@@ -11,7 +11,6 @@ UPlayerStateController::UPlayerStateController()
 void UPlayerStateController::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	testx.Broadcast();
 }
 
 void UPlayerStateController::BeginPlay()

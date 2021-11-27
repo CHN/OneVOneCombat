@@ -11,6 +11,7 @@
 #include "PlayerInputPollingSystem.generated.h"
 
 
+
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UPlayerInputPollingSystem : public UActorComponent
 {
@@ -26,6 +27,9 @@ public:
 	const TArray<FUserInput>& GetInputPoll() const;
 
 	void RemoveFromPolling(int32 inputSequenceCount);
+
+	DECLARE_DELEGATE_OneParam(FOnAnInputTriggered, UPlayerInputPollingSystem*);
+	FOnAnInputTriggered onAnInputTriggered;
 
 private:
 

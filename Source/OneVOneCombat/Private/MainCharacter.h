@@ -9,6 +9,9 @@
 
 #include "MainCharacter.generated.h"
 
+class UPlayerInputPollingSystem;
+class UInputQueueSystem;
+
 UCLASS(Blueprintable)
 class AMainCharacter : public APawn
 {
@@ -36,4 +39,6 @@ protected:
 
 private:
 
+	UPlayerInputPollingSystem* playerInputPollingSystem;
+	UInputQueueSystem* inputQueueSystem;
 };
