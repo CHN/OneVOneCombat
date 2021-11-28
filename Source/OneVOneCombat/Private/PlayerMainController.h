@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 
-#include "UserActionInputHandler.h"
+#include "UserActionAndAxisInputHandler.h"
 #include "PlayerStateObject.h"
 #include "MainCharacter.h"
 
@@ -32,8 +32,8 @@ protected:
 private:
 
 	UPROPERTY(EditAnywhere)
-	UUserActionInputHandler* horizontalMovementInputHandler;
+	UUserActionAndAxisInputHandler* horizontalMovementInputHandler;
 
 	UPROPERTY(EditAnywhere)
-	UUserActionInputHandler* verticalMovementInputHandler;
+	UUserActionAndAxisInputHandler* verticalMovementInputHandler;
 };

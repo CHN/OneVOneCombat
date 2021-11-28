@@ -11,6 +11,9 @@
 
 class UPlayerInputPollingSystem;
 class UInputQueueSystem;
+enum class UserInputType : uint8;
+
+DECLARE_DELEGATE_TwoParams(FHandleActionInputDelegate, UserInputType, EInputEvent);
 
 UCLASS(Blueprintable)
 class AMainCharacter : public APawn
@@ -31,6 +34,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UPlayerStateController* playerStateController;
+
+	void HandleActionInput(UserInputType inputType, EInputEvent inputEvent);
 
 protected:
 

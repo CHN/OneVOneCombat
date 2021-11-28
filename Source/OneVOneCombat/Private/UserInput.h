@@ -13,13 +13,6 @@
  */
 
 UENUM(BlueprintType)
-enum class ActionMappingState : uint8
-{
-	Pressed,
-	Released
-};
-
-UENUM(BlueprintType)
 enum class UserInputType : uint8
 {
 	ATTACK_INPUT,
@@ -41,7 +34,7 @@ class UserInputUtilities
 {
 public:
 
-	static FUserInput ConvertActionToUserInput(UserInputType inputType, ActionMappingState actionMapState);
+	static FUserInput ConvertActionToUserInput(UserInputType inputType, EInputEvent inputEvent);
 	static float ConvertActionToAxisInput(EInputEvent negativeInputEvent, EInputEvent positiveInputEvent);
 	static float ConvertActionToAxisInputByBools(bool negativeInputEvent, bool positiveInputEvent);
 };

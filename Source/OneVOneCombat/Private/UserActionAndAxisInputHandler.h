@@ -6,12 +6,12 @@
 
 #include "UserInput.h"
 
-#include "UserActionInputHandler.generated.h"
+#include "UserActionAndAxisInputHandler.generated.h"
 
 DECLARE_DELEGATE_OneParam(FInputAxisHandlerSignature, float);
 
 UCLASS()
-class UUserActionInputHandler : public UObject
+class UUserActionAndAxisInputHandler : public UObject
 {
 
 	GENERATED_BODY()

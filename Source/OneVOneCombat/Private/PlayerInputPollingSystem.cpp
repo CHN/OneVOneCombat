@@ -11,9 +11,9 @@ UPlayerInputPollingSystem::UPlayerInputPollingSystem()
 }
 
 
-void UPlayerInputPollingSystem::AddActionToUserInputPollingQueue(UserInputType inputType, TEnumAsByte<ActionMappingState> actionMapState)
+void UPlayerInputPollingSystem::AddActionToUserInputPollingQueue(UserInputType inputType, TEnumAsByte<EInputEvent> inputEvent)
 {
-	FUserInput userInput = UserInputUtilities::ConvertActionToUserInput(inputType, actionMapState);
+	FUserInput userInput = UserInputUtilities::ConvertActionToUserInput(inputType, inputEvent);
 
 	inputPoll.Insert(std::move(userInput), 0);
 

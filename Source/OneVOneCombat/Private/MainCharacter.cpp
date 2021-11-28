@@ -5,6 +5,8 @@
 #include "PlayerInputPollingSystem.h"
 #include "InputQueueSystem.h"
 
+#include "EditorUtilities.h"
+
 // Sets default values
 AMainCharacter::AMainCharacter()
 	: Super()
@@ -49,4 +51,9 @@ void AMainCharacter::SetHorizontalMoveAxis(float value)
 void AMainCharacter::SetVerticalMoveAxis(float value)
 {
 	movementInput.Y = value;
+}
+
+void AMainCharacter::HandleActionInput(UserInputType inputType, EInputEvent inputEvent)
+{
+	playerInputPollingSystem->AddActionToUserInputPollingQueue(inputType, inputEvent);
 }

@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UserActionInputHandler.h"
+#include "UserActionAndAxisInputHandler.h"
 
-void UUserActionInputHandler::HandleNegativeInputPressed()
+void UUserActionAndAxisInputHandler::HandleNegativeInputPressed()
 {
 	bIsNegativePressed = true;
 
@@ -13,7 +13,7 @@ void UUserActionInputHandler::HandleNegativeInputPressed()
 	}
 }
 
-void UUserActionInputHandler::HandleNegativeInputReleased()
+void UUserActionAndAxisInputHandler::HandleNegativeInputReleased()
 {
 	bIsNegativePressed = false;
 
@@ -23,7 +23,7 @@ void UUserActionInputHandler::HandleNegativeInputReleased()
 	}
 }
 
-void UUserActionInputHandler::HandlePositiveInputPressed()
+void UUserActionAndAxisInputHandler::HandlePositiveInputPressed()
 {
 	bIsPositivePressed = true;
 
@@ -33,7 +33,7 @@ void UUserActionInputHandler::HandlePositiveInputPressed()
 	}
 }
 
-void UUserActionInputHandler::HandlePositiveInputReleased()
+void UUserActionAndAxisInputHandler::HandlePositiveInputReleased()
 {
 	bIsPositivePressed = false;
 
@@ -43,7 +43,7 @@ void UUserActionInputHandler::HandlePositiveInputReleased()
 	}
 }
 
-void UUserActionInputHandler::HandleAxisInput(float value)
+void UUserActionAndAxisInputHandler::HandleAxisInput(float value)
 {
 	if (axisHandler.IsValid())
 	{
