@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 
-#include "UserInput.h"
-#include "EPlayerState.h"
+#include "InputQueueOutputState.h"
+#include "InputQueueAction.h"
 
 #include "InputQueueDataAsset.generated.h"
 
@@ -22,29 +22,20 @@ public:
 
 	UInputQueueDataAsset(const FObjectInitializer& ObjectInitializer);
 
-	const TArray<UserInputType>& GetInputSequence() const;
-	EPlayerState GetTargetPlayerState() const;
+	const TArray<FInputQueueAction>& GetInputActions() const;
+	EInputQueueOutputState GetInputQueueOutputState() const;
 
 private:
 
 	UPROPERTY(EditAnywhere)
-	TArray<UserInputType> inputSequence;
+	TArray<FInputQueueAction> InputActions;
 
 	UPROPERTY(EditAnywhere)
-	EPlayerState targetPlayerState;
+	EInputQueueOutputState InputQueueOutputState;
 
 	UPROPERTY(EditAnywhere)
-	float minComboTime;
+	float MinQueueTime;
 
 	UPROPERTY(EditAnywhere)
-	float maxComboTime;
-
-	UPROPERTY(EditAnywhere)
-	bool fireStateImmediately;
-
-	UPROPERTY(EditAnywhere)
-	bool askStateSwitchToCurrentState = true;
-
-	UPROPERTY(EditAnywhere)
-	bool askStateSwitchToNextState = true;
+	float MaxQueueTime;
 };

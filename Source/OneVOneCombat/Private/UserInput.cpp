@@ -3,15 +3,13 @@
 
 #include "UserInput.h"
 
-FUserInput UserInputUtilities::ConvertActionToUserInput(UserInputType inputType, EInputEvent inputEvent)
+FUserInput UserInputUtilities::ConvertActionToUserInput(EUserInputType inputType, EInputEvent inputEvent)
 {
-	// Only supports pressed and released, double click etc will be handled by input queue system.
-	check(inputEvent == EInputEvent::IE_Pressed || inputEvent == EInputEvent::IE_Released);
-
 	FUserInput userInput;
 
 	userInput.inputType = inputType;
 	userInput.inputValue = inputEvent == EInputEvent::IE_Pressed ? 1 : -1;
+	userInput.inputEvent = inputEvent;
 	userInput.timeStamp = FDateTime::Now();
 
 	return userInput;

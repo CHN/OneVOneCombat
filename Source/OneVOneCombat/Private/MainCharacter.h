@@ -5,15 +5,15 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 
-#include "PlayerStateController.h"
+#include "UserInputType.h"
 
 #include "MainCharacter.generated.h"
 
 class UPlayerInputPollingSystem;
 class UInputQueueSystem;
-enum class UserInputType : uint8;
+enum class EUserInputType : uint8;
 
-DECLARE_DELEGATE_TwoParams(FHandleActionInputDelegate, UserInputType, EInputEvent);
+DECLARE_DELEGATE_TwoParams(FHandleActionInputDelegate, EUserInputType, EInputEvent);
 
 UCLASS(Blueprintable)
 class AMainCharacter : public APawn
@@ -32,10 +32,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FVector2D movementInput;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UPlayerStateController* playerStateController;
-
-	void HandleActionInput(UserInputType inputType, EInputEvent inputEvent);
+	void HandleActionInput(EUserInputType inputType, EInputEvent inputEvent);
 
 protected:
 
@@ -44,6 +41,9 @@ protected:
 
 private:
 
+	UPROPERTY(VisibleAnywhere)
 	UPlayerInputPollingSystem* playerInputPollingSystem;
+
+	UPROPERTY(VisibleAnywhere)
 	UInputQueueSystem* inputQueueSystem;
 };

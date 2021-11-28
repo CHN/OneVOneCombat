@@ -3,15 +3,13 @@
 
 #include "PlayerInputPollingSystem.h"
 
-#include "UserInput.h"
-
 UPlayerInputPollingSystem::UPlayerInputPollingSystem()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
 
-void UPlayerInputPollingSystem::AddActionToUserInputPollingQueue(UserInputType inputType, TEnumAsByte<EInputEvent> inputEvent)
+void UPlayerInputPollingSystem::AddActionToUserInputPollingQueue(EUserInputType inputType, TEnumAsByte<EInputEvent> inputEvent)
 {
 	FUserInput userInput = UserInputUtilities::ConvertActionToUserInput(inputType, inputEvent);
 

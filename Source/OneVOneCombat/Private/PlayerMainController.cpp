@@ -3,7 +3,7 @@
 
 #include "PlayerMainController.h"
 
-#include "UserInput.h"
+#include "UserInputType.h"
 #include "MainCharacter.h"
 
 // Sets default values
@@ -45,17 +45,12 @@ void APlayerMainController::BeginPlay()
 	InputComponent->BindAxis(TEXT("Move_Horizontal"), horizontalMovementInputHandler, &UUserActionAndAxisInputHandler::HandleAxisInput);
 	InputComponent->BindAxis(TEXT("Move_Vertical"), verticalMovementInputHandler, &UUserActionAndAxisInputHandler::HandleAxisInput);
 
-	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Attack"), EInputEvent::IE_Pressed, character, &AMainCharacter::HandleActionInput, UserInputType::ATTACK_INPUT, EInputEvent::IE_Pressed);
-	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Attack"), EInputEvent::IE_Released, character, &AMainCharacter::HandleActionInput, UserInputType::ATTACK_INPUT, EInputEvent::IE_Released);
+	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Attack"), EInputEvent::IE_Pressed, character, &AMainCharacter::HandleActionInput, EUserInputType::ATTACK_INPUT, EInputEvent::IE_Pressed);
+	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Attack"), EInputEvent::IE_Released, character, &AMainCharacter::HandleActionInput, EUserInputType::ATTACK_INPUT, EInputEvent::IE_Released);
 
-	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Jump"), EInputEvent::IE_Pressed, character, &AMainCharacter::HandleActionInput, UserInputType::JUMP_INPUT, EInputEvent::IE_Pressed);
-	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Jump"), EInputEvent::IE_Released, character, &AMainCharacter::HandleActionInput, UserInputType::JUMP_INPUT, EInputEvent::IE_Released);
+	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Jump"), EInputEvent::IE_Pressed, character, &AMainCharacter::HandleActionInput, EUserInputType::JUMP_INPUT, EInputEvent::IE_Pressed);
+	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Jump"), EInputEvent::IE_Released, character, &AMainCharacter::HandleActionInput, EUserInputType::JUMP_INPUT, EInputEvent::IE_Released);
 
-	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Crouch"), EInputEvent::IE_Pressed, character, &AMainCharacter::HandleActionInput, UserInputType::CROUCH_INPUT, EInputEvent::IE_Pressed);
-	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Crouch"), EInputEvent::IE_Released, character, &AMainCharacter::HandleActionInput, UserInputType::CROUCH_INPUT, EInputEvent::IE_Released);
-}
-
-void APlayerMainController::HandleUserInput(FUserInput userInput)
-{
-
+	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Crouch"), EInputEvent::IE_Pressed, character, &AMainCharacter::HandleActionInput, EUserInputType::CROUCH_INPUT, EInputEvent::IE_Pressed);
+	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Crouch"), EInputEvent::IE_Released, character, &AMainCharacter::HandleActionInput, EUserInputType::CROUCH_INPUT, EInputEvent::IE_Released);
 }

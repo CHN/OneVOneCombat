@@ -9,12 +9,12 @@ UInputQueueDataAsset::UInputQueueDataAsset(const FObjectInitializer& ObjectIniti
 
 }
 
-const TArray<UserInputType>& UInputQueueDataAsset::GetInputSequence() const
+const TArray<FInputQueueAction>& UInputQueueDataAsset::GetInputActions() const
 {
-	return inputSequence;
+	return InputActions;
 }
 
-EPlayerState UInputQueueDataAsset::GetTargetPlayerState() const
+EInputQueueOutputState UInputQueueDataAsset::GetInputQueueOutputState() const
 {
-	return targetPlayerState;
+	return InputQueueOutputState;
 }

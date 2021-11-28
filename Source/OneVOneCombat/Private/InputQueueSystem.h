@@ -11,7 +11,7 @@
 #include "InputQueueSystem.generated.h"
 
 
-UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable)
 class UInputQueueSystem : public UActorComponent
 {
 	GENERATED_BODY()
@@ -24,6 +24,6 @@ public:
 
 private:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TArray<UInputQueueDataAsset*> activeComboList;
 };

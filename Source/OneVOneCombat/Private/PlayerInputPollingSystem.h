@@ -22,7 +22,7 @@ public:
 	UPlayerInputPollingSystem();
 
 	UFUNCTION(BlueprintCallable, meta = (ExpandEnumAsExecs = inputEvent))
-	void AddActionToUserInputPollingQueue(UserInputType inputType, TEnumAsByte<EInputEvent> inputEvent);
+	void AddActionToUserInputPollingQueue(EUserInputType inputType, TEnumAsByte<EInputEvent> inputEvent);
 
 	const TArray<FUserInput>& GetInputPoll() const;
 

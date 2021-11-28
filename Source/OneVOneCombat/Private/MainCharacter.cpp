@@ -14,7 +14,6 @@ AMainCharacter::AMainCharacter()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	playerStateController = CreateDefaultSubobject<UPlayerStateController>("PlayerStateController");
 	playerInputPollingSystem = CreateDefaultSubobject<UPlayerInputPollingSystem>("PlayerInputPollingSystem");
 	inputQueueSystem = CreateDefaultSubobject<UInputQueueSystem>("InputQueueSystem");
 }
@@ -53,7 +52,7 @@ void AMainCharacter::SetVerticalMoveAxis(float value)
 	movementInput.Y = value;
 }
 
-void AMainCharacter::HandleActionInput(UserInputType inputType, EInputEvent inputEvent)
+void AMainCharacter::HandleActionInput(EUserInputType inputType, EInputEvent inputEvent)
 {
 	playerInputPollingSystem->AddActionToUserInputPollingQueue(inputType, inputEvent);
 }

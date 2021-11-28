@@ -21,7 +21,7 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 
 	for (const auto* const comboData : activeComboList)
 	{
-		const auto& inputSequence = comboData->GetInputSequence();
+		const auto& inputSequence = comboData->GetInputActions();
 
 		int32 inputSequenceCount = 0;
 
@@ -29,10 +29,10 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 		{
 			for (int32 i = 0; i < inputSequence.Num(); ++i)
 			{
-				if (inputSequence[i] != currentInputPoll[i].inputType)
-				{
-					break;
-				}
+				//if (inputSequence[i] != currentInputPoll[i].inputType)
+				//{
+				//	break;
+				//}
 
 				++inputSequenceCount;
 			}
@@ -44,7 +44,7 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 		{
 			inputPollingSystem->RemoveFromPolling(inputSequenceCount);
 
-			GEngine->AddOnScreenDebugMessage(rand(), 1.f, FColor::Blue, FString::Printf(TEXT("Sequence Found: %d"), comboData->GetTargetPlayerState()));
+			GEngine->AddOnScreenDebugMessage(rand(), 1.f, FColor::Blue, FString::Printf(TEXT("Sequence Found: %d"), comboData->GetInputQueueOutputState()));
 
 			break;
 		}

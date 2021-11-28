@@ -6,7 +6,6 @@
 #include "GameFramework/Pawn.h"
 
 #include "UserActionAndAxisInputHandler.h"
-#include "PlayerStateObject.h"
 #include "MainCharacter.h"
 
 #include "PlayerMainController.generated.h"
@@ -21,9 +20,6 @@ public:
 	APlayerMainController();
 
 	void PreInitializeComponents() override;
-
-	UFUNCTION(BlueprintCallable)
-	void HandleUserInput(FUserInput userInput);
 
 protected:
 	// Called when the game starts or when spawned
