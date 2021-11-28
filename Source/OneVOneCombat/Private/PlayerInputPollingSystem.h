@@ -31,10 +31,11 @@ public:
 	DECLARE_DELEGATE_OneParam(FOnAnInputTriggered, UPlayerInputPollingSystem*);
 	FOnAnInputTriggered onAnInputTriggered;
 
-private:
-
+	UPROPERTY(EditAnywhere)
 	TArray<FUserInput> inputPoll;
 
+private:
+
 	UPROPERTY(EditAnywhere)
-	int8 maxPollSize = 8;
+	int8 maxPollSize = 16;
 };

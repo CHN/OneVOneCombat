@@ -13,15 +13,15 @@ AMainCharacter::AMainCharacter()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	playerInputPollingSystem = CreateDefaultSubobject<UPlayerInputPollingSystem>("PlayerInputPollingSystem");
-	inputQueueSystem = CreateDefaultSubobject<UInputQueueSystem>("InputQueueSystem");
 }
 
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	playerInputPollingSystem = NewObject<UPlayerInputPollingSystem>(this, "PlayerInputPollingSystem");
+	inputQueueSystem = NewObject<UInputQueueSystem>(this, "InputQueueSystem");
 
 	playerInputPollingSystem->onAnInputTriggered.BindUObject(inputQueueSystem, &UInputQueueSystem::ConsumeInputs);
 }

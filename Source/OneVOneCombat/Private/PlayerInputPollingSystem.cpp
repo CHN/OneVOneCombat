@@ -11,14 +11,13 @@ UPlayerInputPollingSystem::UPlayerInputPollingSystem()
 
 void UPlayerInputPollingSystem::AddActionToUserInputPollingQueue(EUserInputType inputType, TEnumAsByte<EInputEvent> inputEvent)
 {
-	FUserInput userInput = UserInputUtilities::ConvertActionToUserInput(inputType, inputEvent);
-
-	inputPoll.Insert(std::move(userInput), 0);
-
-	if (inputPoll.Num() == maxPollSize)
+	if (inputPoll.Num() == maxPollSize - 1)
 	{
 		inputPoll.RemoveAt(inputPoll.Num() - 1);
 	}
+
+	FUserInput userInput = UserInputUtilities::ConvertActionToUserInput(inputType, inputEvent);
+	inputPoll.Insert(std::move(userInput), 0);
 
 	onAnInputTriggered.ExecuteIfBound(this);
 }

@@ -11,10 +11,10 @@ UInputQueueDataAsset::UInputQueueDataAsset(const FObjectInitializer& ObjectIniti
 
 const TArray<FInputQueueAction>& UInputQueueDataAsset::GetInputActions() const
 {
-	return InputActions;
+	return inputActions;
 }
 
 EInputQueueOutputState UInputQueueDataAsset::GetInputQueueOutputState() const
 {
-	return InputQueueOutputState;
+	return inputQueueOutputState;
 }

@@ -11,18 +11,25 @@
 USTRUCT(BlueprintType)
 struct FUserInput
 {
-	EUserInputType inputType;
-	float inputValue;
-	TEnumAsByte<EInputEvent> inputEvent;
-	FDateTime timeStamp;
-
 	GENERATED_BODY();
+
+	UPROPERTY(VisibleAnywhere)
+	EUserInputType inputType;
+
+	UPROPERTY(VisibleAnywhere)
+	float inputValue;
+		
+	UPROPERTY(VisibleAnywhere)
+	TEnumAsByte<EInputEvent> inputEvent;
+
+	UPROPERTY(VisibleAnywhere)
+	int32 timeStamp;
 };
 
 class UserInputUtilities
 {
 public:
-
+		
 	static FUserInput ConvertActionToUserInput(EUserInputType inputType, EInputEvent inputEvent);
 	static float ConvertActionToAxisInput(EInputEvent negativeInputEvent, EInputEvent positiveInputEvent);
 	static float ConvertActionToAxisInputByBools(bool negativeInputEvent, bool positiveInputEvent);

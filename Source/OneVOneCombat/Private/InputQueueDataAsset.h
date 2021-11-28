@@ -24,18 +24,24 @@ public:
 
 	const TArray<FInputQueueAction>& GetInputActions() const;
 	EInputQueueOutputState GetInputQueueOutputState() const;
+	float GetMinQueueTime() const { return minQueueTime; }
+	float GetMaxQueueTime() const { return maxQueueTime; }
+	int32 GetPriority() const { return priority; }
 
 private:
 
 	UPROPERTY(EditAnywhere)
-	TArray<FInputQueueAction> InputActions;
+	TArray<FInputQueueAction> inputActions;
 
 	UPROPERTY(EditAnywhere)
-	EInputQueueOutputState InputQueueOutputState;
+	EInputQueueOutputState inputQueueOutputState;
 
 	UPROPERTY(EditAnywhere)
-	float MinQueueTime;
+	float minQueueTime;
 
 	UPROPERTY(EditAnywhere)
-	float MaxQueueTime;
+	float maxQueueTime;
+
+	UPROPERTY(EditAnywhere)
+	int32 priority;
 };

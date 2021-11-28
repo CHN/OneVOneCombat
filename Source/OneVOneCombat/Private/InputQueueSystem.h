@@ -20,10 +20,12 @@ public:
 	// Sets default values for this component's properties
 	UInputQueueSystem();
 
+	void BeginPlay() override;
+
 	void ConsumeInputs(UPlayerInputPollingSystem* inputPollingSystem);
 
 private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TArray<UInputQueueDataAsset*> activeComboList;
+	TArray<UInputQueueDataAsset*> inputQueueDataAssets;
 };
