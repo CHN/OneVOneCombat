@@ -2,11 +2,3 @@
 
 
 #include "EditorUtilities.h"
-
-EditorUtilities::EditorUtilities()
-{
-}
-
-EditorUtilities::~EditorUtilities()
-{
-}
