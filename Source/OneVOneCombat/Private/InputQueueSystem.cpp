@@ -50,23 +50,26 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 	{
 		const FUserInput& currentUserInput = currentInputPoll[i];
 
-		int32 lastTwoInputInterval = 0;
-		int32 nextTwoInputInterval = 0;
+		double lastTwoInputInterval = 0.f;
+		double nextTwoInputInterval = 0.f;
 
 		if (currentInputPoll.Num() > 1)
 		{
 			if (i > 0)
 			{
 				const FUserInput& beforeCurrentUserInput = currentInputPoll[i - 1];
-				lastTwoInputInterval = FMath::Max(currentUserInput.timeStamp - beforeCurrentUserInput.timeStamp, 0);
+				lastTwoInputInterval = (beforeCurrentUserInput.timeStamp - currentUserInput.timeStamp).GetTotalMilliseconds();
 			}
 
 			if (i < currentInputPoll.Num() - 1)
 			{
 				const FUserInput& afterCurrentUserInput = currentInputPoll[i + 1];
-				nextTwoInputInterval = FMath::Max(currentUserInput.timeStamp - afterCurrentUserInput.timeStamp, 0);
+				nextTwoInputInterval = (currentUserInput.timeStamp - afterCurrentUserInput.timeStamp).GetTotalMilliseconds();
 			}
 		}
+
+		LOG_TO_SCREEN_STR("lastTwoInputInterval is {0}", lastTwoInputInterval);
+		LOG_TO_SCREEN_STR("nextTwoInputInterval is {0}", nextTwoInputInterval);
 
 		for (int32 inputQueueIndex = 0; inputQueueIndex < inputQueueDataCandidates.Num(); ++inputQueueIndex)
 		{
@@ -86,7 +89,7 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 			{
 				// TODO: Remove elements after for-loop ends
 				inputQueueDataCandidates.RemoveAt(inputQueueIndex);
-				inputQueueIndex > 0 && --inputQueueIndex;
+				--inputQueueIndex;
 				continue;
 			}
 
@@ -94,7 +97,7 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 				currentQueueAction.maxPreviousInputTime < lastTwoInputInterval)
 			{
 				inputQueueDataCandidates.RemoveAt(inputQueueIndex);
-				inputQueueIndex > 0 && --inputQueueIndex;
+				--inputQueueIndex;
 				continue;
 			}
 
@@ -102,7 +105,7 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 				currentQueueAction.maxNextInputTime < nextTwoInputInterval)
 			{
 				inputQueueDataCandidates.RemoveAt(inputQueueIndex);
-				inputQueueIndex > 0 && --inputQueueIndex;
+				--inputQueueIndex;
 				continue;
 			}
 		}

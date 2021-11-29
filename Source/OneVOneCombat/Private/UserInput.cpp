@@ -10,7 +10,7 @@ FUserInput UserInputUtilities::ConvertActionToUserInput(EUserInputType inputType
 	userInput.inputType = inputType;
 	userInput.inputValue = inputEvent == EInputEvent::IE_Pressed ? 1 : 0.f;
 	userInput.inputEvent = inputEvent;
-	userInput.timeStamp = FDateTime::Now().GetMillisecond();
+	userInput.timeStamp = FDateTime::Now();
 
 	return userInput;
 }

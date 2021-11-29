@@ -23,7 +23,7 @@ struct FUserInput
 	TEnumAsByte<EInputEvent> inputEvent;
 
 	UPROPERTY(VisibleAnywhere)
-	int32 timeStamp;
+	FDateTime timeStamp;
 };
 
 class UserInputUtilities

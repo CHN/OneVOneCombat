@@ -24,6 +24,7 @@ struct FInputQueueAction
 	UPROPERTY(EditAnywhere)
 	TEnumAsByte<EInputEvent> inputEvent;
 
+	// TODO: Convert to double
 	UPROPERTY(EditAnywhere, meta = (ClampMin = "0"))
 	float minPreviousInputTime = 0.f;
 
