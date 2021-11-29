@@ -84,6 +84,7 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 			if (currentQueueAction.inputType != currentUserInput.inputType ||
 				currentQueueAction.inputEvent != currentUserInput.inputEvent)
 			{
+				// TODO: Remove elements after for-loop ends
 				inputQueueDataCandidates.RemoveAt(inputQueueIndex);
 				inputQueueIndex > 0 && --inputQueueIndex;
 				continue;
