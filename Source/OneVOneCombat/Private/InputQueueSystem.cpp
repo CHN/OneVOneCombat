@@ -68,9 +68,6 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 			}
 		}
 
-		LOG_TO_SCREEN_STR("lastTwoInputInterval is {0}", lastTwoInputInterval);
-		LOG_TO_SCREEN_STR("nextTwoInputInterval is {0}", nextTwoInputInterval);
-
 		for (int32 inputQueueIndex = 0; inputQueueIndex < inputQueueDataCandidates.Num(); ++inputQueueIndex)
 		{
 			const auto* const inputQueueData = inputQueueDataCandidates[inputQueueIndex];
