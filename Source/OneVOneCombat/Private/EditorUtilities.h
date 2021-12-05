@@ -9,7 +9,7 @@
  */
 
 #define LOG_TO_SCREEN(text, ...) GEngine->AddOnScreenDebugMessage(rand(), 0.5f, FColor::Cyan, FString::Printf(TEXT(text), __VA_ARGS__))
-#define LOG_TO_SCREEN_STR(text, ...) GEngine->AddOnScreenDebugMessage(rand(), 0.5f, FColor::Cyan, FString::Format(TEXT(text), { FStringFormatArg(__VA_ARGS__) }))
+#define LOG_TO_SCREEN_STR(text, ...) GEngine->AddOnScreenDebugMessage(rand(), 0.5f, FColor::Cyan, FString::Format(TEXT(text), { __VA_ARGS__ }))
 
 class EditorUtilities
 {

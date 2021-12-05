@@ -30,6 +30,12 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 		return;
 	}
 
+	if (WillCurrentInputBeDiscarded(currentInputPoll[0]))
+	{
+		inputPollingSystem->RemoveFromPolling(1);
+		return;
+	}
+
 	TArray<UInputQueueDataAsset*> inputQueueDataCandidates;
 
 	for (const auto& inputQueueDataAsset : inputQueueDataAssets)
@@ -58,13 +64,13 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 			if (i > 0)
 			{
 				const FUserInput& beforeCurrentUserInput = currentInputPoll[i - 1];
-				lastTwoInputInterval = (beforeCurrentUserInput.timeStamp - currentUserInput.timeStamp).GetTotalMilliseconds();
+				nextTwoInputInterval = (beforeCurrentUserInput.timeStamp - currentUserInput.timeStamp).GetTotalMilliseconds();
 			}
 
 			if (i < currentInputPoll.Num() - 1)
 			{
 				const FUserInput& afterCurrentUserInput = currentInputPoll[i + 1];
-				nextTwoInputInterval = (currentUserInput.timeStamp - afterCurrentUserInput.timeStamp).GetTotalMilliseconds();
+				lastTwoInputInterval = (currentUserInput.timeStamp - afterCurrentUserInput.timeStamp).GetTotalMilliseconds();
 			}
 		}
 
@@ -90,9 +96,16 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 				continue;
 			}
 
-			if (currentQueueAction.minPreviousInputTime > lastTwoInputInterval ||
-				currentQueueAction.maxPreviousInputTime < lastTwoInputInterval)
+			const bool willPreviousTimeCheckBeDiscarded = actionIndex > 0 && 
+														  currentInputPoll.Num() > 1 &&
+														 (currentInputPoll[1].inputType == inputActions[actionIndex - 1].inputType &&
+														  currentInputPoll[1].inputEvent == inputActions[actionIndex - 1].inputEvent);
+
+			if (willPreviousTimeCheckBeDiscarded &&
+				(currentQueueAction.minPreviousInputTime > lastTwoInputInterval ||
+				currentQueueAction.maxPreviousInputTime < lastTwoInputInterval))
 			{
+				
 				inputQueueDataCandidates.RemoveAt(inputQueueIndex);
 				--inputQueueIndex;
 				continue;
@@ -118,7 +131,58 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 		return;
 	}
 
-	inputPollingSystem->RemoveFromPolling(currentInputPoll.Num()); // TODO: Remove input from poll if expired
+	inputPollingSystem->RemoveFromPolling(inputQueueDataCandidates[0]->GetInputActions().Num()); // TODO: Remove input from poll if expired
+
+	UpdateDiscardInputPairForQueueFound(inputQueueDataCandidates[0]);
 
 	LOG_TO_SCREEN_STR("Current Action is {0}", EditorUtilities::EnumToString(TEXT("EInputQueueOutputState"), static_cast<uint8>(inputQueueDataCandidates[0]->GetInputQueueOutputState())));
+}
+
+void UInputQueueSystem::UpdateDiscardInputPairForQueueFound(const UInputQueueDataAsset* const inputQueueDataAsset)
+{
+	if (inputQueueDataAsset->GetDiscardReleaseInputOfPressEventWhenQueueFound())
+	{
+		const auto& inputActions = inputQueueDataAsset->GetInputActions();
+
+		for (const FInputQueueAction& inputAction : inputActions)
+		{
+			if (inputAction.inputEvent == EInputEvent::IE_Pressed)
+			{
+				discardInputPairs.Add({ inputAction.inputType, EInputEvent::IE_Released });
+			}
+		}
+	}
+	else
+	{
+		UpdateDiscardInputPair(inputQueueDataAsset);
+	}
+}
+
+void UInputQueueSystem::UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset)
+{
+	const auto& inputActions = inputQueueDataAsset->GetInputActions();
+
+	for (const FInputQueueAction& inputAction : inputActions)
+	{
+		if (inputAction.bDiscardReleaseInputOfPressEvent &&
+			inputAction.inputEvent == EInputEvent::IE_Pressed)
+		{
+			discardInputPairs.Add({ inputAction.inputType, EInputEvent::IE_Released });
+		}
+	}
+}
+
+bool UInputQueueSystem::WillCurrentInputBeDiscarded(const FUserInput& userInput)
+{
+	for (int32 i = 0; i < discardInputPairs.Num(); ++i)
+	{
+		if (discardInputPairs[i].inputType == userInput.inputType &&
+			discardInputPairs[i].inputEvent == userInput.inputEvent)
+		{
+			discardInputPairs.RemoveAt(i);
+			return true;
+		}
+	}
+
+	return false;
 }

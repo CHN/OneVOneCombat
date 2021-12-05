@@ -10,6 +10,14 @@
 
 #include "InputQueueSystem.generated.h"
 
+USTRUCT()
+struct FDiscardInputPair
+{
+	GENERATED_BODY()
+
+	EUserInputType inputType;
+	EInputEvent inputEvent;
+};
 
 UCLASS(Blueprintable)
 class UInputQueueSystem : public UActorComponent
@@ -28,4 +36,11 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TArray<UInputQueueDataAsset*> inputQueueDataAssets;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	TArray<FDiscardInputPair> discardInputPairs;
+
+	void UpdateDiscardInputPairForQueueFound(const UInputQueueDataAsset* const inputQueueDataAsset);
+	void UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset);
+	bool WillCurrentInputBeDiscarded(const FUserInput& userInput);
 };
