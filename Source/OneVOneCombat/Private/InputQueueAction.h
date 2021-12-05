@@ -31,18 +31,6 @@ struct FInputQueueAction
 	UPROPERTY(EditAnywhere, meta = (ClampMin = "0"))
 	float maxPreviousInputTime = 10000.f;
 
-	UPROPERTY(EditAnywhere, meta = (ClampMin = "0"))
-	float minNextInputTime = 0.f;
-
-	UPROPERTY(EditAnywhere, meta = (ClampMin = "0"))
-	float maxNextInputTime = 10000.f;
-
-	UPROPERTY(EditAnywhere, meta = (ClampMin = "0"))
-	float minClickTime = 0.f;
-
-	UPROPERTY(EditAnywhere, meta = (ClampMin = "0"))
-	float maxClickTime = 10000.f;
-
 	UPROPERTY(EditAnywhere)
 	bool bDiscardReleaseInputOfPressEvent = true;
 };

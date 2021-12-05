@@ -57,21 +57,11 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 		const FUserInput& currentUserInput = currentInputPoll[i];
 
 		double lastTwoInputInterval = 0.f;
-		double nextTwoInputInterval = 0.f;
 
-		if (currentInputPoll.Num() > 1)
+		if (currentInputPoll.Num() > 1 && i < currentInputPoll.Num() - 1)
 		{
-			if (i > 0)
-			{
-				const FUserInput& beforeCurrentUserInput = currentInputPoll[i - 1];
-				nextTwoInputInterval = (beforeCurrentUserInput.timeStamp - currentUserInput.timeStamp).GetTotalMilliseconds();
-			}
-
-			if (i < currentInputPoll.Num() - 1)
-			{
-				const FUserInput& afterCurrentUserInput = currentInputPoll[i + 1];
-				lastTwoInputInterval = (currentUserInput.timeStamp - afterCurrentUserInput.timeStamp).GetTotalMilliseconds();
-			}
+			const FUserInput& afterCurrentUserInput = currentInputPoll[i + 1];
+			lastTwoInputInterval = (currentUserInput.timeStamp - afterCurrentUserInput.timeStamp).GetTotalMilliseconds();
 		}
 
 		for (int32 inputQueueIndex = 0; inputQueueIndex < inputQueueDataCandidates.Num(); ++inputQueueIndex)
@@ -106,14 +96,6 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 				currentQueueAction.maxPreviousInputTime < lastTwoInputInterval))
 			{
 				
-				inputQueueDataCandidates.RemoveAt(inputQueueIndex);
-				--inputQueueIndex;
-				continue;
-			}
-
-			if (currentQueueAction.minNextInputTime > nextTwoInputInterval ||
-				currentQueueAction.maxNextInputTime < nextTwoInputInterval)
-			{
 				inputQueueDataCandidates.RemoveAt(inputQueueIndex);
 				--inputQueueIndex;
 				continue;
