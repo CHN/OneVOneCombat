@@ -122,40 +122,15 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 
 		if (inputQueueDataCandidates.IsEmpty())
 		{
-			break;
+			return;
 		}
-	}
-
-	if (inputQueueDataCandidates.IsEmpty())
-	{
-		return;
 	}
 
 	inputPollingSystem->RemoveFromPolling(inputQueueDataCandidates[0]->GetInputActions().Num()); // TODO: Remove input from poll if expired
 
-	UpdateDiscardInputPairForQueueFound(inputQueueDataCandidates[0]);
+	UpdateDiscardInputPair(inputQueueDataCandidates[0]);
 
 	LOG_TO_SCREEN_STR("Current Action is {0}", EditorUtilities::EnumToString(TEXT("EInputQueueOutputState"), static_cast<uint8>(inputQueueDataCandidates[0]->GetInputQueueOutputState())));
-}
-
-void UInputQueueSystem::UpdateDiscardInputPairForQueueFound(const UInputQueueDataAsset* const inputQueueDataAsset)
-{
-	if (inputQueueDataAsset->GetDiscardReleaseInputOfPressEventWhenQueueFound())
-	{
-		const auto& inputActions = inputQueueDataAsset->GetInputActions();
-
-		for (const FInputQueueAction& inputAction : inputActions)
-		{
-			if (inputAction.inputEvent == EInputEvent::IE_Pressed)
-			{
-				discardInputPairs.Add({ inputAction.inputType, EInputEvent::IE_Released });
-			}
-		}
-	}
-	else
-	{
-		UpdateDiscardInputPair(inputQueueDataAsset);
-	}
 }
 
 void UInputQueueSystem::UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset)

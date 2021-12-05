@@ -27,7 +27,6 @@ public:
 	float GetMinQueueTime() const { return minQueueTime; }
 	float GetMaxQueueTime() const { return maxQueueTime; }
 	int32 GetPriority() const { return priority; }
-	bool GetDiscardReleaseInputOfPressEventWhenQueueFound() const { return bDiscardReleaseInputOfPressEventWhenQueueFound; }
 
 private:
 
@@ -45,7 +44,4 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	int32 priority;
-
-	UPROPERTY(EditAnywhere)
-	bool bDiscardReleaseInputOfPressEventWhenQueueFound = true;
 };
