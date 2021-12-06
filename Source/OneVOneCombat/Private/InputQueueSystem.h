@@ -38,4 +38,5 @@ private:
 
 	void UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset);
 	bool WillCurrentInputBeDiscarded(const FUserInput& userInput);
+	bool IsUserInputExpiredForInputQueueAction(const FUserInput& userInput, const FInputQueueAction& inputQueueAction);
 };

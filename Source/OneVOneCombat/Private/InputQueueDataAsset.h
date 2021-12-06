@@ -27,6 +27,7 @@ public:
 	float GetMinQueueTime() const { return minQueueTime; }
 	float GetMaxQueueTime() const { return maxQueueTime; }
 	int32 GetPriority() const { return priority; }
+	bool GetRemoveFromPollWhenInputQueueFound() const { return bRemoveFromPollWhenInputQueueFound; }
 
 private:
 
@@ -44,4 +45,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	int32 priority;
+
+	UPROPERTY(EditAnywhere)
+	bool bRemoveFromPollWhenInputQueueFound = true;
 };

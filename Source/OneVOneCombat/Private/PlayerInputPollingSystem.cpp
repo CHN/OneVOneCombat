@@ -31,3 +31,8 @@ void UPlayerInputPollingSystem::RemoveFromPolling(int32 inputSequenceCount)
 {
 	inputPoll.RemoveAt(0, inputSequenceCount);
 }
+
+void UPlayerInputPollingSystem::RemoveFromPollingAt(int32 index)
+{
+	inputPoll.RemoveAt(index, 1);
+}

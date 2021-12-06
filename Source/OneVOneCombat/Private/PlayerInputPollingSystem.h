@@ -38,4 +38,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	int8 maxPollSize = 16;
+public:
+	void RemoveFromPollingAt(int32 index);
 };

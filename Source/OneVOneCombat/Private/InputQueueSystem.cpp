@@ -86,6 +86,13 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 				continue;
 			}
 
+			if (IsUserInputExpiredForInputQueueAction(currentUserInput, currentQueueAction))
+			{
+				inputQueueDataCandidates.RemoveAt(inputQueueIndex);
+				--inputQueueIndex;
+				continue;
+			}
+
 			const bool willPreviousTimeCheckBeDiscarded = actionIndex > 0 && 
 														  currentInputPoll.Num() > 1 &&
 														 (currentInputPoll[1].inputType == inputActions[actionIndex - 1].inputType &&
@@ -108,7 +115,10 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 		}
 	}
 
-	inputPollingSystem->RemoveFromPolling(inputQueueDataCandidates[0]->GetInputActions().Num()); // TODO: Remove input from poll if expired
+	if (inputQueueDataCandidates[0]->GetRemoveFromPollWhenInputQueueFound())
+	{
+		inputPollingSystem->RemoveFromPolling(inputQueueDataCandidates[0]->GetInputActions().Num());
+	}
 
 	UpdateDiscardInputPair(inputQueueDataCandidates[0]);
 
@@ -142,4 +152,10 @@ bool UInputQueueSystem::WillCurrentInputBeDiscarded(const FUserInput& userInput)
 	}
 
 	return false;
+}
+
+bool UInputQueueSystem::IsUserInputExpiredForInputQueueAction(const FUserInput& userInput, const FInputQueueAction& inputQueueAction)
+{
+	const double passedTime = (FDateTime::Now() - userInput.timeStamp).GetTotalMilliseconds();
+	return passedTime > inputQueueAction.expireTime;
 }
