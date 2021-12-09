@@ -14,11 +14,26 @@ UInputQueueSystem::UInputQueueSystem()
 void UInputQueueSystem::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	inputQueueDataAssets.Sort([](UInputQueueDataAsset& prev, UInputQueueDataAsset& next)
+
+	SortInputQueueDataArray();
+
+}
+
+void UInputQueueSystem::SortInputQueueDataArray()
+{
+	TArray<FInputQueueData> sortedArray;
+
+	sortedArray.SetNum(static_cast<uint8>(EUserInputType::END_OF_ENUM));
+
+	for (const FInputQueueData& inputQueueData : inputQueueDataArray)
+	{
+		if (inputQueueData.inputType < EUserInputType::END_OF_ENUM)
 		{
-			return prev.GetPriority() <= next.GetPriority();
-		});
+			sortedArray[static_cast<uint8>(inputQueueData.inputType.GetValue())] = inputQueueData;
+		}
+	}
+
+	inputQueueDataArray = std::move(sortedArray);
 }
 
 void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSystem)
@@ -38,9 +53,10 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 
 	TArray<UInputQueueDataAsset*> inputQueueDataCandidates;
 
-	for (const auto& inputQueueDataAsset : inputQueueDataAssets)
+	const TArray<UInputQueueDataAsset*>& selectedInputQueueDataAssets = inputQueueDataArray[static_cast<uint8>(currentInputPoll[0].inputType)].inputQueueDataAssets;
+
+	for (UInputQueueDataAsset* const inputQueueDataAsset : selectedInputQueueDataAssets)
 	{
-		// TODO: Don't add to candidates if last input is not equal
 		if (inputQueueDataAsset->GetInputActions().Num() <= currentInputPoll.Num())
 		{
 			inputQueueDataCandidates.Add(inputQueueDataAsset);
@@ -56,7 +72,7 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 	{
 		const FUserInput& currentUserInput = currentInputPoll[i];
 
-		double lastTwoInputInterval = 0.f;
+		double lastTwoInputInterval = 0.0;
 
 		if (currentInputPoll.Num() > 1 && i < currentInputPoll.Num() - 1)
 		{

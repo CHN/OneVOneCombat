@@ -10,6 +10,18 @@
 
 #include "InputQueueSystem.generated.h"
 
+USTRUCT(BlueprintType)
+struct FInputQueueData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TEnumAsByte<EUserInputType> inputType = EUserInputType::END_OF_ENUM;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UInputQueueDataAsset*> inputQueueDataAssets;
+};
+
 UCLASS(Blueprintable)
 class UInputQueueSystem : public UActorComponent
 {
@@ -26,7 +38,7 @@ public:
 private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TArray<UInputQueueDataAsset*> inputQueueDataAssets;
+	TArray<FInputQueueData> inputQueueDataArray;
 
 	struct DiscardInputPair
 	{
@@ -36,6 +48,7 @@ private:
 
 	TArray<DiscardInputPair> discardInputPairs;
 
+	void SortInputQueueDataArray();
 	void UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset);
 	bool WillCurrentInputBeDiscarded(const FUserInput& userInput);
 	bool IsUserInputExpiredForInputQueueAction(const FUserInput& userInput, const FInputQueueAction& inputQueueAction);

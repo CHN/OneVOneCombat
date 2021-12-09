@@ -11,5 +11,7 @@ enum class EUserInputType : uint8
 {
 	ATTACK_INPUT,
 	JUMP_INPUT,
-	CROUCH_INPUT
+	CROUCH_INPUT,
+
+	END_OF_ENUM
 };
