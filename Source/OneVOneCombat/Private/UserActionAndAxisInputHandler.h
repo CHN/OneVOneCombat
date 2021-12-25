@@ -23,6 +23,7 @@ public:
 	void HandlePositiveInputPressed();
 	void HandlePositiveInputReleased();
 	void HandleAxisInput(float value);
+	void ResetAxisAccumulation();
 
 	template<typename UserClass>
 	void BindAxisFunction(UserClass* object, typename FInputAxisHandlerSignature::template TUObjectMethodDelegate<UserClass>::FMethodPtr method)
@@ -39,6 +40,8 @@ private:
 
 	bool bIsNegativePressed = false;
 	bool bIsPositivePressed = false;
+
+	float axisValue = 0.f;
 
 	TSharedPtr<FInputAxisHandlerSignature> axisHandler;
 };

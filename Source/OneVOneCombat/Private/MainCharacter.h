@@ -29,10 +29,22 @@ public:
 	void SetHorizontalMoveAxis(float value);
 	void SetVerticalMoveAxis(float value);
 
+	void SetHorizontalLookAxis(float value);
+	void SetVerticalLookAxis(float value);
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FVector2D movementInput;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	FVector2D lookInput;
+
 	void HandleActionInput(EUserInputType inputType, EInputEvent inputEvent);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USkeletalMeshComponent* SkeletalMeshComp1;
+
+	UPROPERTY(BlueprintReadWrite)
+	USceneComponent* cameraBoom;
 
 protected:
 

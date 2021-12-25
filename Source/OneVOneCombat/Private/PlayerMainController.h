@@ -24,6 +24,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void PlayerTick(float DeltaTime) override;
 
 private:
 
@@ -32,4 +33,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	UUserActionAndAxisInputHandler* verticalMovementInputHandler;
+
+	UPROPERTY(EditAnywhere)
+	UUserActionAndAxisInputHandler* horizontalLookInputHandler;
+
+	UPROPERTY(EditAnywhere)
+	UUserActionAndAxisInputHandler* verticalLookInputHandler;
 };

@@ -47,8 +47,13 @@ void UUserActionAndAxisInputHandler::HandleAxisInput(float value)
 {
 	if (axisHandler.IsValid())
 	{
-		const float resultAxisInput = GetAxisValue() + value;
+		axisValue += GetAxisValue() + value;
 
-		axisHandler->Execute(FMath::Clamp(resultAxisInput, -1.f, 1.f));
+		axisHandler->Execute(FMath::Clamp(axisValue, -1.f, 1.f));
 	}
+}
+
+void UUserActionAndAxisInputHandler::ResetAxisAccumulation()
+{
+	axisValue = 0.f;
 }

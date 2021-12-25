@@ -19,6 +19,19 @@ void APlayerMainController::PreInitializeComponents()
 
 	horizontalMovementInputHandler = NewObject<UUserActionAndAxisInputHandler>();
 	verticalMovementInputHandler = NewObject<UUserActionAndAxisInputHandler>();
+
+	horizontalLookInputHandler = NewObject<UUserActionAndAxisInputHandler>();
+	verticalLookInputHandler = NewObject<UUserActionAndAxisInputHandler>();
+}
+
+void APlayerMainController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	horizontalMovementInputHandler->ResetAxisAccumulation();
+	verticalMovementInputHandler->ResetAxisAccumulation();
+	horizontalLookInputHandler->ResetAxisAccumulation();
+	verticalLookInputHandler->ResetAxisAccumulation();
 }
 
 void APlayerMainController::BeginPlay()
@@ -53,4 +66,15 @@ void APlayerMainController::BeginPlay()
 
 	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Crouch"), EInputEvent::IE_Pressed, character, &AMainCharacter::HandleActionInput, EUserInputType::CROUCH_INPUT, EInputEvent::IE_Pressed);
 	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Crouch"), EInputEvent::IE_Released, character, &AMainCharacter::HandleActionInput, EUserInputType::CROUCH_INPUT, EInputEvent::IE_Released);
+
+	// Handle Look Input
+
+	horizontalLookInputHandler->BindAxisFunction(character, &AMainCharacter::SetHorizontalLookAxis);
+	verticalLookInputHandler->BindAxisFunction(character, &AMainCharacter::SetVerticalLookAxis);
+
+	InputComponent->BindAxis(TEXT("Look_Horizontal"), horizontalLookInputHandler, &UUserActionAndAxisInputHandler::HandleAxisInput);
+	InputComponent->BindAxis(TEXT("Look_Vertical"), verticalLookInputHandler, &UUserActionAndAxisInputHandler::HandleAxisInput);
+
+	InputComponent->BindAxis(TEXT("Look_Horizontal_Joystick"), horizontalLookInputHandler, &UUserActionAndAxisInputHandler::HandleAxisInput);
+	InputComponent->BindAxis(TEXT("Look_Vertical_Joystick"), verticalLookInputHandler, &UUserActionAndAxisInputHandler::HandleAxisInput);
 }
