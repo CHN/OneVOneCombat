@@ -4,6 +4,8 @@
 
 #include "PlayerInputPollingSystem.h"
 #include "InputQueueSystem.h"
+#include "MainCharacterMovementComponent.h"
+#include "Components\CapsuleComponent.h"
 
 #include "EditorUtilities.h"
 
@@ -17,6 +19,9 @@ AMainCharacter::AMainCharacter()
 
 	playerInputPollingSystem = CreateDefaultSubobject<UPlayerInputPollingSystem>("PlayerInputPollingSystem");
 	inputQueueSystem = CreateDefaultSubobject<UInputQueueSystem>("InputQueueSystem");
+	mainCharacterMovementComponent = CreateDefaultSubobject<UMainCharacterMovementComponent>("MainCharacterMovementComponent");
+
+	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>("CapsuleCollider");
 }
 
 // Called when the game starts or when spawned
@@ -25,6 +30,8 @@ void AMainCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	playerInputPollingSystem->onAnInputTriggered.BindUObject(inputQueueSystem, &UInputQueueSystem::ConsumeInputs);
+
+	mainCharacterMovementComponent->SetMoveableComponent(capsuleCollider);
 }
 
 // Called every frame
@@ -61,10 +68,10 @@ void AMainCharacter::Tick(float DeltaTime)
 
 	cameraBoom->SetWorldRotation(swing * twist);
 
-	LOG_TO_SCREEN("Move: %f, %f, %f", move.X, move.Y, move.Z);
-
 	FHitResult MoveOnBaseHit(1.f);
-	GetRootComponent()->MoveComponent(move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion(), true, &MoveOnBaseHit);
+	//GetRootComponent()->MoveComponent(move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion(), true, &MoveOnBaseHit);
+
+	mainCharacterMovementComponent->TryMoveByDelta(DeltaTime, move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion());
 }
 
 // Called to bind functionality to input

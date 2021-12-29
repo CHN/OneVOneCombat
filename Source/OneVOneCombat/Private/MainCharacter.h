@@ -11,6 +11,7 @@
 
 class UPlayerInputPollingSystem;
 class UInputQueueSystem;
+class UMainCharacterMovementComponent;
 enum class EUserInputType : uint8;
 
 DECLARE_DELEGATE_TwoParams(FHandleActionInputDelegate, EUserInputType, EInputEvent);
@@ -58,4 +59,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UInputQueueSystem* inputQueueSystem;
+
+	UPROPERTY(EditAnywhere)
+	UPrimitiveComponent* capsuleCollider;
+
+	UPROPERTY(VisibleAnywhere)
+	UMainCharacterMovementComponent* mainCharacterMovementComponent;
 };
