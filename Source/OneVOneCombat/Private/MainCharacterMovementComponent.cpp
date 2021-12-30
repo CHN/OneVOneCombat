@@ -15,54 +15,73 @@ void UMainCharacterMovementComponent::SetMoveableComponent(UPrimitiveComponent* 
 	moveableComponent = NewMoveableComponent;
 }
 
+static float CalculateDistanceByDirection(const FVector& dir, const FVector& pos)
+{
+	return FVector::DotProduct(pos, -dir.GetUnsafeNormal());
+}
+
 bool UMainCharacterMovementComponent::TryMoveByDelta(const float deltaTime, const FVector& delta, const FQuat& worldRotation)
 {
 	if (moveableComponent.IsNull())
 	{
 		return false;
 	}
-
-	UWorld* const currentWorld = GetWorld();
-
-	FVector sweepStartPosition = moveableComponent->GetComponentLocation();
-
-	FVector groundHitNormal = FVector::UpVector;
-	const float hitResultTime = CalculateAppliableGravityDelta(deltaTime, &groundHitNormal);
 	
-	if (hitResultTime == 0.f)
+	UWorld* const world = GetWorld();
+
+	movementProperties.currentVelocity += movementProperties.gravityConstant * deltaTime;
+
+	FVector currentPosition = moveableComponent->GetComponentLocation();
+	const FVector gravitySweepEnd = currentPosition + movementProperties.currentVelocity * deltaTime;
+
+	TArray<FHitResult> gravityHitResults;
+
+	world->SweepMultiByChannel(NO_CONST_REF gravityHitResults, currentPosition, gravitySweepEnd, worldRotation, walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape());
+
+	float maxDistance = -1.f;
+	FHitResult* topmostHitResult = nullptr;
+	bool nonTouchingGround = true;
+
+	for (FHitResult& hitResult : gravityHitResults)
 	{
-		movementProperties.currentVelocity.Z = 0;
-	}
-	else
-	{
-		movementProperties.currentVelocity += movementProperties.gravityConstant * deltaTime;
-	}
+		float distance = CalculateDistanceByDirection(movementProperties.gravityConstant, hitResult.ImpactPoint);
 
-	sweepStartPosition += movementProperties.currentVelocity * deltaTime * hitResultTime;
-
-	const FVector projectedDelta = FVector::VectorPlaneProject(delta, groundHitNormal).GetSafeNormal() * delta.Size();
-
-	const FVector sweepEndPosition = sweepStartPosition + projectedDelta;
-
-	FHitResult hitResult;
-
-	if (currentWorld->SweepSingleByChannel(NO_CONST_REF hitResult, sweepStartPosition + groundHitNormal * 0.1f, sweepEndPosition + groundHitNormal * 0.1f, worldRotation, sweepCollisionChannel, moveableComponent->GetCollisionShape()))
-	{
-		if (FVector::DotProduct(projectedDelta, hitResult.Normal) > 0.f)
+		if (hitResult.Time == 0.f)
 		{
-			moveableComponent->SetWorldLocationAndRotation(sweepEndPosition, worldRotation, false);
+			if (distance > maxDistance)
+			{
+				maxDistance = distance;
+				topmostHitResult = &hitResult;
+				nonTouchingGround = false;
+			}
 		}
 		else
 		{
-			const FVector projectedDelta2 = FVector::VectorPlaneProject(projectedDelta, hitResult.Normal);
-
-			moveableComponent->SetWorldLocationAndRotation(sweepStartPosition + projectedDelta2, worldRotation, false);
+			topmostHitResult = &hitResult;
+			maxDistance = distance;
+			break;
 		}
-		
-		return true;
 	}
 
-	moveableComponent->SetWorldLocationAndRotation(sweepEndPosition, worldRotation, false);
+	if (nonTouchingGround)
+	{
+		currentPosition += movementProperties.currentVelocity * deltaTime * (topmostHitResult ? topmostHitResult->Time : 1.f);
+	}
+	else
+	{
+		const FVector capsuleBottom = currentPosition + FVector::DownVector * moveableComponent->GetCollisionShape().GetCapsuleHalfHeight();
+		float distance = CalculateDistanceByDirection(movementProperties.gravityConstant, capsuleBottom);
+		const FVector sweepStart = currentPosition + (distance - maxDistance) * movementProperties.gravityConstant.GetUnsafeNormal();
+
+		FHitResult hitResult;
+		const bool isTouching = world->SweepSingleByChannel(NO_CONST_REF hitResult, sweepStart, currentPosition, worldRotation, walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(0.1f));
+		
+		currentPosition = isTouching ? hitResult.Location : sweepStart;
+
+		movementProperties.currentVelocity = FVector::ZeroVector;
+	}
+
+	moveableComponent->SetWorldLocation(currentPosition);
 
 	return true;
 }
@@ -75,48 +94,4 @@ void UMainCharacterMovementComponent::BeginPlay()
 void UMainCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-}
-
-float UMainCharacterMovementComponent::CalculateAppliableGravityDelta(const float deltaTime, FVector* outGroundHitNormal)
-{
-	UWorld* const currentWorld = GetWorld();
-
-	FVector sweepEndPosition = moveableComponent->GetComponentLocation();
-
-	sweepEndPosition += movementProperties.gravityConstant * 0.01;
-
-	TArray<FHitResult> hitResults;
-
-	if (currentWorld->SweepMultiByChannel(NO_CONST_REF hitResults, moveableComponent->GetComponentLocation(), sweepEndPosition, FQuat::Identity, walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape()))
-	{
-		float smallestDot = -9999;
-		FHitResult* h = nullptr;
-
-		for (FHitResult& hitResult : hitResults)
-		{
-			const float facingDotProduct = FVector::DotProduct(moveableComponent->GetUpVector(), hitResult.Normal);
-
-			if (hitResult.Location.Z > smallestDot)
-			{
-				smallestDot = hitResult.Location.Z;
-				h = &hitResult;
-			}
-		}
-
-		if (h == nullptr)
-		{
-			return 1.f;
-		}
-
-		/*if (walkableGroundProperties.minSlopeDotProduct <= facingDotProduct && facingDotProduct <= walkableGroundProperties.maxSlopeDotProduct)
-		{
-
-		}*/
-
-		*outGroundHitNormal = h->Normal;
-
-		return h->Time;
-	}
-
-	return 1.f;
 }

@@ -55,8 +55,6 @@ private:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	float CalculateAppliableGravityDelta(const float deltaTime, FVector* outGroundHitNormal);
-
 	UPROPERTY(EditAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
 	FWalkableGroundProperties walkableGroundProperties;
 
