@@ -69,7 +69,7 @@ bool UMainCharacterMovementComponent::TryMoveByDelta(const float deltaTime, cons
 	}
 	else
 	{
-		const FVector capsuleBottom = currentPosition + FVector::DownVector * moveableComponent->GetCollisionShape().GetCapsuleHalfHeight();
+		const FVector capsuleBottom = currentPosition - moveableComponent->GetUpVector() * moveableComponent->GetCollisionShape().GetCapsuleHalfHeight();
 		float distance = CalculateDistanceByDirection(movementProperties.gravityConstant, capsuleBottom);
 		const FVector sweepStart = currentPosition + (distance - maxDistance) * movementProperties.gravityConstant.GetUnsafeNormal();
 
