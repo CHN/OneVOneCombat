@@ -34,7 +34,7 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 	UWorld* const world = GetWorld();
 
 	TArray<FHitResult> hitResults;
-	const bool isHit = world->ComponentSweepMulti(NO_CONST_REF hitResults, moveableComponent, desiredPosition, sweepEndPosition, rotation, FComponentQueryParams::DefaultComponentQueryParams);
+	const bool isHit = world->ComponentSweepMulti(NO_CONST_REF hitResults, moveableComponent, desiredPosition, sweepEndPosition, rotation, FComponentQueryParams::DefaultComponentQueryParams); // TODO: Consider using single sweep
 
 	if (isHit)
 	{
@@ -54,73 +54,71 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 	Rotation = rotation;
 }
 
-FVector UMainCharacterMovementComponent::IterateMovement(FVector inPos, FVector endDelta)
+FVector UMainCharacterMovementComponent::FindNonCollidingClosestPosition(const FVector& initialPosition, const FVector& sweepEndPosition) /*const*/ // TODO: Update logic and enable const again
 {
-	TArray<FHitResult> groundHitResults;
-	UWorld* const world = GetWorld();
-	const bool isHitGround = world->SweepMultiByChannel(NO_CONST_REF groundHitResults, inPos, endDelta, moveableComponent->GetComponentQuat(), walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
+	FVector currentPosition = initialPosition;
 
-	for (int32 i = 0; i < groundHitResults.Num(); ++i)
+	TArray<FHitResult> hitResults;
+	const bool isHitting = GetWorld()->SweepMultiByChannel(NO_CONST_REF hitResults, currentPosition, sweepEndPosition, moveableComponent->GetComponentQuat(), moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
+
+	if (!isHitting)
 	{
-		inPos += groundHitResults[i].ImpactNormal * groundHitResults[i].PenetrationDepth;
+		return sweepEndPosition;
+	}
 
-		if (groundHitResults[i].PenetrationDepth > 0.f)
+	for (const FHitResult& hitResult : hitResults)
+	{
+		currentPosition += hitResult.ImpactNormal * hitResult.PenetrationDepth;
+
+		if (hitResult.PenetrationDepth > 0.f)
 		{
-			velocity = FVector::ZeroVector;
+			velocity = FVector::ZeroVector; // TODO: A workaround for testing
 		}
 	}
 
-	return inPos;
+	return currentPosition;
 }
 
 void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaTime)
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when UpdateMoveableComponent is invoked"));
 
-	UWorld* const world = GetWorld();
+	velocity += gravity.GetVector() * deltaTime;
 
 	FVector currentPosition = moveableComponent->GetComponentLocation();
-	const FVector gravityAppliedPosition = currentPosition + velocity.ProjectOnTo(gravity.GetNormalizedVector()) * deltaTime + gravity.GetVector() * deltaTime * deltaTime;
+	FVector sweepEndPosition = currentPosition + deltaVelocity * deltaTime;
 
-	const FHitResult* groundHitResult = nullptr;
-	TArray<FHitResult> groundHitResults;
-
-	const bool isHitGround = world->SweepMultiByChannel(NO_CONST_REF groundHitResults, currentPosition + deltaVelocity * deltaTime, gravityAppliedPosition + deltaVelocity * deltaTime, moveableComponent->GetComponentQuat(), walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
-
-	float highest = -99999.f;
-
-	for (int32 i = 0; i < groundHitResults.Num(); ++i)
+	for (uint8 i = 0; i < movementIterationCount; ++i)
 	{
-		if (highest < CalculateDistanceByDirection(gravity.GetNormalizedVector(), groundHitResults[i].ImpactPoint))
-		{
-			highest = CalculateDistanceByDirection(gravity.GetNormalizedVector(), groundHitResults[i].ImpactPoint);
-			groundHitResult = &groundHitResults[i];
-		}
+		currentPosition = FindNonCollidingClosestPosition(currentPosition, sweepEndPosition);
 	}
+
+	FHitResult groundHitResult;
+	const bool isHitGround = GetWorld()->SweepSingleByChannel(NO_CONST_REF groundHitResult, currentPosition, currentPosition + velocity * deltaTime, moveableComponent->GetComponentQuat(), walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
 
 	if (isHitGround)
 	{
-		velocity += gravity.GetVector() * deltaTime * groundHitResult->Time;
-
-		for (int32 i = 0; i < 8; ++i)
-		{
-			currentPosition = IterateMovement(currentPosition + deltaVelocity * deltaTime, gravityAppliedPosition + deltaVelocity * deltaTime) - deltaVelocity * deltaTime;
-		}
-
-		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity.GetSafeNormal(), groundHitResult->ImpactNormal) * deltaVelocity.Size();
+		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity.GetSafeNormal(), groundHitResult.ImpactNormal) * deltaVelocity.Size();
 	}
-	else
+
+	currentPosition = moveableComponent->GetComponentLocation();
+	FVector movementEndPosition = currentPosition + velocity * deltaTime;
+
+	for (uint8 i = 0; i < movementIterationCount; ++i)
 	{
-		velocity += gravity.GetVector() * deltaTime;
+		currentPosition = FindNonCollidingClosestPosition(currentPosition, movementEndPosition);
 	}
 
-	FVector posChange = (deltaVelocity + velocity) * deltaTime;
+	movementEndPosition = currentPosition + deltaVelocity * deltaTime;
 
-	deltaVelocity = FVector::ZeroVector; // TODO: Just testing for a while
-
-	currentPosition += posChange;
+	for (uint8 i = 0; i < movementIterationCount; ++i)
+	{
+		currentPosition = FindNonCollidingClosestPosition(currentPosition, movementEndPosition);
+	}
 
 	moveableComponent->SetWorldLocationAndRotation(currentPosition, Rotation);
+
+	deltaVelocity = FVector::ZeroVector; // TODO: Workaround for testing
 }
 
 void UMainCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

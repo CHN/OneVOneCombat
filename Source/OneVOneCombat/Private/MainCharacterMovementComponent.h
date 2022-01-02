@@ -100,11 +100,14 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
 	FVector accumulatedDelta;
-	FQuat Rotation;
+	FQuat Rotation; // TODO: A workaround for testing
+
+	UPROPERTY(EditAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
+	uint8 movementIterationCount = 8;
 
 	TObjectPtr<UPrimitiveComponent> moveableComponent;
 
 	FCollisionQueryParams groundHitSweepQueryParams;
 
-	FVector IterateMovement(FVector inPos, FVector endDelta);
+	FVector FindNonCollidingClosestPosition(const FVector& initialPosition, const FVector& sweepEndPosition);
 };
