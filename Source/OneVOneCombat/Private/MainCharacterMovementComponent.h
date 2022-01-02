@@ -20,20 +20,49 @@ struct FWalkableGroundProperties
 	UPROPERTY(VisibleAnywhere)
 	float sweepGroundAvoidanceDistance = 1.f;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	TEnumAsByte<ECollisionChannel> collisionChannel;
 };
 
 USTRUCT()
-struct FCharacterMovementProperties
+struct FCachedVector
 {
+public:
+
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere)
-	FVector gravityConstant = FVector(0.f, 0.f, -980.f);
+	FCachedVector() = default;
+	FCachedVector(const FVector& vec) { SetVector(vec); }
+	FCachedVector(float X, float Y, float Z) { SetVector(X, Y, Z); }
+
+	void SetVector(float X, float Y, float Z);
+	void SetVector(const FVector& val);
+
+	inline const FVector& GetVector() const { return originalVector; }
 	
-	UPROPERTY(EditAnywhere)
-	FVector currentVelocity;
+	inline const FVector& GetNormalizedVector() const { return normalizedVector; }
+	inline float GetMagnitude() const { return magnitude; }
+	inline float GetSqrMagnitude() const { return sqrMagnitude; }
+
+	inline float X() { return originalVector.X; }
+	inline float Y() { return originalVector.Y; }
+	inline float Z() { return originalVector.Z; }
+
+private:
+
+	void UpdateCache();
+
+	UPROPERTY(VisibleAnywhere, Category = "Cached Vector", meta = (AllowPrivateAccess = "true"))
+	FVector originalVector;
+
+	UPROPERTY(VisibleAnywhere, Category = "Cached Vector", meta = (AllowPrivateAccess = "true"))
+	FVector normalizedVector;
+
+	UPROPERTY(VisibleAnywhere, Category = "Cached Vector", meta = (AllowPrivateAccess = "true"))
+	float magnitude;
+
+	UPROPERTY(VisibleAnywhere, Category = "Cached Vector", meta = (AllowPrivateAccess = "true"))
+	float sqrMagnitude;
 };
 
 UCLASS(Blueprintable)
@@ -48,21 +77,34 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetMoveableComponent(UPrimitiveComponent* NewMoveableComponent);
 
-	bool TryMoveByDelta(const float deltaTime, const FVector& delta, const FQuat& worldRotation);
+	void MoveByDelta(const float duration, const FVector& delta, const FQuat& rotation);
 
 private:
 
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void UpdateMoveableComponent(const float deltaTime);
+
 	UPROPERTY(EditAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
 	FWalkableGroundProperties walkableGroundProperties;
 
-	UPROPERTY(EditAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	TEnumAsByte<ECollisionChannel> sweepCollisionChannel;
+	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
+	FCachedVector gravity;
 
-	UPROPERTY(EditAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	FCharacterMovementProperties movementProperties;
+	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
+	FVector velocity;
+
+	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
+	FVector deltaVelocity;
+
+	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
+	FVector accumulatedDelta;
+	FQuat Rotation;
 
 	TObjectPtr<UPrimitiveComponent> moveableComponent;
+
+	FCollisionQueryParams groundHitSweepQueryParams;
+
+	FVector IterateMovement(FVector inPos, FVector endDelta);
 };

@@ -71,7 +71,7 @@ void AMainCharacter::Tick(float DeltaTime)
 	FHitResult MoveOnBaseHit(1.f);
 	//GetRootComponent()->MoveComponent(move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion(), true, &MoveOnBaseHit);
 
-	mainCharacterMovementComponent->TryMoveByDelta(DeltaTime, move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion());
+	mainCharacterMovementComponent->MoveByDelta(DeltaTime, move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion());
 }
 
 // Called to bind functionality to input
