@@ -56,27 +56,32 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 
 FVector UMainCharacterMovementComponent::FindNonCollidingClosestPosition(const FVector& initialPosition, const FVector& sweepEndPosition) /*const*/ // TODO: Update logic and enable const again
 {
-	FVector currentPosition = initialPosition;
-
 	TArray<FHitResult> hitResults;
-	const bool isHitting = GetWorld()->SweepMultiByChannel(NO_CONST_REF hitResults, currentPosition, sweepEndPosition, moveableComponent->GetComponentQuat(), moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
+		
+	FCollisionQueryParams f = groundHitSweepQueryParams;
+
+	const bool isHitting = GetWorld()->SweepMultiByChannel(NO_CONST_REF hitResults, initialPosition, sweepEndPosition, moveableComponent->GetComponentQuat(), walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
 
 	if (!isHitting)
 	{
 		return sweepEndPosition;
 	}
 
-	for (const FHitResult& hitResult : hitResults)
+	if (!hitResults[0].bStartPenetrating)
 	{
-		currentPosition += hitResult.ImpactNormal * hitResult.PenetrationDepth;
-
-		if (hitResult.PenetrationDepth > 0.f)
-		{
-			velocity = FVector::ZeroVector; // TODO: A workaround for testing
-		}
+		return hitResults[0].Location;
 	}
+	else
+	{
+		FVector avgPosition = FVector::ZeroVector;
 
-	return currentPosition;
+		for (const FHitResult& hitResult : hitResults)
+		{
+			avgPosition += hitResult.Location + hitResult.ImpactNormal * hitResult.PenetrationDepth;
+		}
+
+		return avgPosition / hitResults.Num();
+	}
 }
 
 void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaTime)
@@ -85,38 +90,34 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	velocity += gravity.GetVector() * deltaTime;
 
-	FVector currentPosition = moveableComponent->GetComponentLocation();
-	FVector sweepEndPosition = currentPosition + deltaVelocity * deltaTime;
+	FVector currentPos = moveableComponent->GetComponentLocation();
 
-	for (uint8 i = 0; i < movementIterationCount; ++i)
-	{
-		currentPosition = FindNonCollidingClosestPosition(currentPosition, sweepEndPosition);
-	}
+	FVector penTestPos = currentPos + deltaVelocity * deltaTime;
+
+	FVector safePos = FindNonCollidingClosestPosition(penTestPos, currentPos);
 
 	FHitResult groundHitResult;
-	const bool isHitGround = GetWorld()->SweepSingleByChannel(NO_CONST_REF groundHitResult, currentPosition, currentPosition + velocity * deltaTime, moveableComponent->GetComponentQuat(), walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
 
-	if (isHitGround)
+	if (GetWorld()->SweepSingleByChannel(NO_CONST_REF groundHitResult, safePos, safePos + velocity * deltaTime, Rotation, walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
 		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity.GetSafeNormal(), groundHitResult.ImpactNormal) * deltaVelocity.Size();
+		velocity *= groundHitResult.Time;
 	}
 
-	currentPosition = moveableComponent->GetComponentLocation();
-	FVector movementEndPosition = currentPosition + velocity * deltaTime;
+	//DrawDebugCapsule(GetWorld(), currentPos, moveableComponent->GetCollisionShape().GetCapsuleHalfHeight(), moveableComponent->GetCollisionShape().GetCapsuleRadius(), moveableComponent->GetComponentQuat(), FColor::Red);
 
-	for (uint8 i = 0; i < movementIterationCount; ++i)
+	currentPos += velocity * deltaTime;
+
+	FVector s = currentPos + deltaVelocity * deltaTime * 1.01f;
+
+	currentPos += deltaVelocity * deltaTime;
+
+	for (int32 i = 0; i < movementIterationCount; ++i)
 	{
-		currentPosition = FindNonCollidingClosestPosition(currentPosition, movementEndPosition);
+		currentPos = FindNonCollidingClosestPosition(currentPos, s);
 	}
 
-	movementEndPosition = currentPosition + deltaVelocity * deltaTime;
-
-	for (uint8 i = 0; i < movementIterationCount; ++i)
-	{
-		currentPosition = FindNonCollidingClosestPosition(currentPosition, movementEndPosition);
-	}
-
-	moveableComponent->SetWorldLocationAndRotation(currentPosition, Rotation);
+	moveableComponent->SetWorldLocationAndRotation(currentPos, Rotation);
 
 	deltaVelocity = FVector::ZeroVector; // TODO: Workaround for testing
 }
