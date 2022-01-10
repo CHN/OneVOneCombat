@@ -10,13 +10,14 @@ UMainCharacterMovementComponent::UMainCharacterMovementComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	gravity = FCachedVector(0, 0, -980.f);
+	gravity = FCachedVector(0, 800, -980.f);
 	groundHitSweepQueryParams = FCollisionQueryParams(SCENE_QUERY_STAT(groundHitSweepQueryParams), false);
 }
 
 void UMainCharacterMovementComponent::SetMoveableComponent(UPrimitiveComponent* NewMoveableComponent)
 {
 	moveableComponent = NewMoveableComponent;
+	gravity = FCachedVector(0, 0, -980.f);
 }
 
 static float CalculateDistanceByDirection(const FVector& dir, const FVector& pos)
@@ -58,8 +59,6 @@ FVector UMainCharacterMovementComponent::FindNonCollidingClosestPosition(const F
 {
 	TArray<FHitResult> hitResults;
 		
-	FCollisionQueryParams f = groundHitSweepQueryParams;
-
 	const bool isHitting = GetWorld()->SweepMultiByChannel(NO_CONST_REF hitResults, initialPosition, sweepEndPosition, moveableComponent->GetComponentQuat(), walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
 
 	if (!isHitting)
@@ -67,21 +66,14 @@ FVector UMainCharacterMovementComponent::FindNonCollidingClosestPosition(const F
 		return sweepEndPosition;
 	}
 
-	if (!hitResults[0].bStartPenetrating)
-	{
-		return hitResults[0].Location;
-	}
-	else
-	{
-		FVector avgPosition = FVector::ZeroVector;
+	FVector avgPosition = FVector::ZeroVector;
 
-		for (const FHitResult& hitResult : hitResults)
-		{
-			avgPosition += hitResult.Location + hitResult.ImpactNormal * hitResult.PenetrationDepth;
-		}
-
-		return avgPosition / hitResults.Num();
+	for (const FHitResult& hitResult : hitResults)
+	{
+		avgPosition += hitResult.Location + hitResult.ImpactNormal * hitResult.PenetrationDepth;
 	}
+
+	return avgPosition / hitResults.Num();
 }
 
 void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaTime)
@@ -94,21 +86,22 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	FVector penTestPos = currentPos + deltaVelocity * deltaTime;
 
-	FVector safePos = FindNonCollidingClosestPosition(penTestPos, currentPos);
+	FVector safePos = FindNonCollidingClosestPosition(penTestPos, currentPos);	
 
 	FHitResult groundHitResult;
 
 	if (GetWorld()->SweepSingleByChannel(NO_CONST_REF groundHitResult, safePos, safePos + velocity * deltaTime, Rotation, walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
-		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity.GetSafeNormal(), groundHitResult.ImpactNormal) * deltaVelocity.Size();
-		velocity *= groundHitResult.Time;
+		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity.GetSafeNormal(), groundHitResult.ImpactNormal) * deltaVelocity.Size();	
+
+		velocity = FVector::VectorPlaneProject(velocity, groundHitResult.ImpactNormal) * 0.95f - FVector::DotProduct(velocity, groundHitResult.ImpactNormal) * gravity.GetNormalizedVector() * groundHitResult.Time;
 	}
 
 	//DrawDebugCapsule(GetWorld(), currentPos, moveableComponent->GetCollisionShape().GetCapsuleHalfHeight(), moveableComponent->GetCollisionShape().GetCapsuleRadius(), moveableComponent->GetComponentQuat(), FColor::Red);
 
 	currentPos += velocity * deltaTime;
 
-	FVector s = currentPos + deltaVelocity * deltaTime * 1.01f;
+	FVector s = currentPos + (deltaVelocity + FVector::UpVector * 0.1f) * deltaTime * 1.01f;
 
 	currentPos += deltaVelocity * deltaTime;
 
