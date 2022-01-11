@@ -86,12 +86,8 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	FVector penTestPos = currentPos + deltaVelocity * deltaTime;
 
-	static FVector oldDeltaVelocity; // TODO: Penetration testing
-
-	oldDeltaVelocity = deltaVelocity;
-
-	FVector safePos = FindNonCollidingClosestPosition(penTestPos + oldDeltaVelocity * 0.02f, penTestPos);
-	currentPos = FindNonCollidingClosestPosition(currentPos + oldDeltaVelocity * 0.02f, currentPos);
+	FVector safePos = FindNonCollidingClosestPosition(penTestPos + moveableComponent->GetForwardVector() * 0.02f, penTestPos);
+	currentPos = FindNonCollidingClosestPosition(currentPos + moveableComponent->GetForwardVector() * 0.02f, currentPos);
 
 	FHitResult groundHitResult;
 
@@ -103,7 +99,7 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	if (GetWorld()->SweepSingleByChannel(NO_CONST_REF groundHitResult, currentPos, currentPos + deltaVelocity * deltaTime, Rotation, walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
-		FVector perpHit = FVector::VectorPlaneProject(groundHitResult.ImpactNormal, moveableComponent->GetUpVector());
+		FVector perpHit = FVector::VectorPlaneProject(groundHitResult.ImpactNormal, moveableComponent->GetUpVector()).GetSafeNormal();
 		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, -perpHit);
 	}
 
