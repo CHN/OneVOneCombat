@@ -102,6 +102,8 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 		velocity *= groundHitResult.Time;
 	}
 
+	isGrounding = groundHitResult.bBlockingHit;
+
 	if (GetWorld()->SweepSingleByChannel(NO_CONST_REF groundHitResult, currentPos, currentPos + deltaVelocity * deltaTime, Rotation, walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
 		FVector perpHit = FVector::VectorPlaneProject(groundHitResult.ImpactNormal, moveableComponent->GetUpVector()).GetSafeNormal();

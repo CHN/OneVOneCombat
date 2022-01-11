@@ -80,6 +80,8 @@ public:
 	void MoveByDelta(const float duration, const FVector& delta, const FQuat& rotation);
 	void AddVelocity(const FVector& NewVelocity);
 
+	bool IsGrounding() const { return isGrounding; }
+
 private:
 
 	virtual void BeginPlay() override;
@@ -105,6 +107,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
 	uint8 movementIterationCount = 8;
+
+	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
+	bool isGrounding;
 
 	TObjectPtr<UPrimitiveComponent> moveableComponent;
 

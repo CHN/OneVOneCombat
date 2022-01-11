@@ -105,7 +105,7 @@ void AMainCharacter::HandleActionInput(EUserInputType inputType, EInputEvent inp
 {
 	playerInputPollingSystem->AddActionToUserInputPollingQueue(inputType, inputEvent);
 
-	if (inputType == EUserInputType::JUMP_INPUT)
+	if (inputType == EUserInputType::JUMP_INPUT && mainCharacterMovementComponent->IsGrounding())
 	{
 		mainCharacterMovementComponent->AddVelocity(FVector::UpVector * 350.f);
 	}
