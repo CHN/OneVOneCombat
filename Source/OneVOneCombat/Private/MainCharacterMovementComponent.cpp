@@ -55,6 +55,11 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 	Rotation = rotation;
 }
 
+void UMainCharacterMovementComponent::AddVelocity(const FVector& NewVelocity)
+{
+	velocity = NewVelocity;
+}
+
 FVector UMainCharacterMovementComponent::FindNonCollidingClosestPosition(const FVector& initialPosition, const FVector& sweepEndPosition) /*const*/ // TODO: Update logic and enable const again
 {
 	TArray<FHitResult> hitResults;

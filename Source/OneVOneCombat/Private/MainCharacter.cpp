@@ -107,6 +107,6 @@ void AMainCharacter::HandleActionInput(EUserInputType inputType, EInputEvent inp
 
 	if (inputType == EUserInputType::JUMP_INPUT)
 	{
-		Cast<UPrimitiveComponent>(GetRootComponent())->AddForce(FVector::UpVector * 14000.f, NAME_None, true);
+		mainCharacterMovementComponent->AddVelocity(FVector::UpVector * 350.f);
 	}
 }

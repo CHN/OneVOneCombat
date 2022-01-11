@@ -78,6 +78,7 @@ public:
 	void SetMoveableComponent(UPrimitiveComponent* NewMoveableComponent);
 
 	void MoveByDelta(const float duration, const FVector& delta, const FQuat& rotation);
+	void AddVelocity(const FVector& NewVelocity);
 
 private:
 
