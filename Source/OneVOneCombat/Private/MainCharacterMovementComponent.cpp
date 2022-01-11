@@ -70,7 +70,7 @@ FVector UMainCharacterMovementComponent::FindNonCollidingClosestPosition(const F
 
 	for (const FHitResult& hitResult : hitResults)
 	{
-		avgPosition += hitResult.Location + hitResult.ImpactNormal * hitResult.PenetrationDepth;
+		avgPosition += hitResult.Location + hitResult.ImpactNormal * (hitResult.PenetrationDepth + 0.1f);
 	}
 
 	return avgPosition / hitResults.Num();
@@ -86,29 +86,30 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	FVector penTestPos = currentPos + deltaVelocity * deltaTime;
 
-	FVector safePos = FindNonCollidingClosestPosition(penTestPos, currentPos);	
+	static FVector oldDeltaVelocity; // TODO: Penetration testing
+
+	oldDeltaVelocity = deltaVelocity;
+
+	FVector safePos = FindNonCollidingClosestPosition(penTestPos + oldDeltaVelocity * 0.02f, penTestPos);
+	currentPos = FindNonCollidingClosestPosition(currentPos + oldDeltaVelocity * 0.02f, currentPos);
 
 	FHitResult groundHitResult;
 
 	if (GetWorld()->SweepSingleByChannel(NO_CONST_REF groundHitResult, safePos, safePos + velocity * deltaTime, Rotation, walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
-		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity.GetSafeNormal(), groundHitResult.ImpactNormal) * deltaVelocity.Size();	
-
-		velocity = FVector::VectorPlaneProject(velocity, groundHitResult.ImpactNormal) * 0.95f - FVector::DotProduct(velocity, groundHitResult.ImpactNormal) * gravity.GetNormalizedVector() * groundHitResult.Time;
+		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity.GetSafeNormal(), groundHitResult.ImpactNormal) * deltaVelocity.Size();
+		velocity *= groundHitResult.Time;
 	}
 
-	//DrawDebugCapsule(GetWorld(), currentPos, moveableComponent->GetCollisionShape().GetCapsuleHalfHeight(), moveableComponent->GetCollisionShape().GetCapsuleRadius(), moveableComponent->GetComponentQuat(), FColor::Red);
-
-	currentPos += velocity * deltaTime;
-
-	FVector s = currentPos + (deltaVelocity + FVector::UpVector * 0.1f) * deltaTime * 1.01f;
-
-	currentPos += deltaVelocity * deltaTime;
-
-	for (int32 i = 0; i < movementIterationCount; ++i)
+	if (GetWorld()->SweepSingleByChannel(NO_CONST_REF groundHitResult, currentPos, currentPos + deltaVelocity * deltaTime, Rotation, walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
-		currentPos = FindNonCollidingClosestPosition(currentPos, s);
+		FVector perpHit = FVector::VectorPlaneProject(groundHitResult.ImpactNormal, moveableComponent->GetUpVector());
+		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, -perpHit);
 	}
+
+	DrawDebugCapsule(GetWorld(), currentPos, moveableComponent->GetCollisionShape().GetCapsuleHalfHeight(), moveableComponent->GetCollisionShape().GetCapsuleRadius(), moveableComponent->GetComponentQuat(), FColor::Red);
+	currentPos = FindNonCollidingClosestPosition(currentPos, currentPos + velocity * deltaTime);
+	currentPos = FindNonCollidingClosestPosition(currentPos, currentPos + deltaVelocity * deltaTime);
 
 	moveableComponent->SetWorldLocationAndRotation(currentPos, Rotation);
 
