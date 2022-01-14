@@ -57,7 +57,7 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 
 void UMainCharacterMovementComponent::AddVelocity(const FVector& NewVelocity)
 {
-	velocity = NewVelocity;
+	velocity += NewVelocity;
 }
 
 FVector UMainCharacterMovementComponent::FindNonCollidingClosestPosition(const FVector& initialPosition, const FVector& sweepEndPosition) /*const*/ // TODO: Update logic and enable const again
@@ -87,34 +87,58 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	velocity += gravity.GetVector() * deltaTime;
 
-	FVector currentPos = moveableComponent->GetComponentLocation();
+	FVector updatedPos = moveableComponent->GetComponentLocation();
 
-	FVector penTestPos = currentPos + deltaVelocity * deltaTime;
+	UWorld* const world = GetWorld();
 
-	FVector safePos = FindNonCollidingClosestPosition(penTestPos + moveableComponent->GetForwardVector() * 0.02f, penTestPos);
-	currentPos = FindNonCollidingClosestPosition(currentPos + moveableComponent->GetForwardVector() * 0.02f, currentPos);
+	FHitResult groundHitResult(1.f);
 
-	FHitResult groundHitResult;
+	const FVector gravityAppliedPos = updatedPos + velocity * deltaTime;
 
-	if (GetWorld()->SweepSingleByChannel(NO_CONST_REF groundHitResult, safePos, safePos + velocity * deltaTime, Rotation, walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
+	if (world->SweepSingleByChannel(NO_CONST_REF groundHitResult, updatedPos, gravityAppliedPos, Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
-		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity.GetSafeNormal(), groundHitResult.ImpactNormal) * deltaVelocity.Size();
-		velocity *= groundHitResult.Time;
+		updatedPos = groundHitResult.Location + gravity.GetNormalizedVector() * -0.1f; // 0.1 => inflate for not getting hit by ground
+		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, groundHitResult.ImpactNormal);
+		velocity = FVector::ZeroVector; // Easy way for now
+
+		isGrounding = true;
+	}
+	else
+	{
+		updatedPos = gravityAppliedPos;
+
+		isGrounding = false;
 	}
 
-	isGrounding = groundHitResult.bBlockingHit;
+	const FVector movementAppliedPos = updatedPos + deltaVelocity * deltaTime;
 
-	if (GetWorld()->SweepSingleByChannel(NO_CONST_REF groundHitResult, currentPos, currentPos + deltaVelocity * deltaTime, Rotation, walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
+	FHitResult movementHitResult(1.f);
+
+	if (world->SweepSingleByChannel(NO_CONST_REF movementHitResult, updatedPos, movementAppliedPos, Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
-		FVector perpHit = FVector::VectorPlaneProject(groundHitResult.ImpactNormal, moveableComponent->GetUpVector()).GetSafeNormal();
-		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, -perpHit);
+		FVector alignedImpactNormal;
+		float verticalImpactAmount = FVector::DotProduct(movementHitResult.ImpactNormal, moveableComponent->GetUpVector());
+
+		if (verticalImpactAmount < 0.f)
+		{
+			alignedImpactNormal = movementHitResult.ImpactNormal - verticalImpactAmount * moveableComponent->GetUpVector();
+			alignedImpactNormal = alignedImpactNormal.GetSafeNormal();
+		}
+		else
+		{
+			alignedImpactNormal = movementHitResult.ImpactNormal;
+		}
+
+		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, alignedImpactNormal);
+
+		updatedPos = FindNonCollidingClosestPosition(updatedPos, updatedPos + deltaVelocity * deltaTime);
+	}
+	else
+	{
+		updatedPos = movementAppliedPos;
 	}
 
-	DrawDebugCapsule(GetWorld(), currentPos, moveableComponent->GetCollisionShape().GetCapsuleHalfHeight(), moveableComponent->GetCollisionShape().GetCapsuleRadius(), moveableComponent->GetComponentQuat(), FColor::Red);
-	currentPos = FindNonCollidingClosestPosition(currentPos, currentPos + velocity * deltaTime);
-	currentPos = FindNonCollidingClosestPosition(currentPos, currentPos + deltaVelocity * deltaTime);
-
-	moveableComponent->SetWorldLocationAndRotation(currentPos, Rotation);
+	moveableComponent->SetWorldLocationAndRotation(updatedPos, Rotation);
 
 	deltaVelocity = FVector::ZeroVector; // TODO: Workaround for testing
 }
