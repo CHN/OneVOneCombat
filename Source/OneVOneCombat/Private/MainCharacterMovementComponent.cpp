@@ -89,7 +89,8 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	velocity += gravity.GetVector() * deltaTime;
 
-	FVector updatedPos = moveableComponent->GetComponentLocation();
+	FVector currentPos = moveableComponent->GetComponentLocation();
+	FVector updatedPos = currentPos;
 
 	UWorld* const world = GetWorld();
 
@@ -100,7 +101,7 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	if (world->SweepSingleByChannel(NO_CONST_REF groundHitResult, updatedPos, gravityAppliedPos - groundInflation, Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
-		updatedPos = FindNonCollidingClosestPosition(updatedPos, groundHitResult.Location + groundInflation);
+		updatedPos = groundHitResult.Location + groundInflation;
 		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, groundHitResult.ImpactNormal);
 		velocity = FVector::ZeroVector; // Easy way for now
 
@@ -134,12 +135,14 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, alignedImpactNormal);
 
-		updatedPos = FindNonCollidingClosestPosition(updatedPos, updatedPos + deltaVelocity * deltaTime);
+		updatedPos += deltaVelocity * deltaTime;
 	}
 	else
 	{
 		updatedPos = movementAppliedPos;
 	}
+
+	updatedPos = FindNonCollidingClosestPosition(currentPos, updatedPos);
 
 	moveableComponent->SetWorldLocationAndRotation(updatedPos, Rotation);
 }
