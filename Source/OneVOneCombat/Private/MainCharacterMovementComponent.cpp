@@ -17,6 +17,9 @@ UMainCharacterMovementComponent::UMainCharacterMovementComponent()
 void UMainCharacterMovementComponent::SetMoveableComponent(UPrimitiveComponent* NewMoveableComponent)
 {
 	moveableComponent = NewMoveableComponent;
+	groundHitSweepQueryParams.ClearIgnoredActors();
+	groundHitSweepQueryParams.AddIgnoredActor(moveableComponent->GetOwner());
+
 	gravity = FCachedVector(0, 0, -980.f);
 }
 
@@ -34,13 +37,12 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 
 	UWorld* const world = GetWorld();
 
-	TArray<FHitResult> hitResults;
-	const bool isHit = world->ComponentSweepMulti(NO_CONST_REF hitResults, moveableComponent, desiredPosition, sweepEndPosition, rotation, FComponentQueryParams::DefaultComponentQueryParams); // TODO: Consider using single sweep
+	FHitResult hitResult;
+	const bool isHit = world->SweepSingleByChannel(NO_CONST_REF hitResult, desiredPosition, sweepEndPosition, rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams); // TODO: Consider using single sweep
 
 	if (isHit)
 	{
-		const FHitResult& firstHitResult = hitResults[0];
-		FVector adjustedDelta = firstHitResult.Location - desiredPosition;
+		FVector adjustedDelta = FVector::VectorPlaneProject(delta, hitResult.ImpactNormal);;
 
 		accumulatedDelta += adjustedDelta;
 	}
@@ -98,14 +100,14 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	if (world->SweepSingleByChannel(NO_CONST_REF groundHitResult, updatedPos, gravityAppliedPos - groundInflation, Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
-		updatedPos = groundHitResult.Location + groundInflation;
+		updatedPos = FindNonCollidingClosestPosition(updatedPos, groundHitResult.Location + groundInflation);
 		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, groundHitResult.ImpactNormal);
 		velocity = FVector::ZeroVector; // Easy way for now
 
 		isGrounding = true;
 	}
 	else
-	{
+	{	
 		updatedPos = gravityAppliedPos;
 
 		isGrounding = false;
