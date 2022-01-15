@@ -94,10 +94,11 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 	FHitResult groundHitResult(1.f);
 
 	const FVector gravityAppliedPos = updatedPos + velocity * deltaTime;
+	const FVector groundInflation = gravity.GetNormalizedVector() * -2.f; // 0.1 => inflate for not getting hit by ground
 
-	if (world->SweepSingleByChannel(NO_CONST_REF groundHitResult, updatedPos, gravityAppliedPos, Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
+	if (world->SweepSingleByChannel(NO_CONST_REF groundHitResult, updatedPos, gravityAppliedPos - groundInflation, Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
-		updatedPos = groundHitResult.Location + gravity.GetNormalizedVector() * -0.1f; // 0.1 => inflate for not getting hit by ground
+		updatedPos = groundHitResult.Location + groundInflation;
 		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, groundHitResult.ImpactNormal);
 		velocity = FVector::ZeroVector; // Easy way for now
 
@@ -139,8 +140,6 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 	}
 
 	moveableComponent->SetWorldLocationAndRotation(updatedPos, Rotation);
-
-	deltaVelocity = FVector::ZeroVector; // TODO: Workaround for testing
 }
 
 void UMainCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
