@@ -77,7 +77,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetMoveableComponent(UPrimitiveComponent* NewMoveableComponent);
 
-	void MoveByDelta(const float duration, const FVector& delta, const FQuat& rotation);
+	void MoveByDelta(const float deltaTime, const FVector& delta, const FQuat& rotation);
 	void AddVelocity(const FVector& NewVelocity);
 
 	bool IsGrounding() const { return isGrounding; }
@@ -101,12 +101,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
 	FVector deltaVelocity;
 
-	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	FVector accumulatedDelta;
-	FQuat Rotation; // TODO: A workaround for testing
-
-	UPROPERTY(EditAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	uint8 movementIterationCount = 8;
+	FQuat Rotation;
 
 	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
 	bool isGrounding;

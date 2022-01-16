@@ -28,34 +28,12 @@ static float CalculateDistanceByDirection(const FVector& dir, const FVector& pos
 	return FVector::DotProduct(pos, dir.GetUnsafeNormal()) * -1.f;
 }
 
-void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FVector& delta, const FQuat& rotation)
+void UMainCharacterMovementComponent::MoveByDelta(const float deltaTime, const FVector& delta, const FQuat& rotation)
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when MoveByDelta is invoked"));
-
-	/*const FVector desiredPosition = moveableComponent->GetComponentLocation() + accumulatedDelta;
-	const FVector sweepEndPosition = desiredPosition + delta;
-
-	UWorld* const world = GetWorld();
-
-	FHitResult hitResult;
-	const bool isHit = world->SweepSingleByChannel(NO_CONST_REF hitResult, desiredPosition, sweepEndPosition, rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams); // TODO: Consider using single sweep
-
-	if (isHit)
-	{
-		FVector adjustedDelta = FVector::VectorPlaneProject(delta, hitResult.ImpactNormal);;
-
-		accumulatedDelta += adjustedDelta;
-	}
-	else
-	{
-		accumulatedDelta += delta;
-	}*/
-
-	accumulatedDelta += delta;
 	
-	deltaVelocity = accumulatedDelta / duration;
+	deltaVelocity = delta / deltaTime;
 
-	accumulatedDelta = FVector::ZeroVector; // TODO: Just testing for a while
 	Rotation = rotation;
 }
 
