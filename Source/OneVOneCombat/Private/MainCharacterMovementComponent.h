@@ -116,4 +116,6 @@ private:
 	FCollisionQueryParams groundHitSweepQueryParams;
 
 	FVector FindNonCollidingClosestPosition(const FVector& initialPosition, const FVector& sweepEndPosition);
+
+	bool IsLedgeDetected(const FVector& centerPoint, const FVector& impactPoint) const;
 };

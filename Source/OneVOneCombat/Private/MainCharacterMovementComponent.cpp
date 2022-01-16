@@ -32,7 +32,7 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when MoveByDelta is invoked"));
 
-	const FVector desiredPosition = moveableComponent->GetComponentLocation() + accumulatedDelta;
+	/*const FVector desiredPosition = moveableComponent->GetComponentLocation() + accumulatedDelta;
 	const FVector sweepEndPosition = desiredPosition + delta;
 
 	UWorld* const world = GetWorld();
@@ -49,7 +49,9 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 	else
 	{
 		accumulatedDelta += delta;
-	}
+	}*/
+
+	accumulatedDelta += delta;
 	
 	deltaVelocity = accumulatedDelta / duration;
 
@@ -83,6 +85,16 @@ FVector UMainCharacterMovementComponent::FindNonCollidingClosestPosition(const F
 	return avgPosition / hitResults.Num();
 }
 
+bool UMainCharacterMovementComponent::IsLedgeDetected(const FVector& centerPoint, const FVector& impactPoint) const
+{
+	const auto moveableCompShape = moveableComponent->GetCollisionShape();
+	const FVector capsuleBottomSphereCenter = centerPoint + moveableComponent->GetUpVector() * -moveableCompShape.GetCapsuleAxisHalfLength();
+
+	const FVector impactVector = impactPoint - capsuleBottomSphereCenter;
+
+	return FVector::DotProduct(impactVector, moveableComponent->GetUpVector()) < 0;
+}
+
 void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaTime)
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when UpdateMoveableComponent is invoked"));
@@ -102,6 +114,7 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 	if (world->SweepSingleByChannel(NO_CONST_REF groundHitResult, updatedPos, gravityAppliedPos - groundInflation, Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
 		updatedPos = groundHitResult.Location + groundInflation;
+
 		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, groundHitResult.ImpactNormal);
 		velocity = FVector::ZeroVector; // Easy way for now
 
@@ -130,7 +143,14 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 		}
 		else
 		{
-			alignedImpactNormal = movementHitResult.ImpactNormal;
+			if (IsLedgeDetected(currentPos, movementHitResult.ImpactPoint))
+			{
+				alignedImpactNormal = (updatedPos - movementHitResult.ImpactPoint).GetSafeNormal();
+			}
+			else
+			{
+				alignedImpactNormal = movementHitResult.ImpactNormal;
+			}
 		}
 
 		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, alignedImpactNormal);
