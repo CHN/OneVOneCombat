@@ -99,12 +99,24 @@ private:
 	FVector velocity;
 
 	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	FVector deltaVelocity;
+	FVector movementTargetPosition;
+
+	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
+	FVector movementDelta;
+
+	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
+	float movementDuration;
+
+	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
+	float currentDuration;
 
 	FQuat Rotation;
 
 	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
 	bool isGrounding;
+
+	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
+	bool isMovementRequested = false;
 
 	TObjectPtr<UPrimitiveComponent> moveableComponent;
 

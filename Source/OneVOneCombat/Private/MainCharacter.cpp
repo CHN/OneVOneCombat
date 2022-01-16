@@ -107,6 +107,7 @@ void AMainCharacter::HandleActionInput(EUserInputType inputType, EInputEvent inp
 
 	if (inputType == EUserInputType::JUMP_INPUT && mainCharacterMovementComponent->IsGrounding())
 	{
+		//mainCharacterMovementComponent->MoveByDelta(.0f, FVector::RightVector * -600.f, GetRootComponent()->GetComponentRotation().Quaternion());
 		mainCharacterMovementComponent->AddVelocity(FVector::UpVector * 350.f);
 	}
 }

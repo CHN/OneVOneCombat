@@ -12,6 +12,9 @@ UMainCharacterMovementComponent::UMainCharacterMovementComponent()
 
 	gravity = FCachedVector(0, 800, -980.f);
 	groundHitSweepQueryParams = FCollisionQueryParams(SCENE_QUERY_STAT(groundHitSweepQueryParams), false);
+	movementTargetPosition = FVector::ZeroVector;
+	movementDelta = FVector::ZeroVector;
+	movementDuration = 0.f;
 }
 
 void UMainCharacterMovementComponent::SetMoveableComponent(UPrimitiveComponent* NewMoveableComponent)
@@ -28,11 +31,16 @@ static float CalculateDistanceByDirection(const FVector& dir, const FVector& pos
 	return FVector::DotProduct(pos, dir.GetUnsafeNormal()) * -1.f;
 }
 
-void UMainCharacterMovementComponent::MoveByDelta(const float deltaTime, const FVector& delta, const FQuat& rotation)
+void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FVector& delta, const FQuat& rotation)
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when MoveByDelta is invoked"));
 	
-	deltaVelocity = delta / deltaTime;
+	isMovementRequested = true;
+
+	movementDelta = delta;
+	movementTargetPosition = moveableComponent->GetComponentLocation() + movementDelta;
+	movementDuration = duration;
+	currentDuration = movementDuration;
 
 	Rotation = rotation;
 }
@@ -79,8 +87,28 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	velocity += gravity.GetVector() * deltaTime;
 
-	FVector currentPos = moveableComponent->GetComponentLocation();
+	const FVector currentPos = moveableComponent->GetComponentLocation();
 	FVector updatedPos = currentPos;
+
+	FVector deltaVelocity;
+
+	if (currentDuration <= 0.f)
+	{
+		if (isMovementRequested)
+		{
+			deltaVelocity = (movementTargetPosition - currentPos) / deltaTime;
+			isMovementRequested = false;
+		}
+		else
+		{
+			deltaVelocity = FVector::ZeroVector;
+		}
+	}
+	else
+	{
+		deltaVelocity = movementDelta / movementDuration; // Handle frame rate changes
+		currentDuration -= deltaTime;
+	}
 
 	UWorld* const world = GetWorld();
 
@@ -121,9 +149,9 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 		}
 		else
 		{
-			if (IsLedgeDetected(currentPos, movementHitResult.ImpactPoint))
+			if (IsLedgeDetected(movementHitResult.Location, movementHitResult.ImpactPoint))
 			{
-				alignedImpactNormal = (updatedPos - movementHitResult.ImpactPoint).GetSafeNormal();
+				alignedImpactNormal = (movementHitResult.Location - movementHitResult.ImpactPoint).GetSafeNormal();
 			}
 			else
 			{
