@@ -35,7 +35,7 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when MoveByDelta is invoked"));
 	
-	isMovementRequested = true;
+	isMovementBeginApplied = true;
 
 	movementDelta = delta;
 	movementTargetPosition = moveableComponent->GetComponentLocation() + movementDelta;
@@ -81,6 +81,11 @@ bool UMainCharacterMovementComponent::IsLedgeDetected(const FVector& centerPoint
 	return FVector::DotProduct(impactVector, moveableComponent->GetUpVector()) < 0;
 }
 
+bool UMainCharacterMovementComponent::IsMovementBeingApplied() const
+{
+	return isMovementBeginApplied;	
+}
+
 void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaTime)
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when UpdateMoveableComponent is invoked"));
@@ -92,12 +97,14 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	FVector deltaVelocity;
 
+	currentDuration -= deltaTime;
+
 	if (currentDuration <= 0.f)
 	{
-		if (isMovementRequested)
+		if (isMovementBeginApplied)
 		{
 			deltaVelocity = (movementTargetPosition - currentPos) / deltaTime;
-			isMovementRequested = false;
+			isMovementBeginApplied = false;
 		}
 		else
 		{
@@ -107,7 +114,6 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 	else
 	{
 		deltaVelocity = movementDelta / movementDuration; // Handle frame rate changes
-		currentDuration -= deltaTime;
 	}
 
 	UWorld* const world = GetWorld();
@@ -139,35 +145,42 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	if (world->SweepSingleByChannel(NO_CONST_REF movementHitResult, updatedPos, movementAppliedPos, Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
-		FVector alignedImpactNormal;
-		float verticalImpactAmount = FVector::DotProduct(movementHitResult.ImpactNormal, moveableComponent->GetUpVector());
-
-		if (verticalImpactAmount < 0.f)
+		const float nonAppliedDeltaPosition = deltaVelocity.Size() * deltaTime - (updatedPos - movementHitResult.Location).Size();
+		updatedPos = movementHitResult.Location + movementHitResult.ImpactNormal * 0.1f;
+		
+		if (nonAppliedDeltaPosition > 0)
 		{
-			alignedImpactNormal = movementHitResult.ImpactNormal - verticalImpactAmount * moveableComponent->GetUpVector();
-			alignedImpactNormal = alignedImpactNormal.GetSafeNormal();
-		}
-		else
-		{
-			if (IsLedgeDetected(movementHitResult.Location, movementHitResult.ImpactPoint))
+			if (IsLedgeDetected(updatedPos, movementHitResult.ImpactPoint))
 			{
-				alignedImpactNormal = (movementHitResult.Location - movementHitResult.ImpactPoint).GetSafeNormal();
+				updatedPos += moveableComponent->GetUpVector() * nonAppliedDeltaPosition;
 			}
 			else
 			{
-				alignedImpactNormal = movementHitResult.ImpactNormal;
+				FVector alignedImpactNormal;
+				float verticalImpactAmount = FVector::DotProduct(movementHitResult.ImpactNormal, moveableComponent->GetUpVector());
+
+				if (verticalImpactAmount < 0.f)
+				{
+					alignedImpactNormal = movementHitResult.ImpactNormal - verticalImpactAmount * moveableComponent->GetUpVector();
+				}
+				else
+				{
+					alignedImpactNormal = movementHitResult.ImpactNormal - verticalImpactAmount * moveableComponent->GetUpVector();
+				}
+
+				alignedImpactNormal.Normalize();
+
+				const FVector adjustedUnitDeltaVelocity = FVector::VectorPlaneProject(deltaVelocity.GetSafeNormal(), alignedImpactNormal);
+
+				updatedPos += adjustedUnitDeltaVelocity * nonAppliedDeltaPosition;
 			}
 		}
-
-		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, alignedImpactNormal);
-
-		updatedPos += deltaVelocity * deltaTime;
 	}
 	else
 	{
 		updatedPos = movementAppliedPos;
 	}
-
+		
 	updatedPos = FindNonCollidingClosestPosition(currentPos, updatedPos);
 
 	moveableComponent->SetWorldLocationAndRotation(updatedPos, Rotation);

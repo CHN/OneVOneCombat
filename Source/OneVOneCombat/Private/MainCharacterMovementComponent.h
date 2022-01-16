@@ -81,6 +81,7 @@ public:
 	void AddVelocity(const FVector& NewVelocity);
 
 	bool IsGrounding() const { return isGrounding; }
+	bool IsMovementBeingApplied() const;
 
 private:
 
@@ -116,7 +117,7 @@ private:
 	bool isGrounding;
 
 	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	bool isMovementRequested = false;
+	bool isMovementBeginApplied = false;
 
 	TObjectPtr<UPrimitiveComponent> moveableComponent;
 

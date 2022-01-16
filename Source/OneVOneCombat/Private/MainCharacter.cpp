@@ -71,7 +71,8 @@ void AMainCharacter::Tick(float DeltaTime)
 	FHitResult MoveOnBaseHit(1.f);
 	//GetRootComponent()->MoveComponent(move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion(), true, &MoveOnBaseHit);
 
-	mainCharacterMovementComponent->MoveByDelta(DeltaTime, move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion());
+	if(!mainCharacterMovementComponent->IsMovementBeingApplied())
+		mainCharacterMovementComponent->MoveByDelta(DeltaTime, move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion());
 }
 
 // Called to bind functionality to input
@@ -105,9 +106,9 @@ void AMainCharacter::HandleActionInput(EUserInputType inputType, EInputEvent inp
 {
 	playerInputPollingSystem->AddActionToUserInputPollingQueue(inputType, inputEvent);
 
-	if (inputType == EUserInputType::JUMP_INPUT && mainCharacterMovementComponent->IsGrounding())
+	if (inputType == EUserInputType::JUMP_INPUT && inputEvent == IE_Released)
 	{
-		//mainCharacterMovementComponent->MoveByDelta(.0f, FVector::RightVector * -600.f, GetRootComponent()->GetComponentRotation().Quaternion());
-		mainCharacterMovementComponent->AddVelocity(FVector::UpVector * 350.f);
+		mainCharacterMovementComponent->MoveByDelta(.12f, GetRootComponent()->GetRightVector() * 400.f, GetRootComponent()->GetComponentRotation().Quaternion());
+		//mainCharacterMovementComponent->AddVelocity(FVector::UpVector * 350.f);
 	}
 }
