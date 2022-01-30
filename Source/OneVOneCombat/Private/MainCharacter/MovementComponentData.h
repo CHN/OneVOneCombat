@@ -37,4 +37,7 @@ struct FMovementComponentData
 
 	UPROPERTY(VisibleAnywhere)
 	bool isMovementBeginApplied;
+
+	UPROPERTY(VisibleAnywhere)
+	bool constrainInputToGround;
 };

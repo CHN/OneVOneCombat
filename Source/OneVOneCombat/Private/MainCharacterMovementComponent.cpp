@@ -34,7 +34,7 @@ static float CalculateDistanceByDirection(const FVector& dir, const FVector& pos
 	return FVector::DotProduct(pos, dir.GetUnsafeNormal()) * -1.f;
 }
 
-void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FVector& delta, const FQuat& rotation)
+void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FVector& delta, const FQuat& rotation, bool constrainInputToGround)
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when MoveByDelta is invoked"));
 	
@@ -44,6 +44,7 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 	data->movementTargetPosition = moveableComponent->GetComponentLocation() + data->movementDelta;
 	data->movementDuration = duration;
 	data->currentDuration = data->movementDuration;
+	data->constrainInputToGround = constrainInputToGround;
 
 	data->Rotation = rotation;
 }
@@ -137,7 +138,11 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 	{
 		updatedPos = groundHitResult.Location + groundInflation;
 
-		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, groundHitResult.ImpactNormal);
+		if (data->constrainInputToGround)
+		{
+			deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, groundHitResult.ImpactNormal);
+		}
+
 		data->velocity = FVector::ZeroVector; // Easy way for now
 
 		data->isGrounding = true;
