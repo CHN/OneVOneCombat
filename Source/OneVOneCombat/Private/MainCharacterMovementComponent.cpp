@@ -88,8 +88,6 @@ UMainCharacterMovementComponent::LedgeReturnData UMainCharacterMovementComponent
 	ledgeReturnData.isDetected = ledgeAmount < 1.f && ledgeAmount > 0.3f; // TODO: Should be changed with editor ui
 	ledgeReturnData.ledgeHeight = moveableCompShape.GetCapsuleRadius() - FVector::DotProduct(impactVector, moveableComponent->GetUpVector());
 
-	LOG_TO_SCREEN_STR("{0}", ledgeReturnData.ledgeHeight);
-
 	return ledgeReturnData;
 }
 
@@ -173,14 +171,7 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 				FVector alignedImpactNormal;
 				float verticalImpactAmount = FVector::DotProduct(movementHitResult.ImpactNormal, moveableComponent->GetUpVector());
 
-				if (verticalImpactAmount < 0.f)
-				{
-					alignedImpactNormal = movementHitResult.ImpactNormal - verticalImpactAmount * moveableComponent->GetUpVector();
-				}
-				else
-				{
-					alignedImpactNormal = movementHitResult.ImpactNormal - verticalImpactAmount * moveableComponent->GetUpVector();
-				}
+				alignedImpactNormal = movementHitResult.ImpactNormal - verticalImpactAmount * moveableComponent->GetUpVector();
 
 				alignedImpactNormal.Normalize();
 
