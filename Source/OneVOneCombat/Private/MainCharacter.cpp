@@ -7,6 +7,8 @@
 #include "MainCharacterMovementComponent.h"
 #include "Components\CapsuleComponent.h"
 
+#include "MainCharacter/MainCharacterData.h"
+
 #include "EditorUtilities.h"
 
 // Sets default values
@@ -22,6 +24,8 @@ AMainCharacter::AMainCharacter()
 	mainCharacterMovementComponent = CreateDefaultSubobject<UMainCharacterMovementComponent>("MainCharacterMovementComponent");
 
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>("CapsuleCollider");
+
+	data = CreateDefaultSubobject<UMainCharacterData>("MainCharacterData");
 }
 
 // Called when the game starts or when spawned
@@ -106,7 +110,7 @@ void AMainCharacter::HandleActionInput(EUserInputType inputType, EInputEvent inp
 {
 	playerInputPollingSystem->AddActionToUserInputPollingQueue(inputType, inputEvent);
 
-	if (inputType == EUserInputType::JUMP_INPUT && inputEvent == IE_Released)
+	if (inputType == EUserInputType::JUMP_INPUT && mainCharacterMovementComponent->IsGrounding() && inputEvent == IE_Released)
 	{
 		mainCharacterMovementComponent->MoveByDelta(.12f, GetRootComponent()->GetRightVector() * 400.f, GetRootComponent()->GetComponentRotation().Quaternion());
 		//mainCharacterMovementComponent->AddVelocity(FVector::UpVector * 350.f);

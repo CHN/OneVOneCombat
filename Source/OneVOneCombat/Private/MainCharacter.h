@@ -12,6 +12,8 @@
 class UPlayerInputPollingSystem;
 class UInputQueueSystem;
 class UMainCharacterMovementComponent;
+class UMainCharacterData;
+
 enum class EUserInputType : uint8;
 
 DECLARE_DELEGATE_TwoParams(FHandleActionInputDelegate, EUserInputType, EInputEvent);
@@ -33,6 +35,8 @@ public:
 	void SetHorizontalLookAxis(float value);
 	void SetVerticalLookAxis(float value);
 
+	inline UMainCharacterData* const GetCharacterData() const { return data; }
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FVector2D movementInput;
 
@@ -48,7 +52,7 @@ public:
 	USceneComponent* cameraBoom;
 
 protected:
-
+	 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
@@ -65,4 +69,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UMainCharacterMovementComponent* mainCharacterMovementComponent;
+
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	UMainCharacterData* data;
 };

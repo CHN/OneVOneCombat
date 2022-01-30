@@ -4,69 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+
+#include "CachedVector.h"
+#include "DataSubOwner.h"
+#include "DataInlineSubOwner.h"
+#include "MainCharacter/MovementComponentData.h"
+#include "MainCharacter/WalkableGroundPropertiesData.h"
+
 #include "MainCharacterMovementComponent.generated.h"
 
-USTRUCT()
-struct FWalkableGroundProperties
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere)
-	float minSlopeDotProduct = 0.95f;
-
-	UPROPERTY(EditAnywhere)
-	float maxSlopeDotProduct = 1.f;
-
-	UPROPERTY(VisibleAnywhere)
-	float sweepGroundAvoidanceDistance = 1.f;
-
-	UPROPERTY(EditAnywhere)
-	TEnumAsByte<ECollisionChannel> collisionChannel;
-};
-
-USTRUCT()
-struct FCachedVector
-{
-public:
-
-	GENERATED_BODY()
-
-	FCachedVector() = default;
-	FCachedVector(const FVector& vec) { SetVector(vec); }
-	FCachedVector(float X, float Y, float Z) { SetVector(X, Y, Z); }
-
-	void SetVector(float X, float Y, float Z);
-	void SetVector(const FVector& val);
-
-	inline const FVector& GetVector() const { return originalVector; }
-	
-	inline const FVector& GetNormalizedVector() const { return normalizedVector; }
-	inline float GetMagnitude() const { return magnitude; }
-	inline float GetSqrMagnitude() const { return sqrMagnitude; }
-
-	inline float X() { return originalVector.X; }
-	inline float Y() { return originalVector.Y; }
-	inline float Z() { return originalVector.Z; }
-
-private:
-
-	void UpdateCache();
-
-	UPROPERTY(VisibleAnywhere, Category = "Cached Vector", meta = (AllowPrivateAccess = "true"))
-	FVector originalVector;
-
-	UPROPERTY(VisibleAnywhere, Category = "Cached Vector", meta = (AllowPrivateAccess = "true"))
-	FVector normalizedVector;
-
-	UPROPERTY(VisibleAnywhere, Category = "Cached Vector", meta = (AllowPrivateAccess = "true"))
-	float magnitude;
-
-	UPROPERTY(VisibleAnywhere, Category = "Cached Vector", meta = (AllowPrivateAccess = "true"))
-	float sqrMagnitude;
-};
-
 UCLASS(Blueprintable)
-class UMainCharacterMovementComponent : public UActorComponent
+class UMainCharacterMovementComponent : public UActorComponent, public DataSubOwner<FMovementComponentData>
 {
 	GENERATED_BODY()
 
@@ -80,7 +28,7 @@ public:
 	void MoveByDelta(const float deltaTime, const FVector& delta, const FQuat& rotation);
 	void AddVelocity(const FVector& NewVelocity);
 
-	bool IsGrounding() const { return isGrounding; }
+	bool IsGrounding() const { return data->isGrounding; }
 	bool IsMovementBeingApplied() const;
 
 private:
@@ -90,34 +38,7 @@ private:
 
 	void UpdateMoveableComponent(const float deltaTime);
 
-	UPROPERTY(EditAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	FWalkableGroundProperties walkableGroundProperties;
-
-	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	FCachedVector gravity;
-
-	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	FVector velocity;
-
-	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	FVector movementTargetPosition;
-
-	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	FVector movementDelta;
-
-	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	float movementDuration;
-
-	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	float currentDuration;
-
-	FQuat Rotation;
-
-	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	bool isGrounding;
-
-	UPROPERTY(VisibleAnywhere, Category = "Properties", meta = (AllowPrivateAccess = "true"))
-	bool isMovementBeginApplied = false;
+	DataInlineSubOwner<FWalkableGroundPropertiesData> walkableGroundPropertiesSubOwner;
 
 	TObjectPtr<UPrimitiveComponent> moveableComponent;
 

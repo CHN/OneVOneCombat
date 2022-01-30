@@ -2,6 +2,9 @@
 
 #include "MainCharacterMovementComponent.h"
 
+#include "MainCharacter.h"
+#include "MainCharacter/MainCharacterData.h"
+
 #include "HelperMacros.h"
 #include "EditorUtilities.h"	
 #include "DrawDebugHelpers.h"
@@ -10,11 +13,11 @@ UMainCharacterMovementComponent::UMainCharacterMovementComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	gravity = FCachedVector(0, 800, -980.f);
+	//data->gravity = FCachedVector(0, 800, -980.f);
 	groundHitSweepQueryParams = FCollisionQueryParams(SCENE_QUERY_STAT(groundHitSweepQueryParams), false);
-	movementTargetPosition = FVector::ZeroVector;
-	movementDelta = FVector::ZeroVector;
-	movementDuration = 0.f;
+	//data->movementTargetPosition = FVector::ZeroVector;
+	//data->movementDelta = FVector::ZeroVector;
+	//data->movementDuration = 0.f;
 }
 
 void UMainCharacterMovementComponent::SetMoveableComponent(UPrimitiveComponent* NewMoveableComponent)
@@ -23,10 +26,10 @@ void UMainCharacterMovementComponent::SetMoveableComponent(UPrimitiveComponent* 
 	groundHitSweepQueryParams.ClearIgnoredActors();
 	groundHitSweepQueryParams.AddIgnoredActor(moveableComponent->GetOwner());
 
-	gravity = FCachedVector(0, 0, -980.f);
+	data->gravity = FCachedVector(0, 0, -980.f);
 }
 
-static float CalculateDistanceByDirection(const FVector& dir, const FVector& pos)
+static float CalculateDistanceByDirection(const FVector& dir, const FVector& pos) // TODO: Unused
 {
 	return FVector::DotProduct(pos, dir.GetUnsafeNormal()) * -1.f;
 }
@@ -35,26 +38,26 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when MoveByDelta is invoked"));
 	
-	isMovementBeginApplied = true;
+	data->isMovementBeginApplied = true;
 
-	movementDelta = delta;
-	movementTargetPosition = moveableComponent->GetComponentLocation() + movementDelta;
-	movementDuration = duration;
-	currentDuration = movementDuration;
+	data->movementDelta = delta;
+	data->movementTargetPosition = moveableComponent->GetComponentLocation() + data->movementDelta;
+	data->movementDuration = duration;
+	data->currentDuration = data->movementDuration;
 
-	Rotation = rotation;
+	data->Rotation = rotation;
 }
 
 void UMainCharacterMovementComponent::AddVelocity(const FVector& NewVelocity)
 {
-	velocity += NewVelocity;
+	data->velocity += NewVelocity;
 }
 
 FVector UMainCharacterMovementComponent::FindNonCollidingClosestPosition(const FVector& initialPosition, const FVector& sweepEndPosition) /*const*/ // TODO: Update logic and enable const again
 {
 	TArray<FHitResult> hitResults;
 		
-	const bool isHitting = GetWorld()->SweepMultiByChannel(NO_CONST_REF hitResults, initialPosition, sweepEndPosition, moveableComponent->GetComponentQuat(), walkableGroundProperties.collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
+	const bool isHitting = GetWorld()->SweepMultiByChannel(NO_CONST_REF hitResults, initialPosition, sweepEndPosition, moveableComponent->GetComponentQuat(), walkableGroundPropertiesSubOwner.data->collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
 
 	if (!isHitting)
 	{
@@ -78,33 +81,35 @@ bool UMainCharacterMovementComponent::IsLedgeDetected(const FVector& centerPoint
 
 	const FVector impactVector = impactPoint - capsuleBottomSphereCenter;
 
-	return FVector::DotProduct(impactVector, moveableComponent->GetUpVector()) < 0;
+	const float ledgeAmount = FVector::DotProduct(impactVector, moveableComponent->GetUpVector());
+
+	return ledgeAmount < -4.f && ledgeAmount > -40.f; // TODO: Should be changed with editor ui
 }
 
 bool UMainCharacterMovementComponent::IsMovementBeingApplied() const
 {
-	return isMovementBeginApplied;	
+	return data->isMovementBeginApplied;
 }
 
 void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaTime)
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when UpdateMoveableComponent is invoked"));
 
-	velocity += gravity.GetVector() * deltaTime;
+	data->velocity += data->gravity.GetVector() * deltaTime;
 
 	const FVector currentPos = moveableComponent->GetComponentLocation();
 	FVector updatedPos = currentPos;
 
 	FVector deltaVelocity;
 
-	currentDuration -= deltaTime;
+	data->currentDuration -= deltaTime;
 
-	if (currentDuration <= 0.f)
+	if (data->currentDuration <= 0.f)
 	{
-		if (isMovementBeginApplied)
+		if (data->isMovementBeginApplied)
 		{
-			deltaVelocity = (movementTargetPosition - currentPos) / deltaTime;
-			isMovementBeginApplied = false;
+			deltaVelocity = (data->movementTargetPosition - currentPos) / deltaTime;
+			data->isMovementBeginApplied = false;
 		}
 		else
 		{
@@ -113,37 +118,37 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 	}
 	else
 	{
-		deltaVelocity = movementDelta / movementDuration; // Handle frame rate changes
+		deltaVelocity = data->movementDelta / data->movementDuration; // Handle frame rate changes
 	}
 
 	UWorld* const world = GetWorld();
 
 	FHitResult groundHitResult(1.f);
 
-	const FVector gravityAppliedPos = updatedPos + velocity * deltaTime;
-	const FVector groundInflation = gravity.GetNormalizedVector() * -2.f; // 0.1 => inflate for not getting hit by ground
+	const FVector gravityAppliedPos = updatedPos + data->velocity * deltaTime;
+	const FVector groundInflation = data->gravity.GetNormalizedVector() * -2.f; // 0.1 => inflate for not getting hit by ground
 
-	if (world->SweepSingleByChannel(NO_CONST_REF groundHitResult, updatedPos, gravityAppliedPos - groundInflation, Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
+	if (world->SweepSingleByChannel(NO_CONST_REF groundHitResult, updatedPos, gravityAppliedPos - groundInflation, data->Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
 		updatedPos = groundHitResult.Location + groundInflation;
 
 		deltaVelocity = FVector::VectorPlaneProject(deltaVelocity, groundHitResult.ImpactNormal);
-		velocity = FVector::ZeroVector; // Easy way for now
+		data->velocity = FVector::ZeroVector; // Easy way for now
 
-		isGrounding = true;
+		data->isGrounding = true;
 	}
 	else
 	{	
 		updatedPos = gravityAppliedPos;
 
-		isGrounding = false;
+		data->isGrounding = false;
 	}
 
 	const FVector movementAppliedPos = updatedPos + deltaVelocity * deltaTime;
 
 	FHitResult movementHitResult(1.f);
 
-	if (world->SweepSingleByChannel(NO_CONST_REF movementHitResult, updatedPos, movementAppliedPos, Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
+	if (world->SweepSingleByChannel(NO_CONST_REF movementHitResult, updatedPos, movementAppliedPos, data->Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
 		const float nonAppliedDeltaPosition = deltaVelocity.Size() * deltaTime - (updatedPos - movementHitResult.Location).Size();
 		updatedPos = movementHitResult.Location + movementHitResult.ImpactNormal * 0.1f;
@@ -183,7 +188,7 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 		
 	updatedPos = FindNonCollidingClosestPosition(currentPos, updatedPos);
 
-	moveableComponent->SetWorldLocationAndRotation(updatedPos, Rotation);
+	moveableComponent->SetWorldLocationAndRotation(updatedPos, data->Rotation);
 }
 
 void UMainCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -196,26 +201,9 @@ void UMainCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick 
 void UMainCharacterMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
-}
 
-void FCachedVector::SetVector(float X, float Y, float Z)
-{
-	originalVector.X = X;
-	originalVector.Y = Y;
-	originalVector.Z = Z;
+	auto* characterData = Cast<AMainCharacter>(GetOwner())->GetCharacterData();
 
-	UpdateCache();
-}
-
-void FCachedVector::SetVector(const FVector& val)
-{
-	originalVector = val;
-	UpdateCache();
-}
-
-void FCachedVector::UpdateCache()
-{
-	normalizedVector = originalVector.GetSafeNormal();
-	sqrMagnitude = originalVector.SizeSquared();
-	magnitude = FMath::Sqrt(sqrMagnitude);
+	characterData->movementComponentDataOwner.BecomeSubOwner(this);
+	characterData->walkableGroundPropertiesDataOwner.BecomeSubOwner(&walkableGroundPropertiesSubOwner);
 }
