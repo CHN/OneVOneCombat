@@ -81,9 +81,9 @@ bool UMainCharacterMovementComponent::IsLedgeDetected(const FVector& centerPoint
 
 	const FVector impactVector = impactPoint - capsuleBottomSphereCenter;
 
-	const float ledgeAmount = FVector::DotProduct(impactVector, moveableComponent->GetUpVector());
+	const float ledgeAmount = FVector::DotProduct(impactVector.GetUnsafeNormal(), moveableComponent->GetUpVector());
 
-	return ledgeAmount < -4.f && ledgeAmount > -40.f; // TODO: Should be changed with editor ui
+	return ledgeAmount > -1.f && ledgeAmount < -0.1f; // TODO: Should be changed with editor ui
 }
 
 bool UMainCharacterMovementComponent::IsMovementBeingApplied() const
