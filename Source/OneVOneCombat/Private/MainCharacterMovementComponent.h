@@ -46,5 +46,11 @@ private:
 
 	FVector FindNonCollidingClosestPosition(const FVector& initialPosition, const FVector& sweepEndPosition);
 
-	bool IsLedgeDetected(const FVector& centerPoint, const FVector& impactPoint) const;
+	struct LedgeReturnData
+	{
+		bool isDetected;
+		float ledgeHeight;
+	};
+
+	LedgeReturnData IsLedgeDetected(const FVector& centerPoint, const FVector& impactPoint) const;
 };

@@ -74,16 +74,23 @@ FVector UMainCharacterMovementComponent::FindNonCollidingClosestPosition(const F
 	return avgPosition / hitResults.Num();
 }
 
-bool UMainCharacterMovementComponent::IsLedgeDetected(const FVector& centerPoint, const FVector& impactPoint) const
+UMainCharacterMovementComponent::LedgeReturnData UMainCharacterMovementComponent::IsLedgeDetected(const FVector& centerPoint, const FVector& impactPoint) const
 {
 	const auto moveableCompShape = moveableComponent->GetCollisionShape();
 	const FVector capsuleBottomSphereCenter = centerPoint + moveableComponent->GetUpVector() * -moveableCompShape.GetCapsuleAxisHalfLength();
 
-	const FVector impactVector = impactPoint - capsuleBottomSphereCenter;
+	const FVector impactVector = capsuleBottomSphereCenter - impactPoint;
 
 	const float ledgeAmount = FVector::DotProduct(impactVector.GetUnsafeNormal(), moveableComponent->GetUpVector());
 
-	return ledgeAmount > -1.f && ledgeAmount < -0.1f; // TODO: Should be changed with editor ui
+	LedgeReturnData ledgeReturnData;
+	
+	ledgeReturnData.isDetected = ledgeAmount < 1.f && ledgeAmount > 0.3f; // TODO: Should be changed with editor ui
+	ledgeReturnData.ledgeHeight = moveableCompShape.GetCapsuleRadius() - FVector::DotProduct(impactVector, moveableComponent->GetUpVector());
+
+	LOG_TO_SCREEN_STR("{0}", ledgeReturnData.ledgeHeight);
+
+	return ledgeReturnData;
 }
 
 bool UMainCharacterMovementComponent::IsMovementBeingApplied() const
@@ -138,7 +145,7 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 		data->isGrounding = true;
 	}
 	else
-	{	
+	{
 		updatedPos = gravityAppliedPos;
 
 		data->isGrounding = false;
@@ -155,9 +162,11 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 		
 		if (nonAppliedDeltaPosition > 0)
 		{
-			if (IsLedgeDetected(updatedPos, movementHitResult.ImpactPoint))
+			LedgeReturnData ledgeReturnData = IsLedgeDetected(updatedPos, movementHitResult.ImpactPoint);
+
+			if (ledgeReturnData.isDetected)
 			{
-				updatedPos += moveableComponent->GetUpVector() * nonAppliedDeltaPosition;
+				updatedPos += moveableComponent->GetUpVector() * ledgeReturnData.ledgeHeight * deltaTime; // TODO: Fix use of ledge height instead of using climbing velocity
 			}
 			else
 			{
