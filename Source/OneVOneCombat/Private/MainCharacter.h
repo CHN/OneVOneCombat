@@ -13,6 +13,7 @@ class UPlayerInputPollingSystem;
 class UInputQueueSystem;
 class UMainCharacterMovementComponent;
 class UMainCharacterData;
+class UPlayerStateManager;
 
 enum class EUserInputType : uint8;
 
@@ -57,6 +58,9 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 private:
+
+	UPROPERTY(VisibleAnywhere)
+	UPlayerStateManager* playerStateManager;
 
 	UPROPERTY(VisibleAnywhere)
 	UPlayerInputPollingSystem* playerInputPollingSystem;

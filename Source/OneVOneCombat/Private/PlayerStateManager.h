@@ -4,10 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+
+#include "PlayerStateBase.h"
+
 #include "PlayerStateManager.generated.h"
 
 
 enum class EInputQueueOutputState : uint8;
+class UMainCharacterData;
+class UMainCharacterMovementComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UPlayerStateManager : public UActorComponent
@@ -18,9 +23,10 @@ public:
 
 	UPlayerStateManager();
 
-	bool TryToChangeState(EInputQueueOutputState targetState);
+	void Init(TObjectPtr<UMainCharacterData> characterData, UMainCharacterMovementComponent* tempMovementComp);
+	void OnInputQueueOutputStateTriggered(EInputQueueOutputState state);
 
 private:
 
-	virtual void BeginPlay() override;
+	TArray<TObjectPtr<UPlayerStateBase>> playerStates;
 };

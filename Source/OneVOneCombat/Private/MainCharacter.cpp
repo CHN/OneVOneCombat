@@ -5,6 +5,7 @@
 #include "PlayerInputPollingSystem.h"
 #include "InputQueueSystem.h"
 #include "MainCharacterMovementComponent.h"
+#include "PlayerStateManager.h"
 #include "Components\CapsuleComponent.h"
 
 #include "MainCharacter/MainCharacterData.h"
@@ -22,6 +23,7 @@ AMainCharacter::AMainCharacter()
 	playerInputPollingSystem = CreateDefaultSubobject<UPlayerInputPollingSystem>("PlayerInputPollingSystem");
 	inputQueueSystem = CreateDefaultSubobject<UInputQueueSystem>("InputQueueSystem");
 	mainCharacterMovementComponent = CreateDefaultSubobject<UMainCharacterMovementComponent>("MainCharacterMovementComponent");
+	playerStateManager = CreateDefaultSubobject<UPlayerStateManager>("PlayerStateManager");
 
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>("CapsuleCollider");
 
@@ -34,6 +36,10 @@ void AMainCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	playerInputPollingSystem->onAnInputTriggered.BindUObject(inputQueueSystem, &UInputQueueSystem::ConsumeInputs);
+
+	playerStateManager->Init(data, mainCharacterMovementComponent);
+
+	inputQueueSystem->inputQueueSystemEvent.BindUObject(playerStateManager, &UPlayerStateManager::OnInputQueueOutputStateTriggered);
 
 	mainCharacterMovementComponent->SetMoveableComponent(capsuleCollider);
 }
@@ -112,7 +118,7 @@ void AMainCharacter::HandleActionInput(EUserInputType inputType, EInputEvent inp
 
 	if (inputType == EUserInputType::JUMP_INPUT && mainCharacterMovementComponent->IsGrounding() && inputEvent == IE_Released)
 	{
-		mainCharacterMovementComponent->MoveByDelta(.12f, GetRootComponent()->GetRightVector() * 400.f, GetRootComponent()->GetComponentRotation().Quaternion());
+		//mainCharacterMovementComponent->MoveByDelta(.12f, GetRootComponent()->GetRightVector() * 400.f, GetRootComponent()->GetComponentRotation().Quaternion());
 		//mainCharacterMovementComponent->AddVelocity(FVector::UpVector * 350.f);
 	}
 }

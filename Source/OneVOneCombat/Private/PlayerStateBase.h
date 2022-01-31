@@ -7,6 +7,7 @@
 #include "PlayerStateBase.generated.h"
 
 enum class EInputQueueOutputState : uint8;
+class UMainCharacterData;
 
 UCLASS(Abstract)
 class UPlayerStateBase : public UActorComponent
@@ -15,14 +16,29 @@ public:
 	
 	GENERATED_BODY()
 
-	virtual bool TryToSwitchState(EInputQueueOutputState outputState) { check(0 && "Inherit and implement the logic"); return false; }
+	UPlayerStateBase();
+
+	void InitBase(TObjectPtr<UMainCharacterData> NewCharacterData);
+
+	virtual bool IsStateTransitionAllowedToNewState(EInputQueueOutputState outputState) { return true; } // TODO: Change to player state enum
+	virtual bool IsStateTransitionAllowedToThisState(EInputQueueOutputState outputState) { return true; }
+
+	virtual void OnStateBeginPlay() {}
+	virtual void OnStateEndPlay() {}
+	virtual void OnStateInterrupted() {}
+
+	void StartState_Internal();
 
 	EInputQueueOutputState GetPlayerStateType() const;
 
 protected:
 
 	EInputQueueOutputState playerStateType;
+	TObjectPtr<UMainCharacterData> characterData;
+
+	void EndState();
 
 private:
 
+	bool isStatePlaying;
 };

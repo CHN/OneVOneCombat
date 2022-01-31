@@ -131,14 +131,18 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 		}
 	}
 
+	const UInputQueueDataAsset* const currentInputQueueData = inputQueueDataCandidates[0];
+
 	if (inputQueueDataCandidates[0]->GetRemoveFromPollWhenInputQueueFound())
 	{
-		inputPollingSystem->RemoveFromPolling(inputQueueDataCandidates[0]->GetInputActions().Num());
+		inputPollingSystem->RemoveFromPolling(currentInputQueueData->GetInputActions().Num());
 	}
 
-	UpdateDiscardInputPair(inputQueueDataCandidates[0]);
+	UpdateDiscardInputPair(currentInputQueueData);
 
-	LOG_TO_SCREEN_STR("Current Action is {0}", EditorUtilities::EnumToString(TEXT("EInputQueueOutputState"), static_cast<uint8>(inputQueueDataCandidates[0]->GetInputQueueOutputState())));
+	LOG_TO_SCREEN_STR("Current Action is {0}", EditorUtilities::EnumToString(TEXT("EInputQueueOutputState"), static_cast<uint8>(currentInputQueueData->GetInputQueueOutputState())));
+
+	inputQueueSystemEvent.ExecuteIfBound(currentInputQueueData->GetInputQueueOutputState());
 }
 
 void UInputQueueSystem::UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset)

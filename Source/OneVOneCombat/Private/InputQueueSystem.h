@@ -35,6 +35,9 @@ public:
 
 	void ConsumeInputs(UPlayerInputPollingSystem* inputPollingSystem);
 
+	DECLARE_DELEGATE_OneParam(FInputQueueSystemEvent, EInputQueueOutputState)
+	FInputQueueSystemEvent inputQueueSystemEvent;
+
 private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))

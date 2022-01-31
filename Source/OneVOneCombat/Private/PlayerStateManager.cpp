@@ -3,17 +3,43 @@
 
 #include "PlayerStateManager.h"
 
+#include "InputQueueOutputState.h"
+#include "MainCharacter/MainCharacterData.h"
+
+#include "PlayerStates/JumpPlayerState.h"
+
+#include "EditorUtilities.h"
+
 UPlayerStateManager::UPlayerStateManager()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UPlayerStateManager::BeginPlay()
+void UPlayerStateManager::Init(TObjectPtr<UMainCharacterData> characterData, UMainCharacterMovementComponent* tempMovementComp)
 {
-	Super::BeginPlay();
+	playerStates.SetNum(static_cast<uint8>(EInputQueueOutputState::END_OF_ENUM));
+
+	TObjectPtr<UJumpPlayerState> jumpPlayerState = NewObject<UJumpPlayerState>(this);
+	jumpPlayerState->InitBase(characterData);
+	jumpPlayerState->Init(tempMovementComp);
+	playerStates[static_cast<uint8>(EInputQueueOutputState::JUMP)] = jumpPlayerState;
 }
 
-bool UPlayerStateManager::TryToChangeState(EInputQueueOutputState targetState)
+void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputState state)
 {
-	return false;
+	UPlayerStateBase* const newState = playerStates[static_cast<uint8>(state)];
+
+	if (newState == nullptr)
+	{
+		return;
+	}
+
+	const bool canStateBeChanged = newState->IsStateTransitionAllowedToThisState(state);
+
+	LOG_TO_SCREEN_STR("STATE CHANGE	: {0}, State: {1}", canStateBeChanged, EditorUtilities::EnumToString(TEXT("EInputQueueOutputState"), static_cast<uint8>(state)));
+
+	if (canStateBeChanged)
+	{
+		newState->StartState_Internal();
+	}
 }

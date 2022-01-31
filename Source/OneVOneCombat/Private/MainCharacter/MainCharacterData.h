@@ -22,6 +22,11 @@ public:
 	DataOwner<FMovementComponentData> movementComponentDataOwner;
 	DataOwner<FWalkableGroundPropertiesData> walkableGroundPropertiesDataOwner;
 
+	inline bool IsGrounded() const
+	{
+		return movementComponentData.isGrounding;
+	}
+
 private:
 
 	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
