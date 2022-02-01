@@ -5,22 +5,26 @@
 
 #include "../MainCharacterMovementComponent.h"
 #include "MainCharacter/MainCharacterData.h"
+#include "MainCharacter/MainCharacterComponentGroup.h"
+#include "InputQueueOutputState.h"
 
 #include "EditorUtilities.h"
 
-void UJumpPlayerState::Init(TObjectPtr<UMainCharacterMovementComponent> NewMovementComponent)
+UJumpPlayerState::UJumpPlayerState()
+	: Super()
 {
-	movementComponent = NewMovementComponent;
+	playerStateType = EInputQueueOutputState::JUMP;
 }
 
 void UJumpPlayerState::OnStateBeginPlay()
 {
+	auto movementComponent = characterComponentGroup->GetMovementComponent();
 	movementComponent->AddVelocity(FVector::UpVector * 400.f);
 
 	EndState();
 }
 
-bool UJumpPlayerState::IsStateTransitionAllowedToThisState(EInputQueueOutputState outputState)
+bool UJumpPlayerState::IsStateTransitionInAllowed(EInputQueueOutputState previousState)
 {
 	return characterData->IsGrounded();
 }

@@ -11,6 +11,8 @@
 #include "MainCharacter/MovementComponentData.h"
 #include "MainCharacter/WalkableGroundPropertiesData.h"
 
+#include "UObject/WeakFieldPtr.h"
+
 #include "MainCharacterMovementComponent.generated.h"
 
 UCLASS(Blueprintable)

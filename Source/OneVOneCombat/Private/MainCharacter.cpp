@@ -6,7 +6,8 @@
 #include "InputQueueSystem.h"
 #include "MainCharacterMovementComponent.h"
 #include "PlayerStateManager.h"
-#include "Components\CapsuleComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "MainCharacter/MainCharacterComponentGroup.h"
 
 #include "MainCharacter/MainCharacterData.h"
 
@@ -22,7 +23,7 @@ AMainCharacter::AMainCharacter()
 
 	playerInputPollingSystem = CreateDefaultSubobject<UPlayerInputPollingSystem>("PlayerInputPollingSystem");
 	inputQueueSystem = CreateDefaultSubobject<UInputQueueSystem>("InputQueueSystem");
-	mainCharacterMovementComponent = CreateDefaultSubobject<UMainCharacterMovementComponent>("MainCharacterMovementComponent");
+	componentGroup = CreateDefaultSubobject<UMainCharacterComponentGroup>("ComponentGroup");
 	playerStateManager = CreateDefaultSubobject<UPlayerStateManager>("PlayerStateManager");
 
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>("CapsuleCollider");
@@ -37,11 +38,13 @@ void AMainCharacter::BeginPlay()
 
 	playerInputPollingSystem->onAnInputTriggered.BindUObject(inputQueueSystem, &UInputQueueSystem::ConsumeInputs);
 
-	playerStateManager->Init(data, mainCharacterMovementComponent);
+	movementComponent = componentGroup->GetMovementComponent();
+
+	playerStateManager->Init(data, componentGroup);
 
 	inputQueueSystem->inputQueueSystemEvent.BindUObject(playerStateManager, &UPlayerStateManager::OnInputQueueOutputStateTriggered);
 
-	mainCharacterMovementComponent->SetMoveableComponent(capsuleCollider);
+	movementComponent->SetMoveableComponent(capsuleCollider);
 }
 
 // Called every frame
@@ -81,8 +84,8 @@ void AMainCharacter::Tick(float DeltaTime)
 	FHitResult MoveOnBaseHit(1.f);
 	//GetRootComponent()->MoveComponent(move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion(), true, &MoveOnBaseHit);
 
-	if(!mainCharacterMovementComponent->IsMovementBeingApplied())
-		mainCharacterMovementComponent->MoveByDelta(DeltaTime, move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion());
+	if(!movementComponent->IsMovementBeingApplied())
+		movementComponent->MoveByDelta(DeltaTime, move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion());
 }
 
 // Called to bind functionality to input
@@ -116,7 +119,7 @@ void AMainCharacter::HandleActionInput(EUserInputType inputType, EInputEvent inp
 {
 	playerInputPollingSystem->AddActionToUserInputPollingQueue(inputType, inputEvent);
 
-	if (inputType == EUserInputType::JUMP_INPUT && mainCharacterMovementComponent->IsGrounding() && inputEvent == IE_Released)
+	if (inputType == EUserInputType::JUMP_INPUT && movementComponent->IsGrounding() && inputEvent == IE_Released)
 	{
 		//mainCharacterMovementComponent->MoveByDelta(.12f, GetRootComponent()->GetRightVector() * 400.f, GetRootComponent()->GetComponentRotation().Quaternion());
 		//mainCharacterMovementComponent->AddVelocity(FVector::UpVector * 350.f);

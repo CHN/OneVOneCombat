@@ -13,6 +13,7 @@
 enum class EInputQueueOutputState : uint8;
 class UMainCharacterData;
 class UMainCharacterMovementComponent;
+class UMainCharacterComponentGroup;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UPlayerStateManager : public UActorComponent
@@ -23,10 +24,11 @@ public:
 
 	UPlayerStateManager();
 
-	void Init(TObjectPtr<UMainCharacterData> characterData, UMainCharacterMovementComponent* tempMovementComp);
-	void OnInputQueueOutputStateTriggered(EInputQueueOutputState state);
+	void Init(TWeakObjectPtr<UMainCharacterData> characterData, TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup);
+	void OnInputQueueOutputStateTriggered(EInputQueueOutputState newState);
 
 private:
 
-	TArray<TObjectPtr<UPlayerStateBase>> playerStates;
+	TArray<TWeakObjectPtr<UPlayerStateBase>> playerStates;
+	TWeakObjectPtr<UPlayerStateBase> currentState;
 };

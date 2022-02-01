@@ -11,9 +11,10 @@
 
 class UPlayerInputPollingSystem;
 class UInputQueueSystem;
-class UMainCharacterMovementComponent;
 class UMainCharacterData;
 class UPlayerStateManager;
+class UMainCharacterComponentGroup;
+class UMainCharacterMovementComponent;
 
 enum class EUserInputType : uint8;
 
@@ -71,9 +72,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	UPrimitiveComponent* capsuleCollider;
 
-	UPROPERTY(VisibleAnywhere)
-	UMainCharacterMovementComponent* mainCharacterMovementComponent;
+	UPROPERTY(EditAnywhere)
+	UMainCharacterComponentGroup* componentGroup;
 
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	UMainCharacterData* data;
+
+	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 };

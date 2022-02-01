@@ -19,13 +19,9 @@ public:
 
 	GENERATED_BODY()
 
-	void Init(TObjectPtr<UMainCharacterMovementComponent> NewMovementComponent);
+	UJumpPlayerState();
 
 	void OnStateBeginPlay() override;
 
-	bool IsStateTransitionAllowedToThisState(EInputQueueOutputState outputState) override;
-
-private:
-
-	TObjectPtr<UMainCharacterMovementComponent> movementComponent;
+	bool IsStateTransitionInAllowed(EInputQueueOutputState previousState) override;
 };
