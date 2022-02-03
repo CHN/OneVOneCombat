@@ -26,5 +26,4 @@ public:
 	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) override;
 
 	void OnStateUpdate(float deltaTime) override;
-
 };
