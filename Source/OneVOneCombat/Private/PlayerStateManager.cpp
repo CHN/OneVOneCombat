@@ -19,27 +19,31 @@ UPlayerStateManager::UPlayerStateManager()
 
 void UPlayerStateManager::Init(TWeakObjectPtr<UMainCharacterData> characterData, TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup)
 {
-	playerStates.SetNum(static_cast<uint8>(EInputQueueOutputState::END_OF_ENUM));
+	playerStates.SetNum(static_cast<uint8>(EPlayerState::END_OF_ENUM));
+	inputOutputPlayerStates.SetNum(static_cast<uint8>(EInputQueueOutputState::END_OF_ENUM));
 
 	TObjectPtr<UJumpPlayerState> jumpPlayerState = NewObject<UJumpPlayerState>(this);
 	jumpPlayerState->Init(characterData, characterComponentGroup);
-	playerStates[static_cast<uint8>(EInputQueueOutputState::JUMP)] = jumpPlayerState;
+	playerStates[static_cast<uint8>(EPlayerState::JUMP)] = jumpPlayerState;
+	inputOutputPlayerStates[static_cast<uint8>(EInputQueueOutputState::JUMP)] = jumpPlayerState;
 }
 
-void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputState newOutputState)
+void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputState inputOutputState)
 {
 	bool isCurrentStateChangeable;
-	EInputQueueOutputState previousOutputState;
+
+	EPlayerState newPlayerState = inputOutputPlayerStates[static_cast<uint8>(inputOutputState)]->GetPlayerState();
+	EPlayerState previousPlayerState;
 
 	if (currentState.IsValid())
 	{
-		isCurrentStateChangeable = currentState->IsStateTransitionOutAllowed(newOutputState);
-		previousOutputState = currentState->GetPlayerStateType();
+		isCurrentStateChangeable = currentState->IsStateTransitionOutAllowedByInputStateOutput(inputOutputState, newPlayerState);
+		previousPlayerState = currentState->GetPlayerState();
 	}
 	else
 	{
 		isCurrentStateChangeable = true;
-		previousOutputState = EInputQueueOutputState::END_OF_ENUM;
+		previousPlayerState = EPlayerState::END_OF_ENUM;
 	}
 
 	if (!isCurrentStateChangeable)
@@ -48,7 +52,7 @@ void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputStat
 		return;
 	}
 
-	auto newState = playerStates[static_cast<uint8>(newOutputState)];
+	auto newState = inputOutputPlayerStates[static_cast<uint8>(inputOutputState)];
 
 	if (newState == nullptr)
 	{
@@ -56,15 +60,13 @@ void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputStat
 		return;
 	}
 
-	const bool isNewStateChangeable = newState->IsStateTransitionInAllowed(previousOutputState);
+	const bool isNewStateChangeable = newState->IsStateTransitionInAllowedByInputStateOutput(inputOutputState, previousPlayerState);
 
 	if (!isNewStateChangeable)
 	{
 		LOG_TO_SCREEN_STR("NEW STATE COULDNT BE CHANGED", 1);
 		return;
 	}
-
-	LOG_TO_SCREEN_STR("STATE CHANGE: from {0} to {1}", EditorUtilities::EnumToString(TEXT("EInputQueueOutputState"), static_cast<uint8>(previousOutputState)), EditorUtilities::EnumToString(TEXT("EInputQueueOutputState"), static_cast<uint8>(newOutputState)));
 
 	if (currentState.IsValid())
 	{
@@ -73,6 +75,8 @@ void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputStat
 
 	newState->StartState_Internal();
 	currentState = newState;
+
+	LOG_TO_SCREEN_STR("State change from {0} to {1}", EditorUtilities::EnumToString(TEXT("EPlayerState"), static_cast<uint8>(previousPlayerState)), EditorUtilities::EnumToString(TEXT("EPlayerState"), static_cast<uint8>(newPlayerState)));
 
 	SetComponentTickEnabled(true);
 }

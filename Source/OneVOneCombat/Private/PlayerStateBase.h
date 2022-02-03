@@ -6,6 +6,15 @@
 
 #include "PlayerStateBase.generated.h"
 
+UENUM()
+enum class EPlayerState : uint8
+{
+	MOVE,
+	JUMP,
+
+	END_OF_ENUM
+};
+
 enum class EInputQueueOutputState : uint8;
 class UMainCharacterData;
 class UMainCharacterComponentGroup;
@@ -21,8 +30,11 @@ public:
 
 	virtual void Init(TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup);
 
-	virtual bool IsStateTransitionOutAllowed(EInputQueueOutputState newState) { return true; } // TODO: Change to player state enum
-	virtual bool IsStateTransitionInAllowed(EInputQueueOutputState previousState) { return true; }
+	virtual bool IsStateTransitionOutAllowed(EPlayerState newState) { return true; }
+	virtual bool IsStateTransitionInAllowed(EPlayerState previousState) { return true; }
+
+	virtual bool IsStateTransitionOutAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState) { return true; }
+	virtual bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) { return true; }
 
 	virtual void OnStateBeginPlay() {}
 	virtual void OnStateUpdate(float deltaTime) {}
@@ -32,11 +44,11 @@ public:
 	void StartState_Internal();
 	void EndState_Internal();
 
-	EInputQueueOutputState GetPlayerStateType() const;
+	EPlayerState GetPlayerState() const;
 
 protected:
 
-	EInputQueueOutputState playerStateType;
+	EPlayerState playerState;
 	TWeakObjectPtr<UMainCharacterData> characterData;
 	TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup;
 

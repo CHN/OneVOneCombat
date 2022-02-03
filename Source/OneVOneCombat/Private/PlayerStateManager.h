@@ -25,12 +25,13 @@ public:
 	UPlayerStateManager();
 
 	void Init(TWeakObjectPtr<UMainCharacterData> characterData, TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup);
-	void OnInputQueueOutputStateTriggered(EInputQueueOutputState newState);
+	void OnInputQueueOutputStateTriggered(EInputQueueOutputState inputOutputState);
 
 private:
 
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	TArray<TWeakObjectPtr<UPlayerStateBase>> playerStates;
+	TArray<TWeakObjectPtr<UPlayerStateBase>> inputOutputPlayerStates;
 	TWeakObjectPtr<UPlayerStateBase> currentState;
 };

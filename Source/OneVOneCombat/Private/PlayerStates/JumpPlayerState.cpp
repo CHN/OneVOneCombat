@@ -13,7 +13,7 @@
 UJumpPlayerState::UJumpPlayerState()
 	: Super()
 {
-	playerStateType = EInputQueueOutputState::JUMP;
+	playerState = EPlayerState::JUMP;
 }
 
 void UJumpPlayerState::OnStateBeginPlay()
@@ -24,7 +24,7 @@ void UJumpPlayerState::OnStateBeginPlay()
 	EndState(); // TODO: EndState method should not be at here, can state machine be stateless? LoL, just do a transition to the default state
 }
 
-bool UJumpPlayerState::IsStateTransitionInAllowed(EInputQueueOutputState previousState)
+bool UJumpPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState)
 {
 	return characterData->IsGrounded();
 }

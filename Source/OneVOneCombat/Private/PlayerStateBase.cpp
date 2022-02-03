@@ -9,7 +9,7 @@ UPlayerStateBase::UPlayerStateBase()
 	: Super()
 {
 	isStatePlaying = false;
-	playerStateType = EInputQueueOutputState::END_OF_ENUM;
+	playerState = EPlayerState::END_OF_ENUM;
 }
 
 void UPlayerStateBase::Init(TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup)
@@ -38,9 +38,9 @@ void UPlayerStateBase::EndState_Internal()
 	isStatePlaying = false;
 }
 
-EInputQueueOutputState UPlayerStateBase::GetPlayerStateType() const
+EPlayerState UPlayerStateBase::GetPlayerState() const
 {
-	return playerStateType;
+	return playerState;
 }
 
 void UPlayerStateBase::EndState()

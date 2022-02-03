@@ -23,7 +23,7 @@ public:
 
 	void OnStateBeginPlay() override;
 
-	bool IsStateTransitionInAllowed(EInputQueueOutputState previousState) override;
+	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) override;
 
 	void OnStateUpdate(float deltaTime) override;
 
