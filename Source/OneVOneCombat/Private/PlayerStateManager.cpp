@@ -48,7 +48,7 @@ void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputStat
 
 	if (!isCurrentStateChangeable)
 	{
-		LOG_TO_SCREEN_STR("CURRENT STATE COULDNT BE CHANGED", 1);
+		LOG_TO_SCREEN("CURRENT STATE COULDNT BE CHANGED");
 		return;
 	}
 
@@ -56,7 +56,7 @@ void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputStat
 
 	if (newState == nullptr)
 	{
-		LOG_TO_SCREEN_STR("NEW STATE IS NULL", 1);
+		LOG_TO_SCREEN("NEW STATE IS NULL");
 		return;
 	}
 
@@ -64,7 +64,7 @@ void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputStat
 
 	if (!isNewStateChangeable)
 	{
-		LOG_TO_SCREEN_STR("NEW STATE COULDNT BE CHANGED", 1);
+		LOG_TO_SCREEN("NEW STATE COULDNT BE CHANGED");
 		return;
 	}
 
@@ -76,7 +76,7 @@ void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputStat
 	newState->StartState_Internal();
 	currentState = newState;
 
-	LOG_TO_SCREEN_STR("State change from {0} to {1}", EditorUtilities::EnumToString(TEXT("EPlayerState"), static_cast<uint8>(previousPlayerState)), EditorUtilities::EnumToString(TEXT("EPlayerState"), static_cast<uint8>(newPlayerState)));
+	LOG_TO_SCREEN("State change from {0} to {1}", EditorUtilities::EnumToString(TEXT("EPlayerState"), previousPlayerState), EditorUtilities::EnumToString(TEXT("EPlayerState"), newPlayerState));
 
 	SetComponentTickEnabled(true);
 }

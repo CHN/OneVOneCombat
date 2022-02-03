@@ -140,7 +140,7 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 
 	UpdateDiscardInputPair(currentInputQueueData);
 
-	LOG_TO_SCREEN_STR("Current Action is {0}", EditorUtilities::EnumToString(TEXT("EInputQueueOutputState"), static_cast<uint8>(currentInputQueueData->GetInputQueueOutputState())));
+	LOG_TO_SCREEN("Current Action is {0}", EditorUtilities::EnumToString(TEXT("EInputQueueOutputState"), currentInputQueueData->GetInputQueueOutputState()));
 
 	inputQueueSystemEvent.ExecuteIfBound(currentInputQueueData->GetInputQueueOutputState());
 }
