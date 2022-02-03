@@ -8,6 +8,7 @@
 #include "MainCharacter/MainCharacterComponentGroup.h"
 
 #include "PlayerStates/JumpPlayerState.h"
+#include "PlayerStates/MovementPlayerState.h"
 
 #include "EditorUtilities.h"
 
@@ -26,13 +27,25 @@ void UPlayerStateManager::Init(TWeakObjectPtr<UMainCharacterData> characterData,
 	jumpPlayerState->Init(characterData, characterComponentGroup);
 	playerStates[static_cast<uint8>(EPlayerState::JUMP)] = jumpPlayerState;
 	inputOutputPlayerStates[static_cast<uint8>(EInputQueueOutputState::JUMP)] = jumpPlayerState;
+
+	TObjectPtr<UMovementPlayerState> movementPlayerState = NewObject<UMovementPlayerState>(this);
+	movementPlayerState->Init(characterData, characterComponentGroup);
+	playerStates[static_cast<uint8>(EPlayerState::MOVE)] = movementPlayerState;
 }
 
 void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputState inputOutputState)
 {
 	bool isCurrentStateChangeable;
 
-	EPlayerState newPlayerState = inputOutputPlayerStates[static_cast<uint8>(inputOutputState)]->GetPlayerState();
+	EPlayerState newPlayerState;
+
+	if (!inputOutputPlayerStates[static_cast<uint8>(inputOutputState)].IsValid())
+	{
+		return;
+	}
+
+	newPlayerState = inputOutputPlayerStates[static_cast<uint8>(inputOutputState)]->GetPlayerState();
+
 	EPlayerState previousPlayerState;
 
 	if (currentState.IsValid())
