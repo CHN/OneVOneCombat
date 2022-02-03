@@ -20,4 +20,10 @@ public:
 	GENERATED_BODY()
 
 	UMovementPlayerState();
+
+	void OnStateBeginPlay() override;
+	void OnStateUpdate(float deltaTime) override;
+
+private:
+	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 };

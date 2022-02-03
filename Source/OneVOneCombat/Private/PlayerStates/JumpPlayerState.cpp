@@ -21,7 +21,7 @@ void UJumpPlayerState::OnStateBeginPlay()
 	auto movementComponent = characterComponentGroup->GetMovementComponent();
 	movementComponent->AddVelocity(FVector::UpVector * 400.f);
 
-	EndState(); // TODO: EndState method should not be at here, can state machine be stateless? LoL, just do a transition to the default state
+	EndState(EPlayerState::MOVE);
 }
 
 bool UJumpPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState)

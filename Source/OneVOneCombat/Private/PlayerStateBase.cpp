@@ -4,6 +4,7 @@
 #include "PlayerStateBase.h"
 
 #include "InputQueueOutputState.h"
+#include "PlayerStateManager.h"
 
 UPlayerStateBase::UPlayerStateBase()
 	: Super()
@@ -12,8 +13,9 @@ UPlayerStateBase::UPlayerStateBase()
 	playerState = EPlayerState::END_OF_ENUM;
 }
 
-void UPlayerStateBase::Init(TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup)
+void UPlayerStateBase::Init(UPlayerStateManager* NewPlayerStateManager, TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup)
 {
+	playerStateManager = NewPlayerStateManager;
 	characterData = NewCharacterData;
 	characterComponentGroup = NewCharacterComponentGroup;
 }
@@ -43,8 +45,9 @@ EPlayerState UPlayerStateBase::GetPlayerState() const
 	return playerState;
 }
 
-void UPlayerStateBase::EndState()
+void UPlayerStateBase::EndState(EPlayerState nextState)
 {
 	isStatePlaying = false;
 	OnStateEndPlay();
+	playerStateManager->TryToChangeNextState(nextState);
 }

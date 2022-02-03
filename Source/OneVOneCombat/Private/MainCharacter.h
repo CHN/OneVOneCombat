@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 
 #include "UserInputType.h"
+#include "DataInlineSubOwner.h"
 
 #include "MainCharacter.generated.h"
 
@@ -15,6 +16,8 @@ class UMainCharacterData;
 class UPlayerStateManager;
 class UMainCharacterComponentGroup;
 class UMainCharacterMovementComponent;
+
+struct FMovementComponentData;
 
 enum class EUserInputType : uint8;
 
@@ -78,5 +81,5 @@ private:
 	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	UMainCharacterData* data;
 
-	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
+	DataInlineSubOwner<FMovementComponentData> movementComponentData;
 };

@@ -27,6 +27,9 @@ public:
 	void Init(TWeakObjectPtr<UMainCharacterData> characterData, TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup);
 	void OnInputQueueOutputStateTriggered(EInputQueueOutputState inputOutputState);
 
+	void TryToChangeNextState(EPlayerState nextState);
+	const TArray<TWeakObjectPtr<UPlayerStateBase>>& GetPlayerStates() const;
+
 private:
 
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

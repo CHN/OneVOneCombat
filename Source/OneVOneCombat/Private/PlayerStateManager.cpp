@@ -15,7 +15,6 @@
 UPlayerStateManager::UPlayerStateManager()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
 void UPlayerStateManager::Init(TWeakObjectPtr<UMainCharacterData> characterData, TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup)
@@ -24,13 +23,16 @@ void UPlayerStateManager::Init(TWeakObjectPtr<UMainCharacterData> characterData,
 	inputOutputPlayerStates.SetNum(static_cast<uint8>(EInputQueueOutputState::END_OF_ENUM));
 
 	TObjectPtr<UJumpPlayerState> jumpPlayerState = NewObject<UJumpPlayerState>(this);
-	jumpPlayerState->Init(characterData, characterComponentGroup);
+	jumpPlayerState->Init(this, characterData, characterComponentGroup);
 	playerStates[static_cast<uint8>(EPlayerState::JUMP)] = jumpPlayerState;
 	inputOutputPlayerStates[static_cast<uint8>(EInputQueueOutputState::JUMP)] = jumpPlayerState;
 
 	TObjectPtr<UMovementPlayerState> movementPlayerState = NewObject<UMovementPlayerState>(this);
-	movementPlayerState->Init(characterData, characterComponentGroup);
+	movementPlayerState->Init(this, characterData, characterComponentGroup);
 	playerStates[static_cast<uint8>(EPlayerState::MOVE)] = movementPlayerState;
+
+	currentState = movementPlayerState;
+	currentState->StartState_Internal();
 }
 
 void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputState inputOutputState)
@@ -86,12 +88,41 @@ void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputStat
 		currentState->EndState_Internal();
 	}
 
+	currentState = newState;
+	currentState->StartState_Internal();
+
+	LOG_TO_SCREEN("State change from {0} to {1}", EditorUtilities::EnumToString(TEXT("EPlayerState"), previousPlayerState), EditorUtilities::EnumToString(TEXT("EPlayerState"), newPlayerState));
+}
+
+void UPlayerStateManager::TryToChangeNextState(EPlayerState nextState)
+{
+	EPlayerState previousPlayerState = currentState->GetPlayerState();
+
+	auto newState = playerStates[static_cast<uint8>(nextState)];
+
+	if (newState == nullptr)
+	{
+		LOG_TO_SCREEN("NEW STATE IS NULL");
+		return;
+	}
+
+	const bool isNewStateChangeable = newState->IsStateTransitionInAllowed(previousPlayerState);
+
+	if (!isNewStateChangeable)
+	{
+		LOG_TO_SCREEN("NEW STATE COULDNT BE CHANGED");
+		return;
+	}
+
 	newState->StartState_Internal();
 	currentState = newState;
 
-	LOG_TO_SCREEN("State change from {0} to {1}", EditorUtilities::EnumToString(TEXT("EPlayerState"), previousPlayerState), EditorUtilities::EnumToString(TEXT("EPlayerState"), newPlayerState));
+	LOG_TO_SCREEN("State change from {0} to {1}", EditorUtilities::EnumToString(TEXT("EPlayerState"), previousPlayerState), EditorUtilities::EnumToString(TEXT("EPlayerState"), nextState));
+}
 
-	SetComponentTickEnabled(true);
+const TArray<TWeakObjectPtr<UPlayerStateBase>>& UPlayerStateManager::GetPlayerStates() const
+{
+	return playerStates;
 }
 
 void UPlayerStateManager::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

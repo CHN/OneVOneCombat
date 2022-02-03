@@ -27,6 +27,16 @@ public:
 		return movementComponentData.isGrounding;
 	}
 
+	inline const FVector& GetMovementDelta() const
+	{
+		return movementComponentData.movementDelta;
+	}
+
+	inline const FQuat& GetCameraRotation() const
+	{
+		return movementComponentData.Rotation;
+	}
+
 private:
 
 	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))

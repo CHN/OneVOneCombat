@@ -11,6 +11,8 @@
 
 #include "MainCharacter/MainCharacterData.h"
 
+#include "MainCharacter/MovementComponentData.h"
+
 #include "EditorUtilities.h"
 
 // Sets default values
@@ -38,21 +40,21 @@ void AMainCharacter::BeginPlay()
 
 	playerInputPollingSystem->onAnInputTriggered.BindUObject(inputQueueSystem, &UInputQueueSystem::ConsumeInputs);
 
-	movementComponent = componentGroup->GetMovementComponent();
+	auto movementComponent = componentGroup->GetMovementComponent();
 
 	playerStateManager->Init(data, componentGroup);
 
 	inputQueueSystem->inputQueueSystemEvent.BindUObject(playerStateManager, &UPlayerStateManager::OnInputQueueOutputStateTriggered);
 
 	movementComponent->SetMoveableComponent(capsuleCollider);
+
+	data->movementComponentDataOwner.BecomeSubOwner(&movementComponentData);
 }
 
 // Called every frame
 void AMainCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	FVector move = FVector::ZeroVector;
 
 	if (SkeletalMeshComp1->IsPlayingRootMotion())
 	{
@@ -62,7 +64,7 @@ void AMainCharacter::Tick(float DeltaTime)
 		{
 			const FTransform WorldSpaceRootMotionTransform = SkeletalMeshComp1->ConvertLocalRootMotionToWorld(RootMotion.GetRootMotionTransform());
 			FQuat NewRotation = WorldSpaceRootMotionTransform.GetRotation() * GetRootComponent()->GetComponentRotation().Quaternion();
-			move = WorldSpaceRootMotionTransform.GetLocation();
+			movementComponentData.data->movementDelta = WorldSpaceRootMotionTransform.GetLocation();
 		}
 	}
 
@@ -81,18 +83,13 @@ void AMainCharacter::Tick(float DeltaTime)
 
 	cameraBoom->SetWorldRotation(swing * twist);
 
-	FHitResult MoveOnBaseHit(1.f);
-	//GetRootComponent()->MoveComponent(move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion(), true, &MoveOnBaseHit);
-
-	if(!movementComponent->IsMovementBeingApplied())
-		movementComponent->MoveByDelta(DeltaTime, move, FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion());
+	movementComponentData.data->Rotation = FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion();
 }
 
 // Called to bind functionality to input
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void AMainCharacter::SetHorizontalMoveAxis(float value)
@@ -118,10 +115,4 @@ void AMainCharacter::SetVerticalLookAxis(float value)
 void AMainCharacter::HandleActionInput(EUserInputType inputType, EInputEvent inputEvent)
 {
 	playerInputPollingSystem->AddActionToUserInputPollingQueue(inputType, inputEvent);
-
-	if (inputType == EUserInputType::JUMP_INPUT && movementComponent->IsGrounding() && inputEvent == IE_Released)
-	{
-		//mainCharacterMovementComponent->MoveByDelta(.12f, GetRootComponent()->GetRightVector() * 400.f, GetRootComponent()->GetComponentRotation().Quaternion());
-		//mainCharacterMovementComponent->AddVelocity(FVector::UpVector * 350.f);
-	}
 }
