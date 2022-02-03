@@ -25,6 +25,7 @@ public:
 	virtual bool IsStateTransitionInAllowed(EInputQueueOutputState previousState) { return true; }
 
 	virtual void OnStateBeginPlay() {}
+	virtual void OnStateUpdate(float deltaTime) {}
 	virtual void OnStateEndPlay() {}
 	virtual void OnStateInterrupted() {}
 

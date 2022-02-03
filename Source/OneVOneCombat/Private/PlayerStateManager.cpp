@@ -13,7 +13,8 @@
 
 UPlayerStateManager::UPlayerStateManager()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
 
 void UPlayerStateManager::Init(TWeakObjectPtr<UMainCharacterData> characterData, TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup)
@@ -72,4 +73,13 @@ void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputStat
 
 	newState->StartState_Internal();
 	currentState = newState;
+
+	SetComponentTickEnabled(true);
+}
+
+void UPlayerStateManager::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	currentState->OnStateUpdate(DeltaTime);
 }

@@ -24,4 +24,7 @@ public:
 	void OnStateBeginPlay() override;
 
 	bool IsStateTransitionInAllowed(EInputQueueOutputState previousState) override;
+
+	void OnStateUpdate(float deltaTime) override;
+
 };

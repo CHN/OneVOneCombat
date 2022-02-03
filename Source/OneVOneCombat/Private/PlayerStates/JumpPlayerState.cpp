@@ -28,3 +28,8 @@ bool UJumpPlayerState::IsStateTransitionInAllowed(EInputQueueOutputState previou
 {
 	return characterData->IsGrounded();
 }
+
+void UJumpPlayerState::OnStateUpdate(float deltaTime)
+{
+	
+}

@@ -29,6 +29,8 @@ public:
 
 private:
 
+	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	TArray<TWeakObjectPtr<UPlayerStateBase>> playerStates;
 	TWeakObjectPtr<UPlayerStateBase> currentState;
 };
