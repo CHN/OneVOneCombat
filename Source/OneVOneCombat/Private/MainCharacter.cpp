@@ -66,15 +66,9 @@ void AMainCharacter::Tick(float DeltaTime)
 			FQuat NewRotation = WorldSpaceRootMotionTransform.GetRotation() * GetRootComponent()->GetComponentRotation().Quaternion();
 			movementComponentData.data->movementDelta = WorldSpaceRootMotionTransform.GetLocation();
 		}
-		else
-		{
-			movementComponentData.data->movementDelta = GetRootComponent()->GetComponentRotation().Quaternion() * FVector(movementInput.X * -8.f, movementInput.Y * 8.f, 0.f);
-		}
 	}
-	else
-	{
-		movementComponentData.data->movementDelta = GetRootComponent()->GetComponentRotation().Quaternion() * FVector(movementInput.X * -8.f, movementInput.Y * 8.f, 0.f);
-	}
+
+	movementComponentData.data->inputMove = movementInput; // FIXME: Delete this, just for testing at nights!
 
 	FQuat x = cameraBoom->GetComponentRotation().Quaternion() * FQuat::MakeFromEuler(FVector(0.f, lookInput.Y, 0.f));
 	

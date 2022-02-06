@@ -37,6 +37,11 @@ public:
 		return movementComponentData.Rotation;
 	}
 
+	inline const FVector2D& GetInputMove() const
+	{
+		return movementComponentData.inputMove;
+	}
+
 private:
 
 	UPROPERTY(EditAnywhere, Category = "Movement", BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

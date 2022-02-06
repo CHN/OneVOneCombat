@@ -35,6 +35,7 @@ private:
 	DataInlineSubOwner<FMovementComponentData> movementComponentData;
 
 	TWeakObjectPtr<UPlayerStateBase> movementPlayerState;
+	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 
 	bool isOneFramePassed;
 };

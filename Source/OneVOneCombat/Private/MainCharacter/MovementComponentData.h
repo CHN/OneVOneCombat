@@ -43,4 +43,7 @@ struct FMovementComponentData
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool isJumping; // Will be moved to another data group
+
+	UPROPERTY(VisibleAnywhere)
+	FVector2D inputMove; // FIXME: Move to input data struct!
 };
