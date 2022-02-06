@@ -31,6 +31,11 @@ void UPlayerStateManager::Init(TWeakObjectPtr<UMainCharacterData> characterData,
 	movementPlayerState->Init(this, characterData, characterComponentGroup);
 	playerStates[static_cast<uint8>(EPlayerState::MOVE)] = movementPlayerState;
 
+	for (auto playerState : playerStates)
+	{
+		playerState->OnStateInitialized();
+	}
+
 	currentState = movementPlayerState;
 	currentState->StartState_Internal();
 }

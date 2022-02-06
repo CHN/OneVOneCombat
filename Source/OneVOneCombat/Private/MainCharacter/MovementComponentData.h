@@ -7,7 +7,7 @@
 
 #include "MovementComponentData.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FMovementComponentData
 {
 	GENERATED_BODY()
@@ -32,7 +32,7 @@ struct FMovementComponentData
 	UPROPERTY(VisibleAnywhere)
 	float currentDuration;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool isGrounding;
 
 	UPROPERTY(VisibleAnywhere)
@@ -40,4 +40,7 @@ struct FMovementComponentData
 
 	UPROPERTY(VisibleAnywhere)
 	bool constrainInputToGround;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool isJumping; // Will be moved to another data group
 };

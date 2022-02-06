@@ -4,6 +4,8 @@
 
 #include "PlayerStateBase.h"
 
+#include "DataInlineSubOwner.h"
+
 #include "JumpPlayerState.generated.h"
 
 /**
@@ -11,6 +13,8 @@
  */
 
 class UMainCharacterMovementComponent;
+
+struct FMovementComponentData;
 
 UCLASS()
 class UJumpPlayerState : public UPlayerStateBase
@@ -22,8 +26,15 @@ public:
 	UJumpPlayerState();
 
 	void OnStateBeginPlay() override;
+	void OnStateInitialized() override;
+	void OnStateUpdate(float deltaTime) override;
 
 	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) override;
 
-	void OnStateUpdate(float deltaTime) override;
+private:
+	DataInlineSubOwner<FMovementComponentData> movementComponentData;
+
+	TWeakObjectPtr<UPlayerStateBase> movementPlayerState;
+
+	bool isOneFramePassed;
 };

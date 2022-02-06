@@ -78,7 +78,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	UMainCharacterComponentGroup* componentGroup;
 
-	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMainCharacterData* data;
 
 	DataInlineSubOwner<FMovementComponentData> movementComponentData;

@@ -31,6 +31,7 @@ public:
 	}
 
 	int32 GetId() { return id; }
+	bool IsDataAvailable() { return data != nullptr; }
 
 private:
 	int32 id = -1;

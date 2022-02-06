@@ -29,7 +29,7 @@ public:
 
 	UPlayerStateBase();
 
-	virtual void Init(UPlayerStateManager* NewPlayerStateManager, TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup);
+	void Init(UPlayerStateManager* NewPlayerStateManager, TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup);
 
 	virtual bool IsStateTransitionOutAllowed(EPlayerState newState) { return true; }
 	virtual bool IsStateTransitionInAllowed(EPlayerState previousState) { return true; }
@@ -37,6 +37,7 @@ public:
 	virtual bool IsStateTransitionOutAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState) { return true; }
 	virtual bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) { return true; }
 
+	virtual void OnStateInitialized() {}
 	virtual void OnStateBeginPlay() {}
 	virtual void OnStateUpdate(float deltaTime) {}
 	virtual void OnStateEndPlay() {}

@@ -45,6 +45,8 @@ void APlayerMainController::BeginPlay()
 	horizontalMovementInputHandler->BindAxisFunction(character, &AMainCharacter::SetHorizontalMoveAxis);
 	verticalMovementInputHandler->BindAxisFunction(character, &AMainCharacter::SetVerticalMoveAxis);
 
+	// FIXME: Do you know how to use functions?
+
 	InputComponent->BindAction(TEXT("Move_Left"), EInputEvent::IE_Pressed, horizontalMovementInputHandler, &UUserActionAndAxisInputHandler::HandleNegativeInputPressed);
 	InputComponent->BindAction(TEXT("Move_Left"), EInputEvent::IE_Released, horizontalMovementInputHandler, &UUserActionAndAxisInputHandler::HandleNegativeInputReleased);
 	InputComponent->BindAction(TEXT("Move_Right"), EInputEvent::IE_Pressed, horizontalMovementInputHandler, &UUserActionAndAxisInputHandler::HandlePositiveInputPressed);
@@ -66,6 +68,12 @@ void APlayerMainController::BeginPlay()
 
 	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Crouch"), EInputEvent::IE_Pressed, character, &AMainCharacter::HandleActionInput, EUserInputType::CROUCH_INPUT, EInputEvent::IE_Pressed);
 	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Crouch"), EInputEvent::IE_Released, character, &AMainCharacter::HandleActionInput, EUserInputType::CROUCH_INPUT, EInputEvent::IE_Released);
+
+	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("ChangeWeapon_Previous"), EInputEvent::IE_Pressed, character, &AMainCharacter::HandleActionInput, EUserInputType::CHANGE_WEAPON_PREVIOUS, EInputEvent::IE_Pressed);
+	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("ChangeWeapon_Previous"), EInputEvent::IE_Released, character, &AMainCharacter::HandleActionInput, EUserInputType::CHANGE_WEAPON_PREVIOUS, EInputEvent::IE_Released);
+
+	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("ChangeWeapon_Next"), EInputEvent::IE_Pressed, character, &AMainCharacter::HandleActionInput, EUserInputType::CHANGE_WEAPON_NEXT, EInputEvent::IE_Pressed);
+	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("ChangeWeapon_Next"), EInputEvent::IE_Released, character, &AMainCharacter::HandleActionInput, EUserInputType::CHANGE_WEAPON_NEXT, EInputEvent::IE_Released);
 
 	// Handle Look Input
 

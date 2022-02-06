@@ -8,6 +8,8 @@
 
 #include <type_traits>
 
+#include "EditorUtilities.h"
+
 /**
  * 
  */
@@ -22,6 +24,12 @@ public:
 	void BecomeSubOwner(DataSubOwner<DataType>* dataSubOwner)
 	{
 		checkf(dataSubOwner, TEXT("DataSubOwner is null"));
+
+		if(dataSubOwner->IsDataAvailable())
+		{
+			LOG_TO_SCREEN("ERROR: Data is not null, it may be already a data sub owner! BecomeSubOwner is returned!");
+			return;
+		}
 
 		int32 id = -1;
 

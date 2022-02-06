@@ -10,7 +10,7 @@
 
 #include "MainCharacterData.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class UMainCharacterData : public UObject
 {
 public:
@@ -39,7 +39,7 @@ public:
 
 private:
 
-	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Movement", BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	FMovementComponentData movementComponentData;
 
 	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))

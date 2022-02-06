@@ -193,6 +193,8 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 		
 	updatedPos = FindNonCollidingClosestPosition(currentPos, updatedPos);
 
+	DEBUG_CAPSULE(moveableComponent);
+
 	moveableComponent->SetWorldLocationAndRotation(updatedPos, data->Rotation);
 }
 
