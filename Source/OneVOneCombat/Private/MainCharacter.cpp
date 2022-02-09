@@ -11,7 +11,8 @@
 
 #include "MainCharacter/MainCharacterData.h"
 
-#include "MainCharacter/MovementComponentData.h"
+#include "MainCharacter/CharacterInputData.h"
+#include "MainCharacter/AnimationRelatedData.h"
 
 #include "EditorUtilities.h"
 
@@ -19,7 +20,6 @@
 AMainCharacter::AMainCharacter()
 	: Super()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = TG_PrePhysics;
 
@@ -48,7 +48,8 @@ void AMainCharacter::BeginPlay()
 
 	movementComponent->SetMoveableComponent(capsuleCollider);
 
-	data->movementComponentDataOwner.BecomeSubOwner(&movementComponentData);
+	data->characterInputDataOwner.BecomeSubOwner(&inputData);
+	data->animationRelatedDataOwner.BecomeSubOwner(&animationRelatedData);
 }
 
 // Called every frame
@@ -64,13 +65,20 @@ void AMainCharacter::Tick(float DeltaTime)
 		{
 			const FTransform WorldSpaceRootMotionTransform = SkeletalMeshComp1->ConvertLocalRootMotionToWorld(RootMotion.GetRootMotionTransform());
 			FQuat NewRotation = WorldSpaceRootMotionTransform.GetRotation() * GetRootComponent()->GetComponentRotation().Quaternion();
-			movementComponentData.data->movementDelta = WorldSpaceRootMotionTransform.GetLocation();
+			animationRelatedData.data->rootMotionMoveDelta = WorldSpaceRootMotionTransform.GetLocation();
+			animationRelatedData.data->isRootMotionBeingUsed = true;
+		}
+		else
+		{
+			animationRelatedData.data->isRootMotionBeingUsed = false;
 		}
 	}
+	else
+	{
+		animationRelatedData.data->isRootMotionBeingUsed = false;
+	}
 
-	movementComponentData.data->inputMove = movementInput; // FIXME: Delete this, just for testing at nights!
-
-	FQuat x = cameraBoom->GetComponentRotation().Quaternion() * FQuat::MakeFromEuler(FVector(0.f, lookInput.Y, 0.f));
+	FQuat x = cameraBoom->GetComponentRotation().Quaternion() * FQuat::MakeFromEuler(FVector(0.f, inputData.data->rawRotateInput.Y, 0.f));
 	
 	FQuat swing;
 	FQuat twist;
@@ -84,8 +92,6 @@ void AMainCharacter::Tick(float DeltaTime)
 	twist = FQuat::MakeFromEuler(e);
 
 	cameraBoom->SetWorldRotation(swing * twist);
-
-	movementComponentData.data->Rotation = FQuat::MakeFromEuler(FVector(0.f, 0.f, lookInput.X)) * GetRootComponent()->GetComponentRotation().Quaternion();
 }
 
 // Called to bind functionality to input
@@ -96,22 +102,22 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void AMainCharacter::SetHorizontalMoveAxis(float value)
 {
-	movementInput.X = value;
+	inputData.data->rawMoveInput.X = value;
 }
 
 void AMainCharacter::SetVerticalMoveAxis(float value)
 {
-	movementInput.Y = value;
+	inputData.data->rawMoveInput.Y = value;
 }
 
 void AMainCharacter::SetHorizontalLookAxis(float value)
 {
-	lookInput.X = value * 10.f;
+	inputData.data->rawRotateInput.X = value * 10.f;
 }
 
 void AMainCharacter::SetVerticalLookAxis(float value)
 {
-	lookInput.Y = value * 10.f;
+	inputData.data->rawRotateInput.Y = value * 10.f;
 }
 
 void AMainCharacter::HandleActionInput(EUserInputType inputType, EInputEvent inputEvent)

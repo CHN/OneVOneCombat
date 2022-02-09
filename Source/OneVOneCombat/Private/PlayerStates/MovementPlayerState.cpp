@@ -7,10 +7,18 @@
 #include "MainCharacter/MainCharacterComponentGroup.h"
 #include "MainCharacter/MainCharacterData.h"
 
+#include "MainCharacter/AnimationRelatedData.h"
+
 UMovementPlayerState::UMovementPlayerState()
 {
 	playerState = EPlayerState::MOVE;
 }
+
+void UMovementPlayerState::OnStateInitialized()
+{
+	characterData->animationRelatedDataOwner.BecomeSubOwner(&animationRelatedData);
+}
+
 
 void UMovementPlayerState::OnStateBeginPlay()
 {
@@ -22,6 +30,6 @@ void UMovementPlayerState::OnStateUpdate(float deltaTime)
 {
 	if (!movementComponent->IsMovementBeingApplied())
 	{
-		movementComponent->MoveByDelta(deltaTime, characterData->GetMovementDelta(), characterData->GetCameraRotation());
+		movementComponent->MoveByDelta(deltaTime, animationRelatedData.data->rootMotionMoveDelta, FQuat::MakeFromEuler(FVector(0.f, 0.f, characterData->GetRawRotateInput().X)));
 	}
 }

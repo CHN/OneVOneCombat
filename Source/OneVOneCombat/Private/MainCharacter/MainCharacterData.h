@@ -6,6 +6,9 @@
 
 #include "MovementComponentData.h"
 #include "WalkableGroundPropertiesData.h"
+#include "CharacterInputData.h"
+#include "CharacterStateData.h"
+#include "AnimationRelatedData.h"
 #include "DataOwner.h"
 
 #include "MainCharacterData.generated.h"
@@ -19,8 +22,11 @@ public:
 
 	UMainCharacterData();
 
+	DataOwner<FCharacterInputData> characterInputDataOwner;
 	DataOwner<FMovementComponentData> movementComponentDataOwner;
 	DataOwner<FWalkableGroundPropertiesData> walkableGroundPropertiesDataOwner;
+	DataOwner<FCharacterStateData> characterStateDataOwner;
+	DataOwner<FAnimationRelatedData> animationRelatedDataOwner;
 
 	inline bool IsGrounded() const
 	{
@@ -32,21 +38,35 @@ public:
 		return movementComponentData.movementDelta;
 	}
 
-	inline const FQuat& GetCameraRotation() const
+	inline const FQuat& GetCurrentRotation() const
 	{
-		return movementComponentData.Rotation;
+		return movementComponentData.currentRotation;
 	}
 
-	inline const FVector2D& GetInputMove() const
+	inline const FVector& GetRawMoveInput() const
 	{
-		return movementComponentData.inputMove;
+		return characterInputData.rawMoveInput;
+	}
+	
+	inline const FVector& GetRawRotateInput() const
+	{
+		return characterInputData.rawRotateInput;
 	}
 
 private:
+
+	UPROPERTY(EditAnywhere, Category = "Input", BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	FCharacterInputData characterInputData;
 
 	UPROPERTY(EditAnywhere, Category = "Movement", BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	FMovementComponentData movementComponentData;
 
 	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	FWalkableGroundPropertiesData walkableGroundPropertiesData;
+
+	UPROPERTY(EditAnywhere, Category = "State", meta = (AllowPrivateAccess = "true"))
+	FCharacterStateData characterStateData;
+		
+	UPROPERTY(EditAnywhere, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+	FAnimationRelatedData animationRelatedData;
 };

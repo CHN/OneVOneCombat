@@ -29,8 +29,7 @@ void UJumpPlayerState::OnStateInitialized()
 
 void UJumpPlayerState::OnStateBeginPlay()
 {
-	
-	movementComponent->AddVelocity(FVector::UpVector * 500.f + characterData->GetCameraRotation() * FVector::RightVector * 400.f);
+	movementComponent->AddVelocity(FVector::UpVector * 500.f + characterData->GetCurrentRotation() * FVector::RightVector * 400.f);
 
 	movementComponentData.data->isJumping = true;
 	isOneFramePassed = false;
@@ -43,7 +42,7 @@ bool UJumpPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueO
 
 void UJumpPlayerState::OnStateUpdate(float deltaTime)
 {
-	movementComponent->MoveByDelta(deltaTime, characterData->GetCameraRotation() * FVector(characterData->GetInputMove().X * -3.f, FMath::Min(characterData->GetInputMove().Y * 6.f, 0.f), 0.f), characterData->GetCameraRotation()); // FIXME: I am sleepy, so testing code was added directly
+	movementComponent->MoveByDelta(deltaTime, characterData->GetCurrentRotation() * FVector(characterData->GetRawMoveInput().X * -3.f, FMath::Min(characterData->GetRawMoveInput().Y * 6.f, 0.f), 0.f), FQuat::MakeFromEuler(FVector(0.f, 0.f, characterData->GetRawRotateInput().X))); // FIXME: I am sleepy, so testing code was added directly
 
 	if (isOneFramePassed && characterData->IsGrounded())
 	{

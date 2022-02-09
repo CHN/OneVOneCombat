@@ -4,6 +4,8 @@
 
 #include "PlayerStateBase.h"
 
+#include "DataInlineSubOwner.h"
+
 #include "MovementPlayerState.generated.h"
 
 /**
@@ -11,6 +13,8 @@
  */
 
 class UMainCharacterMovementComponent;
+
+struct FAnimationRelatedData;
 
 UCLASS()
 class UMovementPlayerState : public UPlayerStateBase
@@ -21,9 +25,11 @@ public:
 
 	UMovementPlayerState();
 
+	void OnStateInitialized() override;
 	void OnStateBeginPlay() override;
 	void OnStateUpdate(float deltaTime) override;
 
 private:
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
+	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;
 };

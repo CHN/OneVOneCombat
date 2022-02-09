@@ -13,11 +13,19 @@ UMainCharacterMovementComponent::UMainCharacterMovementComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	//data->gravity = FCachedVector(0, 800, -980.f);
 	groundHitSweepQueryParams = FCollisionQueryParams(SCENE_QUERY_STAT(groundHitSweepQueryParams), false);
-	//data->movementTargetPosition = FVector::ZeroVector;
-	//data->movementDelta = FVector::ZeroVector;
-	//data->movementDuration = 0.f;
+}
+
+void UMainCharacterMovementComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	auto* characterData = Cast<AMainCharacter>(GetOwner())->GetCharacterData();
+
+	characterData->movementComponentDataOwner.BecomeSubOwner(this);
+	characterData->walkableGroundPropertiesDataOwner.BecomeSubOwner(&walkableGroundPropertiesSubOwner);
+
+	data->gravity = FCachedVector(0, 0, -980.f);
 }
 
 void UMainCharacterMovementComponent::SetMoveableComponent(UPrimitiveComponent* NewMoveableComponent)
@@ -26,7 +34,10 @@ void UMainCharacterMovementComponent::SetMoveableComponent(UPrimitiveComponent* 
 	groundHitSweepQueryParams.ClearIgnoredActors();
 	groundHitSweepQueryParams.AddIgnoredActor(moveableComponent->GetOwner());
 
-	data->gravity = FCachedVector(0, 0, -980.f);
+	data->movementTargetPosition = FVector::ZeroVector;
+	data->movementDelta = FVector::ZeroVector;
+	data->movementDuration = 0.f;
+	data->currentRotation = moveableComponent->GetComponentRotation().Quaternion();
 }
 
 static float CalculateDistanceByDirection(const FVector& dir, const FVector& pos) // TODO: Unused
@@ -34,7 +45,7 @@ static float CalculateDistanceByDirection(const FVector& dir, const FVector& pos
 	return FVector::DotProduct(pos, dir.GetUnsafeNormal()) * -1.f;
 }
 
-void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FVector& delta, const FQuat& rotation, bool constrainInputToGround)
+void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FVector& delta, const FQuat& deltaRotation, bool constrainInputToGround)
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when MoveByDelta is invoked"));
 	
@@ -45,8 +56,7 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 	data->movementDuration = duration;
 	data->currentDuration = data->movementDuration;
 	data->constrainInputToGround = constrainInputToGround;
-
-	data->Rotation = rotation;
+	data->currentRotation = deltaRotation * data->currentRotation;
 }
 
 void UMainCharacterMovementComponent::AddVelocity(const FVector& NewVelocity)
@@ -134,7 +144,7 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 	const FVector gravityAppliedPos = updatedPos + data->velocity * deltaTime;
 	const FVector groundInflation = data->gravity.GetNormalizedVector() * -2.f; // 0.1 => inflate for not getting hit by ground
 
-	if (world->SweepSingleByChannel(NO_CONST_REF groundHitResult, updatedPos, gravityAppliedPos - groundInflation, data->Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
+	if (world->SweepSingleByChannel(NO_CONST_REF groundHitResult, updatedPos, gravityAppliedPos - groundInflation, data->currentRotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
 		updatedPos = groundHitResult.Location + groundInflation;
 
@@ -158,7 +168,7 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	FHitResult movementHitResult(1.f);
 
-	if (world->SweepSingleByChannel(NO_CONST_REF movementHitResult, updatedPos, movementAppliedPos, data->Rotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
+	if (world->SweepSingleByChannel(NO_CONST_REF movementHitResult, updatedPos, movementAppliedPos, data->currentRotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
 		const float nonAppliedDeltaPosition = deltaVelocity.Size() * deltaTime - (updatedPos - movementHitResult.Location).Size();
 		updatedPos = movementHitResult.Location + movementHitResult.ImpactNormal * 0.1f;
@@ -195,7 +205,7 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	DEBUG_CAPSULE(moveableComponent);
 
-	moveableComponent->SetWorldLocationAndRotation(updatedPos, data->Rotation);
+	moveableComponent->SetWorldLocationAndRotation(updatedPos, data->currentRotation);
 }
 
 void UMainCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -203,14 +213,4 @@ void UMainCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick 
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	UpdateMoveableComponent(DeltaTime);
-}
-
-void UMainCharacterMovementComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	auto* characterData = Cast<AMainCharacter>(GetOwner())->GetCharacterData();
-
-	characterData->movementComponentDataOwner.BecomeSubOwner(this);
-	characterData->walkableGroundPropertiesDataOwner.BecomeSubOwner(&walkableGroundPropertiesSubOwner);
 }

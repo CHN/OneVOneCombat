@@ -15,9 +15,9 @@ class UInputQueueSystem;
 class UMainCharacterData;
 class UPlayerStateManager;
 class UMainCharacterComponentGroup;
-class UMainCharacterMovementComponent;
 
-struct FMovementComponentData;
+struct FCharacterInputData;
+struct FAnimationRelatedData;
 
 enum class EUserInputType : uint8;
 
@@ -41,12 +41,6 @@ public:
 	void SetVerticalLookAxis(float value);
 
 	inline UMainCharacterData* const GetCharacterData() const { return data; }
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	FVector2D movementInput;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	FVector2D lookInput;
 
 	void HandleActionInput(EUserInputType inputType, EInputEvent inputEvent);
 	
@@ -81,5 +75,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMainCharacterData* data;
 
-	DataInlineSubOwner<FMovementComponentData> movementComponentData;
+	DataInlineSubOwner<FCharacterInputData> inputData;
+	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;
 };

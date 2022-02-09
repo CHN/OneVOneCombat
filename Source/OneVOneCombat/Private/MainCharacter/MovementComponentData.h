@@ -15,8 +15,6 @@ struct FMovementComponentData
 	UPROPERTY(VisibleAnywhere)
 	FCachedVector gravity;
 
-	FQuat Rotation;
-
 	UPROPERTY(VisibleAnywhere)
 	FVector velocity;
 
@@ -32,6 +30,9 @@ struct FMovementComponentData
 	UPROPERTY(VisibleAnywhere)
 	float currentDuration;
 
+	UPROPERTY(VisibleAnywhere)
+	FQuat currentRotation;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool isGrounding;
 
@@ -43,7 +44,4 @@ struct FMovementComponentData
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool isJumping; // Will be moved to another data group
-
-	UPROPERTY(VisibleAnywhere)
-	FVector2D inputMove; // FIXME: Move to input data struct!
 };

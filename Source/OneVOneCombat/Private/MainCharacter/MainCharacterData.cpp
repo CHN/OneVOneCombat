@@ -6,7 +6,10 @@
 UMainCharacterData::UMainCharacterData()
 	: Super(), 
 	movementComponentDataOwner(&movementComponentData),
-	walkableGroundPropertiesDataOwner(&walkableGroundPropertiesData)
+	walkableGroundPropertiesDataOwner(&walkableGroundPropertiesData),
+	characterInputDataOwner(&characterInputData),
+	characterStateDataOwner(&characterStateData),
+	animationRelatedDataOwner(&animationRelatedData)
 {
 	
 }
