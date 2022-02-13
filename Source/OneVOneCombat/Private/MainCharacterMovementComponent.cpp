@@ -40,11 +40,6 @@ void UMainCharacterMovementComponent::SetMoveableComponent(UPrimitiveComponent* 
 	data->currentRotation = moveableComponent->GetComponentRotation().Quaternion();
 }
 
-static float CalculateDistanceByDirection(const FVector& dir, const FVector& pos) // TODO: Unused
-{
-	return FVector::DotProduct(pos, dir.GetUnsafeNormal()) * -1.f;
-}
-
 void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FVector& delta, const FQuat& deltaRotation, bool constrainInputToGround)
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when MoveByDelta is invoked"));
