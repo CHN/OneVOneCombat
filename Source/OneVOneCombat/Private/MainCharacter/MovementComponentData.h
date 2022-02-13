@@ -41,7 +41,4 @@ struct FMovementComponentData
 
 	UPROPERTY(VisibleAnywhere)
 	bool constrainInputToGround;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool isJumping; // Will be moved to another data group
 };

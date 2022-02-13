@@ -8,7 +8,7 @@
 #include "../MainCharacterMovementComponent.h"
 #include "MainCharacter/MainCharacterData.h"
 #include "MainCharacter/MainCharacterComponentGroup.h"
-#include "MainCharacter/MovementComponentData.h"
+#include "MainCharacter/CharacterStateData.h"
 #include "PlayerStateManager.h"
 #include "InputQueueOutputState.h"
 
@@ -22,7 +22,7 @@ UJumpPlayerState::UJumpPlayerState()
 
 void UJumpPlayerState::OnStateInitialized()
 {
-	characterData->movementComponentDataOwner.BecomeSubOwner(&movementComponentData);
+	characterData->characterStateDataOwner.BecomeSubOwner(&characterStateData);
 	movementPlayerState = playerStateManager->GetPlayerStates()[static_cast<uint32>(EPlayerState::MOVE)];
 	movementComponent = characterComponentGroup->GetMovementComponent();
 }
@@ -31,7 +31,7 @@ void UJumpPlayerState::OnStateBeginPlay()
 {
 	movementComponent->AddVelocity(FVector::UpVector * 500.f + characterData->GetCurrentRotation() * FVector::RightVector * 400.f);
 
-	movementComponentData.data->isJumping = true;
+	characterStateData.data->isJumping = true;
 	isOneFramePassed = false;
 }
 
@@ -46,7 +46,7 @@ void UJumpPlayerState::OnStateUpdate(float deltaTime)
 
 	if (isOneFramePassed && characterData->IsGrounded())
 	{
-		movementComponentData.data->isJumping = false;
+		characterStateData.data->isJumping = false;
 		EndState(EPlayerState::MOVE);
 	}
 

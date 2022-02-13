@@ -14,7 +14,7 @@
 
 class UMainCharacterMovementComponent;
 
-struct FMovementComponentData;
+struct FCharacterStateData;
 
 UCLASS()
 class UJumpPlayerState : public UPlayerStateBase
@@ -32,7 +32,7 @@ public:
 	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) override;
 
 private:
-	DataInlineSubOwner<FMovementComponentData> movementComponentData;
+	DataInlineSubOwner<FCharacterStateData> characterStateData;
 
 	TWeakObjectPtr<UPlayerStateBase> movementPlayerState;
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;

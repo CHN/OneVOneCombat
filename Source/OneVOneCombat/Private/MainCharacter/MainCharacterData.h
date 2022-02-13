@@ -64,9 +64,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	FWalkableGroundPropertiesData walkableGroundPropertiesData;
 
-	UPROPERTY(EditAnywhere, Category = "State", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "State", BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	FCharacterStateData characterStateData;
 		
-	UPROPERTY(EditAnywhere, Category = "Animation", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Animation", BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	FAnimationRelatedData animationRelatedData;
 };
