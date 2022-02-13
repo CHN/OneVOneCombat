@@ -11,6 +11,7 @@ enum class EPlayerState : uint8
 {
 	MOVE,
 	JUMP,
+	MELEE_ATTACK,
 
 	END_OF_ENUM
 };

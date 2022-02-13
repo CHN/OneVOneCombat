@@ -9,6 +9,7 @@
 
 #include "PlayerStates/JumpPlayerState.h"
 #include "PlayerStates/MovementPlayerState.h"
+#include "PlayerStates/SwordAttackPlayerState.h"
 
 #include "EditorUtilities.h"
 
@@ -30,6 +31,11 @@ void UPlayerStateManager::Init(TWeakObjectPtr<UMainCharacterData> characterData,
 	TObjectPtr<UMovementPlayerState> movementPlayerState = NewObject<UMovementPlayerState>(this);
 	movementPlayerState->Init(this, characterData, characterComponentGroup);
 	playerStates[static_cast<uint8>(EPlayerState::MOVE)] = movementPlayerState;
+
+	TObjectPtr<USwordAttackPlayerState> swordAttackPlayerState = NewObject<USwordAttackPlayerState>(this);
+	swordAttackPlayerState->Init(this, characterData, characterComponentGroup);
+	playerStates[static_cast<uint8>(EPlayerState::MELEE_ATTACK)] = swordAttackPlayerState;
+	inputOutputPlayerStates[static_cast<uint8>(EInputQueueOutputState::MELEE_ATTACK)] = swordAttackPlayerState;
 
 	for (auto playerState : playerStates)
 	{

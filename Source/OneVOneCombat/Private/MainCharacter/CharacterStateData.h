@@ -19,4 +19,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool isJumping;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool isSwordAttackWanted;
 };

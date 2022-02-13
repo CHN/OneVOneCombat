@@ -28,14 +28,18 @@ public:
 	void OnStateBeginPlay() override;
 	void OnStateInitialized() override;
 	void OnStateUpdate(float deltaTime) override;
+	void OnStateEndPlay() override;
+	void OnStateInterrupted() override;
 
 	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) override;
+
+	bool IsStateTransitionOutAllowed(EPlayerState newState) override;
 
 private:
 	DataInlineSubOwner<FCharacterStateData> characterStateData;
 
-	TWeakObjectPtr<UPlayerStateBase> movementPlayerState;
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
+	TWeakObjectPtr<UPlayerStateBase> swordAttackPlayerState; // FIXME: ANTIPATTERN - There should be new state with named as JumpSwordAttackPlayerState. Just testing
 
 	bool isOneFramePassed;
 };

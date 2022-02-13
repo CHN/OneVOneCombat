@@ -12,6 +12,8 @@
 #include "PlayerStateManager.h"
 #include "InputQueueOutputState.h"
 
+#include "SwordAttackPlayerState.h" // FIXME: ANTIPATTERN - There should be new state with named as JumpSwordAttackPlayerState. Just testing
+
 #include "EditorUtilities.h"
 
 UJumpPlayerState::UJumpPlayerState()
@@ -23,8 +25,8 @@ UJumpPlayerState::UJumpPlayerState()
 void UJumpPlayerState::OnStateInitialized()
 {
 	characterData->characterStateDataOwner.BecomeSubOwner(&characterStateData);
-	movementPlayerState = playerStateManager->GetPlayerStates()[static_cast<uint32>(EPlayerState::MOVE)];
 	movementComponent = characterComponentGroup->GetMovementComponent();
+	swordAttackPlayerState = playerStateManager->GetPlayerStates()[static_cast<uint32>(EPlayerState::MELEE_ATTACK)];
 }
 
 void UJumpPlayerState::OnStateBeginPlay()
@@ -40,6 +42,11 @@ bool UJumpPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueO
 	return previousState != EPlayerState::JUMP && characterData->IsGrounded();
 }
 
+bool UJumpPlayerState::IsStateTransitionOutAllowed(EPlayerState newState)
+{
+	return newState == EPlayerState::MELEE_ATTACK;
+}
+
 void UJumpPlayerState::OnStateUpdate(float deltaTime)
 {
 	movementComponent->MoveByDelta(deltaTime, characterData->GetCurrentRotation() * FVector(characterData->GetRawMoveInput().X * -3.f, FMath::Min(characterData->GetRawMoveInput().Y * 6.f, 0.f), 0.f), FQuat::MakeFromEuler(FVector(0.f, 0.f, characterData->GetRawRotateInput().X))); // FIXME: I am sleepy, so testing code was added directly
@@ -51,4 +58,14 @@ void UJumpPlayerState::OnStateUpdate(float deltaTime)
 	}
 
 	isOneFramePassed = true;
+}
+
+void UJumpPlayerState::OnStateEndPlay()
+{
+	characterStateData.data->isJumping = false;
+}
+
+void UJumpPlayerState::OnStateInterrupted()
+{
+	characterStateData.data->isJumping = false;
 }

@@ -10,7 +10,7 @@ enum class EInputQueueOutputState : uint8
 	WALK,
 	JUMP,
 	CROUCH,
-	ATTACK,
+	MELEE_ATTACK,
 
 	END_OF_ENUM
 };
