@@ -139,7 +139,7 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 	const FVector gravityAppliedPos = updatedPos + data->velocity * deltaTime;
 	const FVector groundInflation = data->gravity.GetNormalizedVector() * -2.f; // 0.1 => inflate for not getting hit by ground
 
-	if (world->SweepSingleByChannel(NO_CONST_REF groundHitResult, updatedPos, gravityAppliedPos - groundInflation, data->currentRotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
+	if (world->SweepSingleByChannel(NO_CONST_REF groundHitResult, updatedPos, gravityAppliedPos - groundInflation * 1.1f /* FIXME: Handle multiplying 1.1 with different way */, data->currentRotation, moveableComponent->GetCollisionObjectType(), moveableComponent->GetCollisionShape(), groundHitSweepQueryParams))
 	{
 		updatedPos = groundHitResult.Location + groundInflation;
 
