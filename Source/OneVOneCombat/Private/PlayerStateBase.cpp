@@ -13,10 +13,11 @@ UPlayerStateBase::UPlayerStateBase()
 	playerState = EPlayerState::END_OF_ENUM;
 }
 
-void UPlayerStateBase::Init(UPlayerStateManager* NewPlayerStateManager, TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup)
+void UPlayerStateBase::Init(UPlayerStateManager* NewPlayerStateManager, TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UCharacterState> NewCharacterState, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup)
 {
 	playerStateManager = NewPlayerStateManager;
 	characterData = NewCharacterData;
+	characterState = NewCharacterState;
 	characterComponentGroup = NewCharacterComponentGroup;
 }
 
@@ -28,7 +29,7 @@ void UPlayerStateBase::StartState_Internal()
 
 void UPlayerStateBase::EndState_Internal()
 {
-	if (isStatePlaying)
+	if (IsStatePlaying())
 	{
 		OnStateInterrupted();
 	}

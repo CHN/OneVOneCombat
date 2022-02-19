@@ -29,6 +29,10 @@ public:
 	void OnStateBeginPlay() override;
 	void OnStateUpdate(float deltaTime) override;
 
+
+	bool IsStateInterruptible(EPlayerState newState) override;
+	bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState) override;
+
 private:
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;

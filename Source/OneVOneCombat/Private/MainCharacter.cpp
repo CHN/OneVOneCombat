@@ -31,6 +31,7 @@ AMainCharacter::AMainCharacter()
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>("CapsuleCollider");
 
 	data = CreateDefaultSubobject<UMainCharacterData>("MainCharacterData");
+	characterState = CreateDefaultSubobject<UCharacterState>("CharacterState");
 }
 
 // Called when the game starts or when spawned
@@ -42,7 +43,7 @@ void AMainCharacter::BeginPlay()
 
 	auto movementComponent = componentGroup->GetMovementComponent();
 
-	playerStateManager->Init(data, componentGroup);
+	playerStateManager->Init(data, characterState, componentGroup);
 
 	inputQueueSystem->inputQueueSystemEvent.BindUObject(playerStateManager, &UPlayerStateManager::OnInputQueueOutputStateTriggered);
 

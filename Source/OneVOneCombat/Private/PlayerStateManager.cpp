@@ -5,6 +5,7 @@
 
 #include "InputQueueOutputState.h"
 #include "MainCharacter/MainCharacterData.h"
+#include "MainCharacter/CharacterState.h"
 #include "MainCharacter/MainCharacterComponentGroup.h"
 
 #include "PlayerStates/JumpPlayerState.h"
@@ -18,31 +19,43 @@ UPlayerStateManager::UPlayerStateManager()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UPlayerStateManager::Init(TWeakObjectPtr<UMainCharacterData> characterData, TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup)
+template<typename T>
+void UPlayerStateManager::CreatePlayerState(EPlayerState playerState)
 {
+	TObjectPtr<T> state = NewObject<T>(this);
+	state->Init(this, characterData, characterState, characterComponentGroup);
+	playerStates[static_cast<uint8>(playerState)] = state;
+}
+
+template<typename T>
+void UPlayerStateManager::CreatePlayerStateWithInput(EPlayerState playerState, EInputQueueOutputState inputQueueOutputState)
+{
+	TObjectPtr<T> state = NewObject<T>(this);
+	state->Init(this, characterData, characterState, characterComponentGroup);
+	playerStates[static_cast<uint8>(playerState)] = state;
+	inputOutputPlayerStates[static_cast<uint8>(inputQueueOutputState)] = state;
+}
+
+
+void UPlayerStateManager::Init(TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UCharacterState> NewCharacterState, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup)
+{
+	characterData = NewCharacterData;
+	characterState = NewCharacterState;
+	characterComponentGroup = NewCharacterComponentGroup;
+
 	playerStates.SetNum(static_cast<uint8>(EPlayerState::END_OF_ENUM));
 	inputOutputPlayerStates.SetNum(static_cast<uint8>(EInputQueueOutputState::END_OF_ENUM));
 
-	TObjectPtr<UJumpPlayerState> jumpPlayerState = NewObject<UJumpPlayerState>(this);
-	jumpPlayerState->Init(this, characterData, characterComponentGroup);
-	playerStates[static_cast<uint8>(EPlayerState::JUMP)] = jumpPlayerState;
-	inputOutputPlayerStates[static_cast<uint8>(EInputQueueOutputState::JUMP)] = jumpPlayerState;
-
-	TObjectPtr<UMovementPlayerState> movementPlayerState = NewObject<UMovementPlayerState>(this);
-	movementPlayerState->Init(this, characterData, characterComponentGroup);
-	playerStates[static_cast<uint8>(EPlayerState::MOVE)] = movementPlayerState;
-
-	TObjectPtr<USwordAttackPlayerState> swordAttackPlayerState = NewObject<USwordAttackPlayerState>(this);
-	swordAttackPlayerState->Init(this, characterData, characterComponentGroup);
-	playerStates[static_cast<uint8>(EPlayerState::MELEE_ATTACK)] = swordAttackPlayerState;
-	inputOutputPlayerStates[static_cast<uint8>(EInputQueueOutputState::MELEE_ATTACK)] = swordAttackPlayerState;
+	CreatePlayerState<UMovementPlayerState>(EPlayerState::MOVE);
+	CreatePlayerStateWithInput<UJumpPlayerState>(EPlayerState::JUMP, EInputQueueOutputState::JUMP);
+	CreatePlayerStateWithInput<USwordAttackPlayerState>(EPlayerState::MELEE_ATTACK, EInputQueueOutputState::MELEE_ATTACK);
 
 	for (auto playerState : playerStates)
 	{
 		playerState->OnStateInitialized();
 	}
 
-	currentState = movementPlayerState;
+	currentState = playerStates[static_cast<uint8>(EPlayerState::MOVE)];
 	currentState->StartState_Internal();
 }
 
@@ -63,7 +76,7 @@ void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputStat
 
 	if (currentState.IsValid())
 	{
-		isCurrentStateChangeable = currentState->IsStateTransitionOutAllowedByInputStateOutput(inputOutputState, newPlayerState);
+		isCurrentStateChangeable = currentState->IsStateInterruptibleByInputStateOutput(inputOutputState, newPlayerState);
 		previousPlayerState = currentState->GetPlayerState();
 	}
 	else

@@ -12,6 +12,7 @@
 
 enum class EInputQueueOutputState : uint8;
 class UMainCharacterData;
+class UCharacterState;
 class UMainCharacterMovementComponent;
 class UMainCharacterComponentGroup;
 
@@ -24,7 +25,7 @@ public:
 
 	UPlayerStateManager();
 
-	void Init(TWeakObjectPtr<UMainCharacterData> characterData, TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup);
+	void Init(TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UCharacterState> NewCharacterState, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup);
 	void OnInputQueueOutputStateTriggered(EInputQueueOutputState inputOutputState);
 
 	void TryToChangeNextState(EPlayerState nextState);
@@ -33,6 +34,16 @@ public:
 private:
 
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	template<typename T>
+	void CreatePlayerState(EPlayerState playerState);
+
+	template<typename T>
+	void CreatePlayerStateWithInput(EPlayerState playerState, EInputQueueOutputState inputQueueOutputState);
+
+	TWeakObjectPtr<UMainCharacterData> characterData;
+	TWeakObjectPtr<UCharacterState> characterState;
+	TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup;
 
 	TArray<TWeakObjectPtr<UPlayerStateBase>> playerStates;
 	TArray<TWeakObjectPtr<UPlayerStateBase>> inputOutputPlayerStates;

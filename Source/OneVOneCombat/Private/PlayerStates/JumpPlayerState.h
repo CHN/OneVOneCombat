@@ -14,8 +14,6 @@
 
 class UMainCharacterMovementComponent;
 
-struct FCharacterStateData;
-
 UCLASS()
 class UJumpPlayerState : public UPlayerStateBase
 {
@@ -33,13 +31,10 @@ public:
 
 	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) override;
 
-	bool IsStateTransitionOutAllowed(EPlayerState newState) override;
+	bool IsStateInterruptible(EPlayerState newState) override;
 
 private:
-	DataInlineSubOwner<FCharacterStateData> characterStateData;
 
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 	TWeakObjectPtr<UPlayerStateBase> swordAttackPlayerState; // FIXME: ANTIPATTERN - There should be new state with named as JumpSwordAttackPlayerState. Just testing
-
-	bool isOneFramePassed;
 };

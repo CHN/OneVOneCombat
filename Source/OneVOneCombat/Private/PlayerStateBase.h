@@ -18,6 +18,7 @@ enum class EPlayerState : uint8
 
 enum class EInputQueueOutputState : uint8;
 class UMainCharacterData;
+class UCharacterState;
 class UMainCharacterComponentGroup;
 class UPlayerStateManager;
 
@@ -30,12 +31,12 @@ public:
 
 	UPlayerStateBase();
 
-	void Init(UPlayerStateManager* NewPlayerStateManager, TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup);
+	void Init(UPlayerStateManager* NewPlayerStateManager, TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UCharacterState> NewCharacterState, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup);
 
-	virtual bool IsStateTransitionOutAllowed(EPlayerState newState) { return true; }
+	virtual bool IsStateInterruptible(EPlayerState newState) { return false; }
 	virtual bool IsStateTransitionInAllowed(EPlayerState previousState) { return true; }
 
-	virtual bool IsStateTransitionOutAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState) { return true; }
+	virtual bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState) { return false; }
 	virtual bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) { return true; }
 
 	virtual void OnStateInitialized() {}
@@ -49,10 +50,13 @@ public:
 
 	EPlayerState GetPlayerState() const;
 
+	inline bool IsStatePlaying() const { return isStatePlaying; }
+
 protected:
 
 	EPlayerState playerState;
 	TWeakObjectPtr<UMainCharacterData> characterData;
+	TWeakObjectPtr<UCharacterState> characterState;
 	TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup;
 	UPlayerStateManager* playerStateManager;
 

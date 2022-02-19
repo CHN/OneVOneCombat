@@ -7,7 +7,7 @@
 #include "MovementComponentData.h"
 #include "WalkableGroundPropertiesData.h"
 #include "CharacterInputData.h"
-#include "CharacterStateData.h"
+#include "CharacterState.h"
 #include "AnimationRelatedData.h"
 #include "DataOwner.h"
 
@@ -25,7 +25,6 @@ public:
 	DataOwner<FCharacterInputData> characterInputDataOwner;
 	DataOwner<FMovementComponentData> movementComponentDataOwner;
 	DataOwner<FWalkableGroundPropertiesData> walkableGroundPropertiesDataOwner;
-	DataOwner<FCharacterStateData> characterStateDataOwner;
 	DataOwner<FAnimationRelatedData> animationRelatedDataOwner;
 
 	inline bool IsGrounded() const
@@ -63,9 +62,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	FWalkableGroundPropertiesData walkableGroundPropertiesData;
-
-	UPROPERTY(EditAnywhere, Category = "State", BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	FCharacterStateData characterStateData;
 		
 	UPROPERTY(EditAnywhere, Category = "Animation", BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	FAnimationRelatedData animationRelatedData;

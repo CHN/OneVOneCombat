@@ -13,6 +13,7 @@
 class UPlayerInputPollingSystem;
 class UInputQueueSystem;
 class UMainCharacterData;
+class UCharacterState;
 class UPlayerStateManager;
 class UMainCharacterComponentGroup;
 
@@ -41,6 +42,7 @@ public:
 	void SetVerticalLookAxis(float value);
 
 	inline UMainCharacterData* const GetCharacterData() const { return data; }
+	inline UCharacterState* const GetCharacterState() const { return characterState; }
 
 	void HandleActionInput(EUserInputType inputType, EInputEvent inputEvent);
 	
@@ -74,6 +76,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMainCharacterData* data;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UCharacterState* characterState;
 
 	DataInlineSubOwner<FCharacterInputData> inputData;
 	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;

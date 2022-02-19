@@ -4,7 +4,7 @@
 #include "PlayerStates/SwordAttackPlayerState.h"
 
 #include "MainCharacter/MainCharacterData.h"
-#include "MainCharacter/CharacterStateData.h"
+#include "MainCharacter/CharacterState.h"
 
 USwordAttackPlayerState::USwordAttackPlayerState()
 	: Super()
@@ -14,13 +14,12 @@ USwordAttackPlayerState::USwordAttackPlayerState()
 
 void USwordAttackPlayerState::OnStateInitialized()
 {
-	characterData->characterStateDataOwner.BecomeSubOwner(&characterStateData);
+
 }
 
 void USwordAttackPlayerState::OnStateBeginPlay()
 {
-	characterStateData.data->isSwordAttackWanted = true;
-	isOneFramePassed = false;
+	characterState->swordAttackState->SetTriggerValue(true);
 }
 
 bool USwordAttackPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState)
@@ -30,11 +29,18 @@ bool USwordAttackPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInpu
 
 void USwordAttackPlayerState::OnStateUpdate(float deltaTime)
 {
-	if (isOneFramePassed)
+	if (!characterState->swordAttackState->IsAnimationContinue())
 	{
-		characterStateData.data->isSwordAttackWanted = false;
 		EndState(EPlayerState::MOVE);
 	}
+}
 
-	isOneFramePassed = true;
+void USwordAttackPlayerState::OnStateEndPlay()
+{
+	characterState->swordAttackState->SetTriggerValue(false);
+}
+
+void USwordAttackPlayerState::OnStateInterrupted()
+{
+	characterState->swordAttackState->SetTriggerValue(false);
 }

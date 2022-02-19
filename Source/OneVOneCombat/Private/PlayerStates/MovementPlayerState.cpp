@@ -33,3 +33,13 @@ void UMovementPlayerState::OnStateUpdate(float deltaTime)
 		movementComponent->MoveByDelta(deltaTime, animationRelatedData.data->rootMotionMoveDelta, FQuat::MakeFromEuler(FVector(0.f, 0.f, characterData->GetRawRotateInput().X)));
 	}
 }
+
+bool UMovementPlayerState::IsStateInterruptible(EPlayerState newState)
+{
+	return true;
+}
+
+bool UMovementPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState)
+{
+	return true;
+}

@@ -8,7 +8,6 @@ UMainCharacterData::UMainCharacterData()
 	movementComponentDataOwner(&movementComponentData),
 	walkableGroundPropertiesDataOwner(&walkableGroundPropertiesData),
 	characterInputDataOwner(&characterInputData),
-	characterStateDataOwner(&characterStateData),
 	animationRelatedDataOwner(&animationRelatedData)
 {
 	

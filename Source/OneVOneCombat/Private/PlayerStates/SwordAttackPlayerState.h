@@ -26,11 +26,11 @@ public:
 	void OnStateBeginPlay() override;
 	void OnStateInitialized() override;
 	void OnStateUpdate(float deltaTime) override;
+	void OnStateEndPlay() override;
+	void OnStateInterrupted() override;
 
 	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) override;
 
 private:
 	DataInlineSubOwner<FCharacterStateData> characterStateData;
-
-	bool isOneFramePassed;
 };
