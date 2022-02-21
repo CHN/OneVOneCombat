@@ -36,18 +36,17 @@ AMainCharacter::AMainCharacter()
 
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay()
-{
+{	
 	Super::BeginPlay();
 
 	playerInputPollingSystem->onAnInputTriggered.BindUObject(inputQueueSystem, &UInputQueueSystem::ConsumeInputs);
 
 	auto movementComponent = componentGroup->GetMovementComponent();
+	movementComponent->SetMoveableComponent(capsuleCollider);
 
 	playerStateManager->Init(data, characterState, componentGroup);
 
 	inputQueueSystem->inputQueueSystemEvent.BindUObject(playerStateManager, &UPlayerStateManager::OnInputQueueOutputStateTriggered);
-
-	movementComponent->SetMoveableComponent(capsuleCollider);
 
 	data->characterInputDataOwner.BecomeSubOwner(&inputData);
 	data->animationRelatedDataOwner.BecomeSubOwner(&animationRelatedData);
