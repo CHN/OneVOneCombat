@@ -17,9 +17,7 @@ enum class EPlayerState : uint8
 };
 
 enum class EInputQueueOutputState : uint8;
-class UMainCharacterData;
-class UCharacterState;
-class UMainCharacterComponentGroup;
+class AMainCharacter;
 class UPlayerStateManager;
 
 UCLASS(Abstract)
@@ -31,7 +29,7 @@ public:
 
 	UPlayerStateBase();
 
-	void Init(UPlayerStateManager* NewPlayerStateManager, TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UCharacterState> NewCharacterState, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup);
+	void Init(TWeakObjectPtr<UPlayerStateManager> NewPlayerStateManager, TWeakObjectPtr<AMainCharacter> NewMainCharacter);
 
 	virtual bool IsStateInterruptible(EPlayerState newState) { return false; }
 	virtual bool IsStateTransitionInAllowed(EPlayerState previousState) { return true; }
@@ -55,10 +53,8 @@ public:
 protected:
 
 	EPlayerState playerState;
-	TWeakObjectPtr<UMainCharacterData> characterData;
-	TWeakObjectPtr<UCharacterState> characterState;
-	TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup;
-	UPlayerStateManager* playerStateManager;
+	TWeakObjectPtr<AMainCharacter> mainCharacter;
+	TWeakObjectPtr<UPlayerStateManager> playerStateManager;
 
 	void EndState(EPlayerState nextState);
 

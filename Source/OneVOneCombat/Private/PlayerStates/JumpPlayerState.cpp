@@ -7,12 +7,10 @@
 
 #include "../MainCharacterMovementComponent.h"
 #include "MainCharacter/MainCharacterData.h"
-#include "MainCharacter/MainCharacterComponentGroup.h"
 #include "MainCharacter/CharacterState.h"
 #include "PlayerStateManager.h"
 #include "InputQueueOutputState.h"
-
-#include "SwordAttackPlayerState.h" // FIXME: ANTIPATTERN - There should be new state with named as JumpSwordAttackPlayerState. Just testing
+#include "MainCharacter.h"
 
 #include "EditorUtilities.h"
 
@@ -24,8 +22,9 @@ UJumpPlayerState::UJumpPlayerState()
 
 void UJumpPlayerState::OnStateInitialized()
 {
-	movementComponent = characterComponentGroup->GetMovementComponent();
-	swordAttackPlayerState = playerStateManager->GetPlayerStates()[static_cast<uint32>(EPlayerState::MELEE_ATTACK)];
+	movementComponent = mainCharacter->GetMainMovementComponent();
+	characterData = mainCharacter->GetCharacterData();
+	characterState = mainCharacter->GetCharacterState();
 }
 
 void UJumpPlayerState::OnStateBeginPlay()

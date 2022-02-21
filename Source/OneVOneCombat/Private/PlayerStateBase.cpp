@@ -13,12 +13,10 @@ UPlayerStateBase::UPlayerStateBase()
 	playerState = EPlayerState::END_OF_ENUM;
 }
 
-void UPlayerStateBase::Init(UPlayerStateManager* NewPlayerStateManager, TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UCharacterState> NewCharacterState, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup)
+void UPlayerStateBase::Init(TWeakObjectPtr<UPlayerStateManager> NewPlayerStateManager, TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 {
 	playerStateManager = NewPlayerStateManager;
-	characterData = NewCharacterData;
-	characterState = NewCharacterState;
-	characterComponentGroup = NewCharacterComponentGroup;
+	mainCharacter = NewMainCharacter;
 }
 
 void UPlayerStateBase::StartState_Internal()

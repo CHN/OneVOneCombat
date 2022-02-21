@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+#include "AnimationFlaggedBool.h"
+
 #include "CharacterState.generated.h"
 
 /**

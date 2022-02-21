@@ -7,7 +7,6 @@
 #include "MainCharacterMovementComponent.h"
 #include "PlayerStateManager.h"
 #include "Components/CapsuleComponent.h"
-#include "MainCharacter/MainCharacterComponentGroup.h"
 
 #include "MainCharacter/MainCharacterData.h"
 
@@ -25,13 +24,14 @@ AMainCharacter::AMainCharacter()
 
 	playerInputPollingSystem = CreateDefaultSubobject<UPlayerInputPollingSystem>("PlayerInputPollingSystem");
 	inputQueueSystem = CreateDefaultSubobject<UInputQueueSystem>("InputQueueSystem");
-	componentGroup = CreateDefaultSubobject<UMainCharacterComponentGroup>("ComponentGroup");
 	playerStateManager = CreateDefaultSubobject<UPlayerStateManager>("PlayerStateManager");
 
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>("CapsuleCollider");
 
 	data = CreateDefaultSubobject<UMainCharacterData>("MainCharacterData");
 	characterState = CreateDefaultSubobject<UCharacterState>("CharacterState");
+
+	movementComponent = CreateDefaultSubobject<UMainCharacterMovementComponent>("MovementComponent");
 }
 
 // Called when the game starts or when spawned
@@ -41,10 +41,9 @@ void AMainCharacter::BeginPlay()
 
 	playerInputPollingSystem->onAnInputTriggered.BindUObject(inputQueueSystem, &UInputQueueSystem::ConsumeInputs);
 
-	auto movementComponent = componentGroup->GetMovementComponent();
 	movementComponent->SetMoveableComponent(capsuleCollider);
 
-	playerStateManager->Init(data, characterState, componentGroup);
+	playerStateManager->Init(this);
 
 	inputQueueSystem->inputQueueSystemEvent.BindUObject(playerStateManager, &UPlayerStateManager::OnInputQueueOutputStateTriggered);
 

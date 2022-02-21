@@ -15,7 +15,7 @@ class UInputQueueSystem;
 class UMainCharacterData;
 class UCharacterState;
 class UPlayerStateManager;
-class UMainCharacterComponentGroup;
+class UMainCharacterMovementComponent;
 
 struct FCharacterInputData;
 struct FAnimationRelatedData;
@@ -41,8 +41,10 @@ public:
 	void SetHorizontalLookAxis(float value);
 	void SetVerticalLookAxis(float value);
 
-	inline UMainCharacterData* const GetCharacterData() const { return data; }
-	inline UCharacterState* const GetCharacterState() const { return characterState; }
+	inline UMainCharacterData* GetCharacterData() const { return data; }
+	inline UCharacterState* GetCharacterState() const { return characterState; }
+	inline UMainCharacterMovementComponent* GetMainMovementComponent() const { return movementComponent; }
+	inline UPlayerStateManager* GetPlayerStateManager() const { return playerStateManager; }
 
 	void HandleActionInput(EUserInputType inputType, EInputEvent inputEvent);
 	
@@ -71,14 +73,14 @@ private:
 	UPROPERTY(EditAnywhere)
 	UPrimitiveComponent* capsuleCollider;
 
-	UPROPERTY(EditAnywhere)
-	UMainCharacterComponentGroup* componentGroup;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMainCharacterData* data;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UCharacterState* characterState;
+
+	UPROPERTY(VisibleAnywhere)
+	UMainCharacterMovementComponent* movementComponent;
 
 	DataInlineSubOwner<FCharacterInputData> inputData;
 	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;

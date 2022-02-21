@@ -6,7 +6,6 @@
 #include "InputQueueOutputState.h"
 #include "MainCharacter/MainCharacterData.h"
 #include "MainCharacter/CharacterState.h"
-#include "MainCharacter/MainCharacterComponentGroup.h"
 
 #include "PlayerStates/JumpPlayerState.h"
 #include "PlayerStates/MovementPlayerState.h"
@@ -23,7 +22,7 @@ template<typename T>
 void UPlayerStateManager::CreatePlayerState(EPlayerState playerState)
 {
 	TObjectPtr<T> state = NewObject<T>(this);
-	state->Init(this, characterData, characterState, characterComponentGroup);
+	state->Init(this, mainCharacter);
 	playerStates[static_cast<uint8>(playerState)] = state;
 }
 
@@ -31,17 +30,15 @@ template<typename T>
 void UPlayerStateManager::CreatePlayerStateWithInput(EPlayerState playerState, EInputQueueOutputState inputQueueOutputState)
 {
 	TObjectPtr<T> state = NewObject<T>(this);
-	state->Init(this, characterData, characterState, characterComponentGroup);
+	state->Init(this, mainCharacter);
 	playerStates[static_cast<uint8>(playerState)] = state;
 	inputOutputPlayerStates[static_cast<uint8>(inputQueueOutputState)] = state;
 }
 
 
-void UPlayerStateManager::Init(TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UCharacterState> NewCharacterState, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup)
+void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 {
-	characterData = NewCharacterData;
-	characterState = NewCharacterState;
-	characterComponentGroup = NewCharacterComponentGroup;
+	mainCharacter = NewMainCharacter;
 
 	playerStates.SetNum(static_cast<uint8>(EPlayerState::END_OF_ENUM));
 	inputOutputPlayerStates.SetNum(static_cast<uint8>(EInputQueueOutputState::END_OF_ENUM));

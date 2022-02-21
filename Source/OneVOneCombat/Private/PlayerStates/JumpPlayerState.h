@@ -13,6 +13,8 @@
  */
 
 class UMainCharacterMovementComponent;
+class UMainCharacterData;
+class UCharacterState;
 
 UCLASS()
 class UJumpPlayerState : public UPlayerStateBase
@@ -36,5 +38,6 @@ public:
 private:
 
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
-	TWeakObjectPtr<UPlayerStateBase> swordAttackPlayerState; // FIXME: ANTIPATTERN - There should be new state with named as JumpSwordAttackPlayerState. Just testing
+	TWeakObjectPtr<UMainCharacterData> characterData;
+	TWeakObjectPtr<UCharacterState> characterState;
 };

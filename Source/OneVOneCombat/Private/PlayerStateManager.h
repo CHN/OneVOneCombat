@@ -11,10 +11,6 @@
 
 
 enum class EInputQueueOutputState : uint8;
-class UMainCharacterData;
-class UCharacterState;
-class UMainCharacterMovementComponent;
-class UMainCharacterComponentGroup;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UPlayerStateManager : public UActorComponent
@@ -25,7 +21,7 @@ public:
 
 	UPlayerStateManager();
 
-	void Init(TWeakObjectPtr<UMainCharacterData> NewCharacterData, TWeakObjectPtr<UCharacterState> NewCharacterState, TWeakObjectPtr<UMainCharacterComponentGroup> NewCharacterComponentGroup);
+	void Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter);
 	void OnInputQueueOutputStateTriggered(EInputQueueOutputState inputOutputState);
 
 	void TryToChangeNextState(EPlayerState nextState);
@@ -41,9 +37,7 @@ private:
 	template<typename T>
 	void CreatePlayerStateWithInput(EPlayerState playerState, EInputQueueOutputState inputQueueOutputState);
 
-	TWeakObjectPtr<UMainCharacterData> characterData;
-	TWeakObjectPtr<UCharacterState> characterState;
-	TWeakObjectPtr<UMainCharacterComponentGroup> characterComponentGroup;
+	TWeakObjectPtr<AMainCharacter> mainCharacter;
 
 	TArray<TWeakObjectPtr<UPlayerStateBase>> playerStates;
 	TArray<TWeakObjectPtr<UPlayerStateBase>> inputOutputPlayerStates;
