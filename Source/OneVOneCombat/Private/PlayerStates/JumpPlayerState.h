@@ -37,7 +37,11 @@ public:
 
 private:
 
+	void OnJumpActionExecuted();
+
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 	TWeakObjectPtr<UMainCharacterData> characterData;
 	TWeakObjectPtr<UCharacterState> characterState;
+
+	FDelegateHandle handle;
 };

@@ -45,8 +45,6 @@ void AMainCharacter::BeginPlay()
 
 	playerStateManager->Init(this);
 
-	inputQueueSystem->inputQueueSystemEvent.BindUObject(playerStateManager, &UPlayerStateManager::OnInputQueueOutputStateTriggered);
-
 	data->characterInputDataOwner.BecomeSubOwner(&inputData);
 	data->animationRelatedDataOwner.BecomeSubOwner(&animationRelatedData);
 }

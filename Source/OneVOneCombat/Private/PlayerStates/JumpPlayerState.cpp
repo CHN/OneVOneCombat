@@ -11,6 +11,7 @@
 #include "PlayerStateManager.h"
 #include "InputQueueOutputState.h"
 #include "MainCharacter.h"
+#include "InputQueueSystem.h"
 
 #include "EditorUtilities.h"
 
@@ -25,6 +26,8 @@ void UJumpPlayerState::OnStateInitialized()
 	movementComponent = mainCharacter->GetMainMovementComponent();
 	characterData = mainCharacter->GetCharacterData();
 	characterState = mainCharacter->GetCharacterState();
+
+	handle = mainCharacter->GetInputQueueSystem()->BindEvent(EInputQueueOutputState::JUMP, this, &UJumpPlayerState::OnJumpActionExecuted);
 }
 
 void UJumpPlayerState::OnStateBeginPlay()
@@ -44,6 +47,11 @@ bool UJumpPlayerState::IsStateInterruptible(EPlayerState newState)
 	return newState == EPlayerState::MELEE_ATTACK;
 }
 
+void UJumpPlayerState::OnJumpActionExecuted()
+{
+	playerStateManager->TryToChangeCurrentState(EPlayerState::JUMP, EInputQueueOutputState::JUMP); // FIXME
+}
+
 void UJumpPlayerState::OnStateUpdate(float deltaTime)
 {
 	movementComponent->MoveByDelta(deltaTime, characterData->GetCurrentRotation() * FVector(characterData->GetRawMoveInput().X * -3.f, FMath::Min(characterData->GetRawMoveInput().Y * 6.f, 0.f), 0.f), FQuat::MakeFromEuler(FVector(0.f, 0.f, characterData->GetRawRotateInput().X))); // FIXME: I am sleepy, so testing code was added directly
@@ -52,6 +60,8 @@ void UJumpPlayerState::OnStateUpdate(float deltaTime)
 	{
 		EndState(EPlayerState::MOVE);
 	}
+
+	
 }
 
 void UJumpPlayerState::OnStateEndPlay()

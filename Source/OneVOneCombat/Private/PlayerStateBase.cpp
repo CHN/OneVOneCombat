@@ -48,5 +48,5 @@ void UPlayerStateBase::EndState(EPlayerState nextState)
 {
 	isStatePlaying = false;
 	OnStateEndPlay();
-	playerStateManager->TryToChangeNextState(nextState);
+	playerStateManager->ChangeNextStateOnStateEnd(nextState);
 }

@@ -17,6 +17,7 @@ void UInputQueueSystem::BeginPlay()
 
 	SortInputQueueDataArray();
 
+	events.SetNum(static_cast<uint8>(EInputQueueOutputState::END_OF_ENUM));
 }
 
 void UInputQueueSystem::SortInputQueueDataArray()
@@ -142,7 +143,12 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 
 	LOG_TO_SCREEN("Current Action is {0}", EditorUtilities::EnumToString(TEXT("EInputQueueOutputState"), currentInputQueueData->GetInputQueueOutputState()));
 
-	inputQueueSystemEvent.ExecuteIfBound(currentInputQueueData->GetInputQueueOutputState());
+	events[static_cast<uint8>(currentInputQueueData->GetInputQueueOutputState())].Broadcast();
+}
+
+void UInputQueueSystem::UnbindEvent(EInputQueueOutputState state, FDelegateHandle handle)
+{
+	events[static_cast<uint8>(state)].Remove(handle);
 }
 
 void UInputQueueSystem::UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset)

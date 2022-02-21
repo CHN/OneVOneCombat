@@ -26,26 +26,15 @@ void UPlayerStateManager::CreatePlayerState(EPlayerState playerState)
 	playerStates[static_cast<uint8>(playerState)] = state;
 }
 
-template<typename T>
-void UPlayerStateManager::CreatePlayerStateWithInput(EPlayerState playerState, EInputQueueOutputState inputQueueOutputState)
-{
-	TObjectPtr<T> state = NewObject<T>(this);
-	state->Init(this, mainCharacter);
-	playerStates[static_cast<uint8>(playerState)] = state;
-	inputOutputPlayerStates[static_cast<uint8>(inputQueueOutputState)] = state;
-}
-
-
 void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 {
 	mainCharacter = NewMainCharacter;
 
 	playerStates.SetNum(static_cast<uint8>(EPlayerState::END_OF_ENUM));
-	inputOutputPlayerStates.SetNum(static_cast<uint8>(EInputQueueOutputState::END_OF_ENUM));
 
 	CreatePlayerState<UMovementPlayerState>(EPlayerState::MOVE);
-	CreatePlayerStateWithInput<UJumpPlayerState>(EPlayerState::JUMP, EInputQueueOutputState::JUMP);
-	CreatePlayerStateWithInput<USwordAttackPlayerState>(EPlayerState::MELEE_ATTACK, EInputQueueOutputState::MELEE_ATTACK);
+	CreatePlayerState<UJumpPlayerState>(EPlayerState::JUMP);
+	CreatePlayerState<USwordAttackPlayerState>(EPlayerState::MELEE_ATTACK);
 
 	for (auto playerState : playerStates)
 	{
@@ -56,66 +45,32 @@ void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 	currentState->StartState_Internal();
 }
 
-void UPlayerStateManager::OnInputQueueOutputStateTriggered(EInputQueueOutputState inputOutputState)
+bool UPlayerStateManager::TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason)
 {
-	bool isCurrentStateChangeable;
-
-	EPlayerState newPlayerState;
-
-	if (!inputOutputPlayerStates[static_cast<uint8>(inputOutputState)].IsValid())
-	{
-		return;
-	}
-
-	newPlayerState = inputOutputPlayerStates[static_cast<uint8>(inputOutputState)]->GetPlayerState();
-
-	EPlayerState previousPlayerState;
-
 	if (currentState.IsValid())
 	{
-		isCurrentStateChangeable = currentState->IsStateInterruptibleByInputStateOutput(inputOutputState, newPlayerState);
-		previousPlayerState = currentState->GetPlayerState();
+		bool isCurrentStateChangeable = currentState->IsStateInterruptibleByInputStateOutput(inputReason, nextState);
+
+		auto newState = playerStates[static_cast<uint8>(nextState)];
+
+		bool isNextStateChangeable = newState->IsStateTransitionInAllowedByInputStateOutput(inputReason, currentState->GetPlayerState());
+
+		bool isStateChangeable = isCurrentStateChangeable && isNextStateChangeable;
+
+		if (isStateChangeable)
+		{
+			currentState->EndState_Internal();
+			newState->StartState_Internal();
+			currentState = newState;
+		}
+
+		return isStateChangeable;
 	}
-	else
-	{
-		isCurrentStateChangeable = true;
-		previousPlayerState = EPlayerState::END_OF_ENUM;
-	}
-
-	if (!isCurrentStateChangeable)
-	{
-		LOG_TO_SCREEN("CURRENT STATE COULDNT BE CHANGED");
-		return;
-	}
-
-	auto newState = inputOutputPlayerStates[static_cast<uint8>(inputOutputState)];
-
-	if (newState == nullptr)
-	{
-		LOG_TO_SCREEN("NEW STATE IS NULL");
-		return;
-	}
-
-	const bool isNewStateChangeable = newState->IsStateTransitionInAllowedByInputStateOutput(inputOutputState, previousPlayerState);
-
-	if (!isNewStateChangeable)
-	{
-		LOG_TO_SCREEN("NEW STATE COULDNT BE CHANGED");
-		return;
-	}
-
-	if (currentState.IsValid())
-	{
-		currentState->EndState_Internal();
-	}
-
-	currentState = newState;
-	currentState->StartState_Internal();
-
-	LOG_TO_SCREEN("State change from {0} to {1}", EditorUtilities::EnumToString(TEXT("EPlayerState"), previousPlayerState), EditorUtilities::EnumToString(TEXT("EPlayerState"), newPlayerState));
+	
+	return false;
 }
 
-void UPlayerStateManager::TryToChangeNextState(EPlayerState nextState)
+void UPlayerStateManager::ChangeNextStateOnStateEnd(EPlayerState nextState)
 {
 	EPlayerState previousPlayerState = currentState->GetPlayerState();
 

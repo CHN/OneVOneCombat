@@ -9,9 +9,6 @@
 
 #include "PlayerStateManager.generated.h"
 
-
-enum class EInputQueueOutputState : uint8;
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UPlayerStateManager : public UActorComponent
 {
@@ -22,9 +19,9 @@ public:
 	UPlayerStateManager();
 
 	void Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter);
-	void OnInputQueueOutputStateTriggered(EInputQueueOutputState inputOutputState);
 
-	void TryToChangeNextState(EPlayerState nextState);
+	void ChangeNextStateOnStateEnd(EPlayerState nextState);
+	bool TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason);
 	const TArray<TWeakObjectPtr<UPlayerStateBase>>& GetPlayerStates() const;
 
 private:
@@ -40,6 +37,5 @@ private:
 	TWeakObjectPtr<AMainCharacter> mainCharacter;
 
 	TArray<TWeakObjectPtr<UPlayerStateBase>> playerStates;
-	TArray<TWeakObjectPtr<UPlayerStateBase>> inputOutputPlayerStates;
 	TWeakObjectPtr<UPlayerStateBase> currentState;
 };

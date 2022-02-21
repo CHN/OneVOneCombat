@@ -45,6 +45,7 @@ public:
 	inline UCharacterState* GetCharacterState() const { return characterState; }
 	inline UMainCharacterMovementComponent* GetMainMovementComponent() const { return movementComponent; }
 	inline UPlayerStateManager* GetPlayerStateManager() const { return playerStateManager; }
+	inline UInputQueueSystem* GetInputQueueSystem() const { return inputQueueSystem; }
 
 	void HandleActionInput(EUserInputType inputType, EInputEvent inputEvent);
 	

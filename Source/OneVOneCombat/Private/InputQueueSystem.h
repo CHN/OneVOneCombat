@@ -28,6 +28,9 @@ class UInputQueueSystem : public UActorComponent
 	GENERATED_BODY()
 
 public:	
+
+	DECLARE_EVENT(UInputQueueSystem, FInputQueueSystemEvent)
+
 	// Sets default values for this component's properties
 	UInputQueueSystem();
 
@@ -35,8 +38,13 @@ public:
 
 	void ConsumeInputs(UPlayerInputPollingSystem* inputPollingSystem);
 
-	DECLARE_DELEGATE_OneParam(FInputQueueSystemEvent, EInputQueueOutputState)
-	FInputQueueSystemEvent inputQueueSystemEvent;
+	template<typename UserClass>
+	FDelegateHandle BindEvent(EInputQueueOutputState state, UserClass* object, typename TMemFunPtrType<false, UserClass, void()>::Type function)
+	{
+		return events[static_cast<uint8>(state)].AddUObject(object, function);
+	}
+
+	void UnbindEvent(EInputQueueOutputState state, FDelegateHandle handle);
 
 private:
 
@@ -50,6 +58,7 @@ private:
 	};
 
 	TArray<DiscardInputPair> discardInputPairs;
+	TArray<FInputQueueSystemEvent> events;
 
 	void SortInputQueueDataArray();
 	void UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset);
