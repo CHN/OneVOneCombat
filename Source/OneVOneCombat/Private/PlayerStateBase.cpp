@@ -29,14 +29,13 @@ void UPlayerStateBase::EndState_Internal()
 {
 	if (IsStatePlaying())
 	{
+		isStatePlaying = false;
 		OnStateInterrupted();
 	}
 	else
 	{
 		OnStateEndPlay();
 	}
-
-	isStatePlaying = false;
 }
 
 EPlayerState UPlayerStateBase::GetPlayerState() const
@@ -47,6 +46,6 @@ EPlayerState UPlayerStateBase::GetPlayerState() const
 void UPlayerStateBase::EndState(EPlayerState nextState)
 {
 	isStatePlaying = false;
-	OnStateEndPlay();
-	playerStateManager->ChangeNextStateOnStateEnd(nextState);
+	oneTimeStateEndCallback.ExecuteIfBound(nextState);
+	oneTimeStateEndCallback.Unbind();
 }

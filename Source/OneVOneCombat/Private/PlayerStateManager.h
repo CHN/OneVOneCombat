@@ -20,8 +20,8 @@ public:
 
 	void Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter);
 
-	void ChangeNextStateOnStateEnd(EPlayerState nextState);
 	bool TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason);
+	void OnCurrentStateEndCallback(EPlayerState nextState);
 	const TArray<TWeakObjectPtr<UPlayerStateBase>>& GetPlayerStates() const;
 
 private:
@@ -30,9 +30,6 @@ private:
 
 	template<typename T>
 	void CreatePlayerState(EPlayerState playerState);
-
-	template<typename T>
-	void CreatePlayerStateWithInput(EPlayerState playerState, EInputQueueOutputState inputQueueOutputState);
 
 	TWeakObjectPtr<AMainCharacter> mainCharacter;
 

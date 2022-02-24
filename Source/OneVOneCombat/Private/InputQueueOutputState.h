@@ -12,5 +12,6 @@ enum class EInputQueueOutputState : uint8
 	CROUCH,
 	MELEE_ATTACK,
 
-	END_OF_ENUM
+	END_OF_ENUM,
+	NONE
 };

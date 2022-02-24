@@ -41,59 +41,52 @@ void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 		playerState->OnStateInitialized();
 	}
 
-	currentState = playerStates[static_cast<uint8>(EPlayerState::MOVE)];
-	currentState->StartState_Internal();
+	TryToChangeCurrentState(EPlayerState::MOVE, EInputQueueOutputState::NONE);
 }
 
 bool UPlayerStateManager::TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason)
 {
-	if (currentState.IsValid())
-	{
-		bool isCurrentStateChangeable = currentState->IsStateInterruptibleByInputStateOutput(inputReason, nextState);
-
-		auto newState = playerStates[static_cast<uint8>(nextState)];
-
-		bool isNextStateChangeable = newState->IsStateTransitionInAllowedByInputStateOutput(inputReason, currentState->GetPlayerState());
-
-		bool isStateChangeable = isCurrentStateChangeable && isNextStateChangeable;
-
-		if (isStateChangeable)
-		{
-			currentState->EndState_Internal();
-			newState->StartState_Internal();
-			currentState = newState;
-		}
-
-		return isStateChangeable;
-	}
+	const bool isCurrentStateValid = currentState.IsValid();
+	const bool isCurrentStatePlaying = isCurrentStateValid && currentState->IsStatePlaying();
 	
-	return false;
-}
+	if (isCurrentStatePlaying)
+	{
+		const bool isInterruptible = currentState->IsStateInterruptible(nextState);
+		const bool isInputInterruptible = currentState->IsStateInterruptibleByInputStateOutput(inputReason, nextState);
 
-void UPlayerStateManager::ChangeNextStateOnStateEnd(EPlayerState nextState)
-{
-	EPlayerState previousPlayerState = currentState->GetPlayerState();
+		if (!isInterruptible && !isInputInterruptible)
+		{
+			return false;
+		}
+	}
 
 	auto newState = playerStates[static_cast<uint8>(nextState)];
 
-	if (newState == nullptr)
+	const EPlayerState currentPlayerState = isCurrentStateValid ? currentState->GetPlayerState() : EPlayerState::NONE;
+
+	const bool isInterruptible = newState->IsStateTransitionInAllowed(currentPlayerState);
+	const bool isInputInterruptible = newState->IsStateTransitionInAllowedByInputStateOutput(inputReason, currentPlayerState);
+
+	if (!isInterruptible && !isInputInterruptible)
 	{
-		LOG_TO_SCREEN("NEW STATE IS NULL");
-		return;
+		return false;
 	}
 
-	const bool isNewStateChangeable = newState->IsStateTransitionInAllowed(previousPlayerState);
-
-	if (!isNewStateChangeable)
+	if (isCurrentStateValid)
 	{
-		LOG_TO_SCREEN("NEW STATE COULDNT BE CHANGED");
-		return;
+		currentState->EndState_Internal();
 	}
 
+	newState->oneTimeStateEndCallback.BindUObject(this, &UPlayerStateManager::OnCurrentStateEndCallback);
 	newState->StartState_Internal();
 	currentState = newState;
 
-	LOG_TO_SCREEN("State change from {0} to {1}", EditorUtilities::EnumToString(TEXT("EPlayerState"), previousPlayerState), EditorUtilities::EnumToString(TEXT("EPlayerState"), nextState));
+	return true;
+}
+
+void UPlayerStateManager::OnCurrentStateEndCallback(EPlayerState nextState)
+{
+	TryToChangeCurrentState(nextState, EInputQueueOutputState::NONE);
 }
 
 const TArray<TWeakObjectPtr<UPlayerStateBase>>& UPlayerStateManager::GetPlayerStates() const

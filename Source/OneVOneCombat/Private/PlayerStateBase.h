@@ -13,12 +13,15 @@ enum class EPlayerState : uint8
 	JUMP,
 	MELEE_ATTACK,
 
-	END_OF_ENUM
+	END_OF_ENUM,
+	NONE
 };
 
 enum class EInputQueueOutputState : uint8;
 class AMainCharacter;
 class UPlayerStateManager;
+
+DECLARE_DELEGATE_OneParam(FPlayerStateStateEndCallback, EPlayerState);
 
 UCLASS(Abstract)
 class UPlayerStateBase : public UActorComponent
@@ -38,6 +41,7 @@ public:
 	virtual bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) { return true; }
 
 	virtual void OnStateInitialized() {}
+	virtual void OnStateReused(EPlayerState ownerState) {}
 	virtual void OnStateBeginPlay() {}
 	virtual void OnStateUpdate(float deltaTime) {}
 	virtual void OnStateEndPlay() {}
@@ -49,6 +53,8 @@ public:
 	EPlayerState GetPlayerState() const;
 
 	inline bool IsStatePlaying() const { return isStatePlaying; }
+
+	FPlayerStateStateEndCallback oneTimeStateEndCallback;
 
 protected:
 
