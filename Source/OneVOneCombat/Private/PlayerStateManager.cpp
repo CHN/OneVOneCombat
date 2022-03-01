@@ -84,14 +84,17 @@ bool UPlayerStateManager::TryToChangeCurrentState(EPlayerState nextState, EInput
 	return true;
 }
 
+TWeakObjectPtr<UPlayerStateBase> UPlayerStateManager::ReusePlayerState(const UPlayerStateBase* ownerState, EPlayerState state) const
+{
+	auto reusedPlayerState = playerStates[static_cast<uint8>(state)];
+	reusedPlayerState->OnStateReused(ownerState->GetPlayerState());
+
+	return reusedPlayerState;
+}
+
 void UPlayerStateManager::OnCurrentStateEndCallback(EPlayerState nextState)
 {
 	TryToChangeCurrentState(nextState, EInputQueueOutputState::NONE);
-}
-
-const TArray<TWeakObjectPtr<UPlayerStateBase>>& UPlayerStateManager::GetPlayerStates() const
-{
-	return playerStates;
 }
 
 void UPlayerStateManager::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

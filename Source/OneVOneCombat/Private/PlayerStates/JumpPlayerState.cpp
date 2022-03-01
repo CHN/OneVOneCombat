@@ -54,8 +54,6 @@ void UJumpPlayerState::OnJumpActionExecuted()
 
 void UJumpPlayerState::OnStateUpdate(float deltaTime)
 {
-	movementComponent->MoveByDelta(deltaTime, characterData->GetCurrentRotation() * FVector(characterData->GetRawMoveInput().X * -3.f, FMath::Min(characterData->GetRawMoveInput().Y * 6.f, 0.f), 0.f), FQuat::MakeFromEuler(FVector(0.f, 0.f, characterData->GetRawRotateInput().X))); // FIXME: I am sleepy, so testing code was added directly
-
 	if (!characterState->jumpState->IsAnimationContinue() && characterData->IsGrounded())
 	{
 		EndState(EPlayerState::MOVE);
