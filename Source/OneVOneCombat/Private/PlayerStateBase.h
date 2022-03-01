@@ -6,17 +6,6 @@
 
 #include "PlayerStateBase.generated.h"
 
-UENUM()
-enum class EPlayerState : uint8
-{
-	MOVE,
-	JUMP,
-	MELEE_ATTACK,
-
-	END_OF_ENUM,
-	NONE
-};
-
 enum class EInputQueueOutputState : uint8;
 class AMainCharacter;
 class UPlayerStateManager;
@@ -32,7 +21,7 @@ public:
 
 	UPlayerStateBase();
 
-	void Init(TWeakObjectPtr<UPlayerStateManager> NewPlayerStateManager, TWeakObjectPtr<AMainCharacter> NewMainCharacter);
+	void Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter);
 
 	virtual bool IsStateInterruptible(EPlayerState newState) { return false; }
 	virtual bool IsStateTransitionInAllowed(EPlayerState previousState) { return true; }
@@ -46,6 +35,8 @@ public:
 	virtual void OnStateUpdate(float deltaTime) {}
 	virtual void OnStateEndPlay() {}
 	virtual void OnStateInterrupted() {}
+	virtual void OnStateActive() {}
+	virtual void OnStateDeactive() {}
 
 	void StartState_Internal();
 	void EndState_Internal();

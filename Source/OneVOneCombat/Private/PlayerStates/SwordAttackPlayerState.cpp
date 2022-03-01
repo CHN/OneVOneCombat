@@ -10,7 +10,7 @@
 USwordAttackPlayerState::USwordAttackPlayerState()
 	: Super()
 {
-	playerState = EPlayerState::MELEE_ATTACK;
+	playerState = EPlayerState::ATTACK;
 }
 
 void USwordAttackPlayerState::OnStateInitialized()

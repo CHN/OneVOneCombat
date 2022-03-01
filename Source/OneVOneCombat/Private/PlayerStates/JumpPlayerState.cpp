@@ -44,7 +44,7 @@ bool UJumpPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueO
 
 bool UJumpPlayerState::IsStateInterruptible(EPlayerState newState)
 {
-	return newState == EPlayerState::MELEE_ATTACK;
+	return newState == EPlayerState::ATTACK;
 }
 
 void UJumpPlayerState::OnJumpActionExecuted()
