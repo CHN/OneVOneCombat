@@ -26,8 +26,7 @@ public:
 	void OnStateBeginPlay() override;
 	void OnStateInitialized() override;
 	void OnStateUpdate(float deltaTime) override;
-	void OnStateEndPlay() override;
-	void OnStateInterrupted() override;
+	void OnStateEndPlay(bool isInterrupted) override;
 
 	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) override;
 

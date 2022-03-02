@@ -58,16 +58,9 @@ void UJumpPlayerState::OnStateUpdate(float deltaTime)
 	{
 		EndState(EPlayerState::MOVE);
 	}
-
-	
 }
 
-void UJumpPlayerState::OnStateEndPlay()
-{
-	characterState->jumpState->SetTriggerValue(false);
-}
-
-void UJumpPlayerState::OnStateInterrupted()
+void UJumpPlayerState::OnStateEndPlay(bool isInterrupted)
 {
 	characterState->jumpState->SetTriggerValue(false);
 }

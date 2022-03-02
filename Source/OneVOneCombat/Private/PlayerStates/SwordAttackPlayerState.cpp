@@ -36,12 +36,7 @@ void USwordAttackPlayerState::OnStateUpdate(float deltaTime)
 	}
 }
 
-void USwordAttackPlayerState::OnStateEndPlay()
-{
-	mainCharacter->GetCharacterState()->swordAttackState->SetTriggerValue(false);
-}
-
-void USwordAttackPlayerState::OnStateInterrupted()
+void USwordAttackPlayerState::OnStateEndPlay(bool isInterrupted)
 {
 	mainCharacter->GetCharacterState()->swordAttackState->SetTriggerValue(false);
 }

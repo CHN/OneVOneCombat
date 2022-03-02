@@ -33,8 +33,7 @@ public:
 	virtual void OnStateReused(EPlayerState ownerState) {}
 	virtual void OnStateBeginPlay() {}
 	virtual void OnStateUpdate(float deltaTime) {}
-	virtual void OnStateEndPlay() {}
-	virtual void OnStateInterrupted() {}
+	virtual void OnStateEndPlay(bool isInterrupted) {}
 	virtual void OnStateActive() {}
 	virtual void OnStateDeactive() {}
 

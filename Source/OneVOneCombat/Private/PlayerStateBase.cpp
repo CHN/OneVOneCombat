@@ -28,15 +28,8 @@ void UPlayerStateBase::StartState_Internal()
 
 void UPlayerStateBase::EndState_Internal()
 {
-	if (IsStatePlaying())
-	{
-		isStatePlaying = false;
-		OnStateInterrupted();
-	}
-	else
-	{
-		OnStateEndPlay();
-	}
+	const bool isInterrupted = IsStatePlaying();
+	OnStateEndPlay(isInterrupted);
 }
 
 EPlayerState UPlayerStateBase::GetPlayerState() const
