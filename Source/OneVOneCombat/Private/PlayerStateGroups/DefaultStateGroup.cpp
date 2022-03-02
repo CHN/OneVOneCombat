@@ -17,6 +17,6 @@ UDefaultStateGroup::UDefaultStateGroup()
 
 void UDefaultStateGroup::OnInitialized()
 {
-	CreatePlayerState<UMovementPlayerState>(EPlayerState::MOVE);
-	CreatePlayerState<UJumpPlayerState>(EPlayerState::JUMP);
+	CreatePlayerState<UMovementPlayerState>();
+	CreatePlayerState<UJumpPlayerState>();
 }

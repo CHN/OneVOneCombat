@@ -8,9 +8,9 @@
 #include "MainCharacter/CharacterState.h"
 
 #include "PlayerStateBase.h"
-//#include "PlayerStates/SwordAttackPlayerState.h"
+#include "PlayerStates/SwordAttackPlayerState.h"
 
-#include "PlayerStateGroupBase.h"
+#include "PlayerStateGroup.h"
 #include "PlayerStateGroups/DefaultStateGroup.h"
 
 #include "EditorUtilities.h"
@@ -21,11 +21,18 @@ UPlayerStateManager::UPlayerStateManager()
 }
 
 template<typename T>
-void UPlayerStateManager::CreatePlayerStateGroup(EPlayerStateGroup playerStateGroup)
+void UPlayerStateManager::CreatePlayerStateGroup(EPlayerStateGroup stateGroupType)
 {
 	TObjectPtr<T> stateGroup = NewObject<T>(this);
 	stateGroup->Init(mainCharacter);
-	stateGroups[static_cast<uint8>(playerStateGroup)] = stateGroup;
+	stateGroups[static_cast<uint8>(stateGroupType)] = stateGroup;
+}
+
+template<typename T>
+void UPlayerStateManager::CreateBasicPlayerStateGroup(EPlayerStateGroup stateGroupType)
+{
+	TWeakObjectPtr<UPlayerStateGroup> playerStateGroup = UPlayerStateGroup::CreateBasicPlayerStateGroup<T>(stateGroupType, this, mainCharacter);
+	stateGroups[static_cast<uint8>(stateGroupType)] = playerStateGroup;
 }
 
 void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
@@ -36,7 +43,10 @@ void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 	stateGroups.SetNum(static_cast<uint8>(EPlayerStateGroup::END_OF_ENUM));
 
 	CreatePlayerStateGroup<UDefaultStateGroup>(EPlayerStateGroup::DEFAULT_GROUP);
+	CreateBasicPlayerStateGroup<USwordAttackPlayerState>(EPlayerStateGroup::MELEE_ATTACK);
+
 	PushStateGroup(EPlayerStateGroup::DEFAULT_GROUP);
+	PushStateGroup(EPlayerStateGroup::MELEE_ATTACK);
 	TryToChangeCurrentState(EPlayerState::MOVE, EInputQueueOutputState::NONE);
 }
 
@@ -60,10 +70,10 @@ bool UPlayerStateManager::TryToChangeCurrentState(EPlayerState nextState, EInput
 
 	const EPlayerState currentPlayerState = isCurrentStateValid ? currentState->GetPlayerState() : EPlayerState::NONE;
 
-	const bool isInterruptible = newState->IsStateTransitionInAllowed(currentPlayerState);
-	const bool isInputInterruptible = newState->IsStateTransitionInAllowedByInputStateOutput(inputReason, currentPlayerState);
+	const bool isTransitionAllowed = newState->IsStateTransitionInAllowed(currentPlayerState);
+	const bool isInputTransitionAllowed = newState->IsStateTransitionInAllowedByInputStateOutput(inputReason, currentPlayerState);
 
-	if (!isInterruptible && !isInputInterruptible)
+	if (!isTransitionAllowed || !isInputTransitionAllowed)
 	{
 		return false;
 	}
@@ -103,9 +113,9 @@ void UPlayerStateManager::PushStateGroup(EPlayerStateGroup playerStateGroup)
 		if (activeStates[stateTypeInt].IsValid())
 		{
 			activeStates[stateTypeInt]->OnStateDeactive();
+			previousStatesSnapshot.Push(activeStates[stateTypeInt].Get()); // FIXME: Weak ptr to ptr 
 		}
 
-		previousStatesSnapshot.Push(activeStates[stateTypeInt].Get()); // FIXME: Weak ptr to ptr 
 		activeStates[stateTypeInt] = state;
 		state->OnStateActive();
 	}
@@ -145,7 +155,7 @@ void UPlayerStateManager::PopStateGroup()
 	for (UPlayerStateBase* state : poppedStateGroupData.previousStateGroupSnapshot)
 	{
 		int8 stateTypeInt = static_cast<uint8>(state->GetPlayerState());
-		
+
 		if (!activeStates[stateTypeInt].IsValid())
 		{
 			activeStates[stateTypeInt] = state;

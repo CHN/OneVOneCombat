@@ -30,6 +30,14 @@ public:
 
 	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) override;
 
+
+	void OnStateActive() override;
+	void OnStateDeactive() override;
+
 private:
+
+	void OnAttackInputTriggered();
+
 	DataInlineSubOwner<FCharacterStateData> characterStateData;
+	FDelegateHandle inputEventHandle;
 };

@@ -8,7 +8,7 @@
 #include "PlayerStateManager.generated.h"
 
 class UPlayerStateBase;
-class UPlayerStateGroupBase;
+class UPlayerStateGroup;
 
 UENUM()
 enum class EPlayerState : uint8
@@ -55,12 +55,15 @@ private:
 	template<typename T>
 	void CreatePlayerStateGroup(EPlayerStateGroup playerStateGroup);
 
+	template<typename T>
+	void CreateBasicPlayerStateGroup(EPlayerStateGroup stateGroupType);
+
 	void OnCurrentStateEndCallback(EPlayerState nextState);
 
 	TWeakObjectPtr<AMainCharacter> mainCharacter;
 
 	TArray<TWeakObjectPtr<UPlayerStateBase>> activeStates;
-	TArray<TWeakObjectPtr<UPlayerStateGroupBase>> stateGroups;
+	TArray<TWeakObjectPtr<UPlayerStateGroup>> stateGroups;
 	TWeakObjectPtr<UPlayerStateBase> currentState;
 
 	struct LoadedStateGroupData

@@ -25,7 +25,22 @@ void USwordAttackPlayerState::OnStateBeginPlay()
 
 bool USwordAttackPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState)
 {
-	return previousState == EPlayerState::MOVE || previousState == EPlayerState::JUMP;
+	return previousState == EPlayerState::MOVE;
+}
+
+void USwordAttackPlayerState::OnStateActive()
+{
+	inputEventHandle = mainCharacter->GetInputQueueSystem()->BindEvent(EInputQueueOutputState::MELEE_ATTACK, this, &USwordAttackPlayerState::OnAttackInputTriggered);
+}
+
+void USwordAttackPlayerState::OnStateDeactive()
+{
+	mainCharacter->GetInputQueueSystem()->UnbindEvent(EInputQueueOutputState::MELEE_ATTACK, inputEventHandle);
+}
+
+void USwordAttackPlayerState::OnAttackInputTriggered()
+{
+	playerStateManager->TryToChangeCurrentState(EPlayerState::ATTACK, EInputQueueOutputState::MELEE_ATTACK);
 }
 
 void USwordAttackPlayerState::OnStateUpdate(float deltaTime)

@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayerStateGroupBase.h"
+#include "PlayerStateGroup.h"
 #include "DefaultStateGroup.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UDefaultStateGroup : public UPlayerStateGroupBase
+class UDefaultStateGroup : public UPlayerStateGroup
 {
 	GENERATED_BODY()
 

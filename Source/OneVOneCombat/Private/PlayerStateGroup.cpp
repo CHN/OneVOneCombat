@@ -2,16 +2,16 @@
 
 
 #include "MainCharacter.h"
-#include "PlayerStateGroupBase.h"
+#include "PlayerStateGroup.h"
 #include "PlayerStateManager.h"
 
-UPlayerStateGroupBase::UPlayerStateGroupBase()
+UPlayerStateGroup::UPlayerStateGroup()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	stateGroupType = EPlayerStateGroup::END_OF_ENUM;
 }
 
-void UPlayerStateGroupBase::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
+void UPlayerStateGroup::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 {
 	mainCharacter = NewMainCharacter;
 
