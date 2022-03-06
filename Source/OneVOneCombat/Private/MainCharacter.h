@@ -33,7 +33,14 @@ public:
 
 	AMainCharacter();
 
+	void CreateInputHandlers();
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void BindInputHandlerFunctions();
+	void BindMovementInputs();
+	void BindLookInputs();
+	void BindPlayerActionInputs();
 
 	void SetHorizontalMoveAxis(float value);
 	void SetVerticalMoveAxis(float value);
@@ -60,7 +67,14 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+	void ResetInputHandlerAccumulations();
+
 private:
+
+	UUserActionAndAxisInputHandler* horizontalMovementInputHandler;
+	UUserActionAndAxisInputHandler* verticalMovementInputHandler;
+	UUserActionAndAxisInputHandler* horizontalLookInputHandler;
+	UUserActionAndAxisInputHandler* verticalLookInputHandler;
 
 	UPROPERTY(VisibleAnywhere)
 	UPlayerStateManager* playerStateManager;

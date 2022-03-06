@@ -3,10 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
-
 #include "UserActionAndAxisInputHandler.h"
-#include "MainCharacter.h"
+#include "GameFramework\PlayerController.h"
 
 #include "PlayerMainController.generated.h"
 
@@ -25,18 +23,4 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void PlayerTick(float DeltaTime) override;
-
-private:
-
-	UPROPERTY(EditAnywhere)
-	UUserActionAndAxisInputHandler* horizontalMovementInputHandler;
-
-	UPROPERTY(EditAnywhere)
-	UUserActionAndAxisInputHandler* verticalMovementInputHandler;
-
-	UPROPERTY(EditAnywhere)
-	UUserActionAndAxisInputHandler* horizontalLookInputHandler;
-
-	UPROPERTY(EditAnywhere)
-	UUserActionAndAxisInputHandler* verticalLookInputHandler;
 };

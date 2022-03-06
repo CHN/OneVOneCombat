@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "MainCharacter.h"
 #include "PlayerStateGroup.h"
+#include "MainCharacter.h"
 #include "PlayerStateManager.h"
 
 UPlayerStateGroup::UPlayerStateGroup()
