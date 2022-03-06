@@ -84,11 +84,13 @@ void AMainCharacter::Tick(float DeltaTime)
 		}
 		else
 		{
+			animationRelatedData.data->rootMotionMoveDelta = FVector::ZeroVector;
 			animationRelatedData.data->isRootMotionBeingUsed = false;
 		}
 	}
 	else
 	{
+		animationRelatedData.data->rootMotionMoveDelta = FVector::ZeroVector;
 		animationRelatedData.data->isRootMotionBeingUsed = false;
 	}
 
