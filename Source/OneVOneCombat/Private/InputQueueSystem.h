@@ -7,6 +7,7 @@
 
 #include "PlayerInputPollingSystem.h"
 #include "InputQueueDataAsset.h"
+#include "TEnumArray.h"
 
 #include "InputQueueSystem.generated.h"
 
@@ -41,7 +42,7 @@ public:
 	template<typename UserClass>
 	FDelegateHandle BindEvent(EInputQueueOutputState state, UserClass* object, typename TMemFunPtrType<false, UserClass, void()>::Type function)
 	{
-		return events[static_cast<uint8>(state)].AddUObject(object, function);
+		return events[state].AddUObject(object, function);
 	}
 
 	void UnbindEvent(EInputQueueOutputState state, FDelegateHandle handle);
@@ -58,7 +59,7 @@ private:
 	};
 
 	TArray<DiscardInputPair> discardInputPairs;
-	TArray<FInputQueueSystemEvent> events;
+	TEnumArray<FInputQueueSystemEvent, EInputQueueOutputState> events;
 
 	void SortInputQueueDataArray();
 	void UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset);

@@ -20,7 +20,6 @@ void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 {
 	mainCharacter = NewMainCharacter;
 
-	activeStates.SetNum(static_cast<uint8>(EPlayerState::END_OF_ENUM));
 	CreateStateGroups();
 
 	PushStateGroup(EPlayerStateGroup::DEFAULT_GROUP);
@@ -30,13 +29,11 @@ void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 
 void UPlayerStateManager::CreateStateGroups()
 {
-	stateGroups.SetNum(static_cast<uint8>(EPlayerStateGroup::END_OF_ENUM));
-
 	for (TSubclassOf<UPlayerStateGroupBase> stateGroupType : stateGroupTypes)
 	{	
 		UPlayerStateGroupBase* stateGroup = NewObject<UPlayerStateGroupBase>(this, stateGroupType);
 		stateGroup->Init(mainCharacter);
-		stateGroups[static_cast<uint8>(stateGroup->GetPlayerStateGroupType())] = stateGroup;
+		stateGroups[stateGroup->GetPlayerStateGroupType()] = stateGroup;
 	}
 
 	stateGroupTypes.Empty();
@@ -58,7 +55,7 @@ bool UPlayerStateManager::TryToChangeCurrentState(EPlayerState nextState, EInput
 		}
 	}
 
-	auto newState = activeStates[static_cast<uint8>(nextState)];
+	auto newState = activeStates[nextState];
 
 	const EPlayerState currentPlayerState = isCurrentStateValid ? currentState->GetPlayerState() : EPlayerState::NONE;
 
@@ -84,7 +81,7 @@ bool UPlayerStateManager::TryToChangeCurrentState(EPlayerState nextState, EInput
 
 TWeakObjectPtr<UPlayerStateBase> UPlayerStateManager::ReusePlayerState(const UPlayerStateBase* ownerState, EPlayerState state) const
 {
-	auto reusedPlayerState = activeStates[static_cast<uint8>(state)];
+	auto reusedPlayerState = activeStates[state];
 	reusedPlayerState->OnStateReused(ownerState->GetPlayerState());
 
 	return reusedPlayerState;
@@ -93,22 +90,22 @@ TWeakObjectPtr<UPlayerStateBase> UPlayerStateManager::ReusePlayerState(const UPl
 void UPlayerStateManager::PushStateGroup(EPlayerStateGroup playerStateGroup)
 {
 	// Load
-	auto loadedStateGroup = stateGroups[static_cast<uint8>(playerStateGroup)];
+	auto loadedStateGroup = stateGroups[playerStateGroup];
 	auto& loadedStates = loadedStateGroup->GetPlayerStates();
 
 	TArray<UPlayerStateBase*> previousStatesSnapshot;
 
 	for (UPlayerStateBase* state : loadedStates)
 	{
-		int8 stateTypeInt = static_cast<uint8>(state->GetPlayerState());
+		EPlayerState stateType = state->GetPlayerState();
 		
-		if (activeStates[stateTypeInt].IsValid())
+		if (activeStates[stateType].IsValid())
 		{
-			activeStates[stateTypeInt]->OnStateDeactive();
-			previousStatesSnapshot.Push(activeStates[stateTypeInt].Get()); // FIXME: Weak ptr to ptr 
+			activeStates[stateType]->OnStateDeactive();
+			previousStatesSnapshot.Push(activeStates[stateType].Get()); // FIXME: Weak ptr to ptr 
 		}
 
-		activeStates[stateTypeInt] = state;
+		activeStates[stateType] = state;
 		state->OnStateActive();
 	}
 
@@ -123,40 +120,38 @@ void UPlayerStateManager::PopStateGroup()
 	LoadedStateGroupData& poppedStateGroupData = loadedStateGroups.Top();
 	LoadedStateGroupData& loadedStateGroupData = loadedStateGroups[loadedStateGroups.Num() - 2];
 
-	auto unloadedStateGroup = stateGroups[static_cast<uint8>(poppedStateGroupData.stateGroup)];
+	auto unloadedStateGroup = stateGroups[poppedStateGroupData.stateGroup];
 	auto& unloadedStates = unloadedStateGroup->GetPlayerStates();
 
-	auto loadedStateGroup = stateGroups[static_cast<uint8>(loadedStateGroupData.stateGroup)];
+	auto loadedStateGroup = stateGroups[loadedStateGroupData.stateGroup];
 	auto& loadedStates = loadedStateGroup->GetPlayerStates();
 
 	// Mark as unloaded
 	for (UPlayerStateBase* state : unloadedStates)
 	{
-		int8 stateTypeInt = static_cast<uint8>(state->GetPlayerState());
 		state->OnStateDeactive();
-		activeStates[stateTypeInt] = nullptr;
+		activeStates[state->GetPlayerState()] = nullptr;
 	}
 
 	for (UPlayerStateBase* state : loadedStates)
 	{
-		int8 stateTypeInt = static_cast<uint8>(state->GetPlayerState());
-		activeStates[stateTypeInt] = state;
+		activeStates[state->GetPlayerState()] = state;
 		state->OnStateActive();
 	}
 
 	for (UPlayerStateBase* state : poppedStateGroupData.previousStateGroupSnapshot)
 	{
-		int8 stateTypeInt = static_cast<uint8>(state->GetPlayerState());
+		EPlayerState stateType = state->GetPlayerState();
 
-		if (!activeStates[stateTypeInt].IsValid())
+		if (!activeStates[stateType].IsValid())
 		{
-			activeStates[stateTypeInt] = state;
+			activeStates[stateType] = state;
 			state->OnStateActive();
 		}
 	}
 	
-	stateGroups[static_cast<uint8>(poppedStateGroupData.stateGroup)]->OnUnloaded();
-	stateGroups[static_cast<uint8>(loadedStateGroupData.stateGroup)]->OnLoaded();
+	stateGroups[poppedStateGroupData.stateGroup]->OnUnloaded();
+	stateGroups[loadedStateGroupData.stateGroup]->OnLoaded();
 
 	loadedStateGroups.RemoveAt(loadedStateGroups.Num() - 1);
 }

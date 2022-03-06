@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "TEnumArray.h"
 
 #include "PlayerStateManager.generated.h"
 
@@ -48,8 +49,8 @@ private:
 
 	TWeakObjectPtr<AMainCharacter> mainCharacter;
 
-	TArray<TWeakObjectPtr<UPlayerStateBase>> activeStates;
-	TArray<TWeakObjectPtr<UPlayerStateGroupBase>> stateGroups;
+	TEnumArray<TWeakObjectPtr<UPlayerStateBase>, EPlayerState> activeStates;
+	TEnumArray<TWeakObjectPtr<UPlayerStateGroupBase>, EPlayerStateGroup> stateGroups;
 	TWeakObjectPtr<UPlayerStateBase> currentState;
 
 	UPROPERTY(EditDefaultsOnly)
