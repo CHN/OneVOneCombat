@@ -28,7 +28,7 @@ public:
 	template<typename UserClass>
 	void BindAxisFunction(UserClass* object, typename FInputAxisHandlerSignature::template TUObjectMethodDelegate<UserClass>::FMethodPtr method)
 	{
-		axisHandler = MakeShared<FInputAxisHandlerSignature>(FInputAxisHandlerSignature::CreateUObject(object, method));
+		axisHandler.BindUObject(object, method);
 	}
 
 private:
@@ -43,5 +43,5 @@ private:
 
 	float axisValue = 0.f;
 
-	TSharedPtr<FInputAxisHandlerSignature> axisHandler;
+	FInputAxisHandlerSignature axisHandler;
 };

@@ -62,7 +62,6 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	USceneComponent* cameraBoom;
 
-
 	void PreRegisterAllComponents() override;
 
 protected:
