@@ -41,6 +41,16 @@ public:
 		std::move(array, inArray);
 	}
 
+	void operator=(const TEnumArray& inArray)
+	{
+		array = inArray;
+	}
+
+	void operator=(TEnumArray&& inArray)
+	{
+		std::move(array, inArray);
+	}
+
 	template<typename T = bool, typename std::enable_if_t<IsPointerType, T> = true>
 	NonPtrValueType& operator[](EnumType enumIndex)
 	{
