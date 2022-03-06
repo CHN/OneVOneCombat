@@ -11,11 +11,11 @@
 template<typename ValueType, typename EnumType>
 class ONEVONECOMBAT_API TEnumArray
 {
-	static constexpr bool IsPointerType = std::is_pointer_v<ValueType>;
 	using NonPtrValueType = std::remove_pointer_t<ValueType>;
 	using ArrayType = TArray<ValueType>;
 	using SizeType = typename ArrayType::SizeType;
 
+	static constexpr bool IsPointerType = std::is_pointer_v<ValueType>;
 public:
 
 	TEnumArray()
@@ -25,8 +25,10 @@ public:
 
 	TEnumArray(std::initializer_list<ValueType> list)
 	{
-		array = list;
+		checkf(list.size() <= static_cast<SizeType>(EnumType::END_OF_ENUM), TEXT("List size is greater than array size"));
+
 		ReserveArray();
+		array = list;
 	}
 
 	TEnumArray(const TEnumArray& inArray)
@@ -66,6 +68,11 @@ public:
 	ArrayType& GetUnderlyingArray()
 	{
 		return array;
+	}
+
+	constexpr SizeType Num()
+	{
+		return static_cast<SizeType>(EnumType::END_OF_ENUM);
 	}
 
 private:
