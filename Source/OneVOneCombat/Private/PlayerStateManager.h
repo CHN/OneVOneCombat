@@ -42,6 +42,8 @@ public:
 
 	void Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter);
 
+	void CreateStateGroups();
+
 	bool TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason);
 	TWeakObjectPtr<UPlayerStateBase> ReusePlayerState(const UPlayerStateBase* ownerState, EPlayerState state) const;
 
@@ -52,12 +54,6 @@ private:
 
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	template<typename T>
-	void CreatePlayerStateGroup(EPlayerStateGroup playerStateGroup);
-
-	template<typename T>
-	void CreateBasicPlayerStateGroup(EPlayerStateGroup stateGroupType);
-
 	void OnCurrentStateEndCallback(EPlayerState nextState);
 
 	TWeakObjectPtr<AMainCharacter> mainCharacter;
@@ -65,6 +61,9 @@ private:
 	TArray<TWeakObjectPtr<UPlayerStateBase>> activeStates;
 	TArray<TWeakObjectPtr<UPlayerStateGroup>> stateGroups;
 	TWeakObjectPtr<UPlayerStateBase> currentState;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<UPlayerStateGroup>> stateGroupTypes;
 
 	struct LoadedStateGroupData
 	{

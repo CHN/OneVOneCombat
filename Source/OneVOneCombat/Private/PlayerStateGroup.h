@@ -14,7 +14,7 @@ enum class EPlayerState : uint8;
 
 // FIXME: Consider a different way to handle groups
 
-UCLASS(meta=(BlueprintSpawnableComponent))
+UCLASS(Abstract)
 class UPlayerStateGroup : public UActorComponent
 {
 	GENERATED_BODY()

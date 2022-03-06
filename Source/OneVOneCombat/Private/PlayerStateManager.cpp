@@ -20,34 +20,28 @@ UPlayerStateManager::UPlayerStateManager()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-template<typename T>
-void UPlayerStateManager::CreatePlayerStateGroup(EPlayerStateGroup stateGroupType)
-{
-	TObjectPtr<T> stateGroup = NewObject<T>(this);
-	stateGroup->Init(mainCharacter);
-	stateGroups[static_cast<uint8>(stateGroupType)] = stateGroup;
-}
-
-template<typename T>
-void UPlayerStateManager::CreateBasicPlayerStateGroup(EPlayerStateGroup stateGroupType)
-{
-	TWeakObjectPtr<UPlayerStateGroup> playerStateGroup = UPlayerStateGroup::CreateBasicPlayerStateGroup<T>(stateGroupType, this, mainCharacter);
-	stateGroups[static_cast<uint8>(stateGroupType)] = playerStateGroup;
-}
-
 void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 {
 	mainCharacter = NewMainCharacter;
 
 	activeStates.SetNum(static_cast<uint8>(EPlayerState::END_OF_ENUM));
-	stateGroups.SetNum(static_cast<uint8>(EPlayerStateGroup::END_OF_ENUM));
-
-	CreatePlayerStateGroup<UDefaultStateGroup>(EPlayerStateGroup::DEFAULT_GROUP);
-	CreateBasicPlayerStateGroup<USwordAttackPlayerState>(EPlayerStateGroup::MELEE_ATTACK);
+	CreateStateGroups();
 
 	PushStateGroup(EPlayerStateGroup::DEFAULT_GROUP);
-	PushStateGroup(EPlayerStateGroup::MELEE_ATTACK);
+	//PushStateGroup(EPlayerStateGroup::MELEE_ATTACK);
 	TryToChangeCurrentState(EPlayerState::MOVE, EInputQueueOutputState::NONE);
+}
+
+void UPlayerStateManager::CreateStateGroups()
+{
+	stateGroups.SetNum(static_cast<uint8>(EPlayerStateGroup::END_OF_ENUM));
+
+	for (TSubclassOf<UPlayerStateGroup> stateGroupType : stateGroupTypes)
+	{	
+		UPlayerStateGroup* stateGroup = NewObject<UPlayerStateGroup>(this, stateGroupType);
+		stateGroup->Init(mainCharacter);
+		stateGroups[static_cast<uint8>(stateGroup->GetPlayerStateGroupType())] = stateGroup;
+	}
 }
 
 bool UPlayerStateManager::TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason)
