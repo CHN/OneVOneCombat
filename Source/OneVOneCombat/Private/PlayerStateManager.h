@@ -7,8 +7,9 @@
 
 #include "PlayerStateManager.generated.h"
 
+enum class EPlayerStateGroup : uint8;
 class UPlayerStateBase;
-class UPlayerStateGroup;
+class UPlayerStateGroupBase;
 
 UENUM()
 enum class EPlayerState : uint8
@@ -19,16 +20,6 @@ enum class EPlayerState : uint8
 
 	END_OF_ENUM,
 	NONE
-};
-
-UENUM()
-enum class EPlayerStateGroup : uint8
-{
-	MELEE_ATTACK,
-	WEAPON_ATTACK,
-
-	DEFAULT_GROUP,
-	END_OF_ENUM
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -42,8 +33,6 @@ public:
 
 	void Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter);
 
-	void CreateStateGroups();
-
 	bool TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason);
 	TWeakObjectPtr<UPlayerStateBase> ReusePlayerState(const UPlayerStateBase* ownerState, EPlayerState state) const;
 
@@ -54,16 +43,17 @@ private:
 
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void CreateStateGroups();
 	void OnCurrentStateEndCallback(EPlayerState nextState);
 
 	TWeakObjectPtr<AMainCharacter> mainCharacter;
 
 	TArray<TWeakObjectPtr<UPlayerStateBase>> activeStates;
-	TArray<TWeakObjectPtr<UPlayerStateGroup>> stateGroups;
+	TArray<TWeakObjectPtr<UPlayerStateGroupBase>> stateGroups;
 	TWeakObjectPtr<UPlayerStateBase> currentState;
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<TSubclassOf<UPlayerStateGroup>> stateGroupTypes;
+	TArray<TSubclassOf<UPlayerStateGroupBase>> stateGroupTypes;
 
 	struct LoadedStateGroupData
 	{

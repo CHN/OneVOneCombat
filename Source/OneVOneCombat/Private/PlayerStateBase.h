@@ -7,12 +7,13 @@
 #include "PlayerStateBase.generated.h"
 
 enum class EInputQueueOutputState : uint8;
+enum class EPlayerState : uint8;
 class AMainCharacter;
 class UPlayerStateManager;
 
 DECLARE_DELEGATE_OneParam(FPlayerStateStateEndCallback, EPlayerState);
 
-UCLASS(Abstract)
+UCLASS(Abstract, Blueprintable)
 class UPlayerStateBase : public UActorComponent
 {
 public:

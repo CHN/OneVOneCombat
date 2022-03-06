@@ -28,7 +28,7 @@ AMainCharacter::AMainCharacter()
 
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>("CapsuleCollider");
 
-	data = CreateDefaultSubobject<UMainCharacterData>("MainCharacterData");
+	data = CreateDefaultSubobject<UMainCharacterData>("CharacterData");
 	characterState = CreateDefaultSubobject<UCharacterState>("CharacterState");
 
 	movementComponent = CreateDefaultSubobject<UMainCharacterMovementComponent>("MovementComponent");

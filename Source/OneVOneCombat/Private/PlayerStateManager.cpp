@@ -6,13 +6,9 @@
 #include "InputQueueOutputState.h"
 #include "MainCharacter/MainCharacterData.h"
 #include "MainCharacter/CharacterState.h"
-
 #include "PlayerStateBase.h"
-#include "PlayerStates/SwordAttackPlayerState.h"
-
-#include "PlayerStateGroup.h"
-#include "PlayerStateGroups/DefaultStateGroup.h"
-
+#include "PlayerStateGroupBase.h"
+#include "PlayerStateGroupEnum.h"
 #include "EditorUtilities.h"
 
 UPlayerStateManager::UPlayerStateManager()
@@ -28,7 +24,7 @@ void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 	CreateStateGroups();
 
 	PushStateGroup(EPlayerStateGroup::DEFAULT_GROUP);
-	//PushStateGroup(EPlayerStateGroup::MELEE_ATTACK);
+	PushStateGroup(EPlayerStateGroup::MELEE_ATTACK);
 	TryToChangeCurrentState(EPlayerState::MOVE, EInputQueueOutputState::NONE);
 }
 
@@ -36,12 +32,14 @@ void UPlayerStateManager::CreateStateGroups()
 {
 	stateGroups.SetNum(static_cast<uint8>(EPlayerStateGroup::END_OF_ENUM));
 
-	for (TSubclassOf<UPlayerStateGroup> stateGroupType : stateGroupTypes)
+	for (TSubclassOf<UPlayerStateGroupBase> stateGroupType : stateGroupTypes)
 	{	
-		UPlayerStateGroup* stateGroup = NewObject<UPlayerStateGroup>(this, stateGroupType);
+		UPlayerStateGroupBase* stateGroup = NewObject<UPlayerStateGroupBase>(this, stateGroupType);
 		stateGroup->Init(mainCharacter);
 		stateGroups[static_cast<uint8>(stateGroup->GetPlayerStateGroupType())] = stateGroup;
 	}
+
+	stateGroupTypes.Empty();
 }
 
 bool UPlayerStateManager::TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason)

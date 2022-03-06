@@ -24,7 +24,7 @@ enum class EUserInputType : uint8;
 
 DECLARE_DELEGATE_TwoParams(FHandleActionInputDelegate, EUserInputType, EInputEvent);
 
-UCLASS(Blueprintable)
+UCLASS(BlueprintType, Blueprintable)
 class AMainCharacter : public APawn
 {
 	GENERATED_BODY()
