@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MainCharacter/MainCharacterData.h"
+#include "MainCharacter/MainCharacterDataAsset.h"
 
-UMainCharacterData::UMainCharacterData()
+UMainCharacterDataAsset::UMainCharacterDataAsset()
 	: Super(), 
 	movementComponentDataOwner(&movementComponentData),
 	walkableGroundPropertiesDataOwner(&walkableGroundPropertiesData),

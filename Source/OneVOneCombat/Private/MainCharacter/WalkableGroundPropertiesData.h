@@ -15,15 +15,15 @@ struct FWalkableGroundPropertiesData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	float minSlopeDotProduct = 0.95f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	float maxSlopeDotProduct = 1.f;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	float sweepGroundAvoidanceDistance = 1.f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<ECollisionChannel> collisionChannel;
 };

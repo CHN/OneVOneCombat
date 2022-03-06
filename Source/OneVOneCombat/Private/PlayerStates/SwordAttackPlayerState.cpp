@@ -3,7 +3,7 @@
 
 #include "PlayerStates/SwordAttackPlayerState.h"
 
-#include "MainCharacter/MainCharacterData.h"
+#include "MainCharacter/MainCharacterDataAsset.h"
 #include "MainCharacter/CharacterState.h"
 #include "MainCharacter.h"
 

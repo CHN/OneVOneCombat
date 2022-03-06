@@ -11,16 +11,16 @@
 #include "AnimationRelatedData.h"
 #include "DataOwner.h"
 
-#include "MainCharacterData.generated.h"
+#include "MainCharacterDataAsset.generated.h"
 
 UCLASS(BlueprintType)
-class UMainCharacterData : public UObject
+class UMainCharacterDataAsset : public UDataAsset
 {
 public:
 
 	GENERATED_BODY()
 
-	UMainCharacterData();
+	UMainCharacterDataAsset();
 
 	DataOwner<FCharacterInputData> characterInputDataOwner;
 	DataOwner<FMovementComponentData> movementComponentDataOwner;

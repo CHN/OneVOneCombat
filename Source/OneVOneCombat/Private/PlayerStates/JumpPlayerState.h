@@ -13,7 +13,7 @@
  */
 
 class UMainCharacterMovementComponent;
-class UMainCharacterData;
+class UMainCharacterDataAsset;
 class UCharacterState;
 
 UCLASS()
@@ -39,7 +39,7 @@ private:
 	void OnJumpActionExecuted();
 
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
-	TWeakObjectPtr<UMainCharacterData> characterData;
+	TWeakObjectPtr<UMainCharacterDataAsset> characterData;
 	TWeakObjectPtr<UCharacterState> characterState;
 
 	FDelegateHandle handle;

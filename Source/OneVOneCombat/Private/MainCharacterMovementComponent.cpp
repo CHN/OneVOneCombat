@@ -3,7 +3,7 @@
 #include "MainCharacterMovementComponent.h"
 
 #include "MainCharacter.h"
-#include "MainCharacter/MainCharacterData.h"
+#include "MainCharacter/MainCharacterDataAsset.h"
 
 #include "HelperMacros.h"
 #include "EditorUtilities.h"	

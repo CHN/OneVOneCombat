@@ -8,11 +8,11 @@
 #include "PlayerStateManager.h"
 #include "Components/CapsuleComponent.h"
 
-#include "MainCharacter/MainCharacterData.h"
+#include "MainCharacter/MainCharacterDataAsset.h"
 
 #include "MainCharacter/CharacterInputData.h"
 #include "MainCharacter/AnimationRelatedData.h"
-
+#include "Engine/AssetManager.h"
 #include "EditorUtilities.h"
 
 // Sets default values
@@ -28,12 +28,17 @@ AMainCharacter::AMainCharacter()
 
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>("CapsuleCollider");
 
-	data = CreateDefaultSubobject<UMainCharacterData>("CharacterData");
 	characterState = CreateDefaultSubobject<UCharacterState>("CharacterState");
 
 	movementComponent = CreateDefaultSubobject<UMainCharacterMovementComponent>("MovementComponent");
 
 	CreateInputHandlers();
+}
+
+void AMainCharacter::PreRegisterAllComponents()
+{
+	Super::PreRegisterAllComponents();
+	data = DuplicateObject(data, this);
 }
 
 void AMainCharacter::CreateInputHandlers()

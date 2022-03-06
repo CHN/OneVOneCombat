@@ -4,7 +4,7 @@
 #include "PlayerStates/MovementPlayerState.h"
 
 #include "MainCharacterMovementComponent.h"
-#include "MainCharacter/MainCharacterData.h"
+#include "MainCharacter/MainCharacterDataAsset.h"
 #include "MainCharacter.h"
 
 #include "MainCharacter/AnimationRelatedData.h"

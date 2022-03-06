@@ -12,7 +12,7 @@
 
 class UPlayerInputPollingSystem;
 class UInputQueueSystem;
-class UMainCharacterData;
+class UMainCharacterDataAsset;
 class UCharacterState;
 class UPlayerStateManager;
 class UMainCharacterMovementComponent;
@@ -48,7 +48,7 @@ public:
 	void SetHorizontalLookAxis(float value);
 	void SetVerticalLookAxis(float value);
 
-	inline UMainCharacterData* GetCharacterData() const { return data; }
+	inline UMainCharacterDataAsset* GetCharacterData() const { return data; }
 	inline UCharacterState* GetCharacterState() const { return characterState; }
 	inline UMainCharacterMovementComponent* GetMainMovementComponent() const { return movementComponent; }
 	inline UPlayerStateManager* GetPlayerStateManager() const { return playerStateManager; }
@@ -61,6 +61,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	USceneComponent* cameraBoom;
+
+
+	void PreRegisterAllComponents() override;
 
 protected:
 	 
@@ -88,10 +91,10 @@ private:
 	UPROPERTY(EditAnywhere)
 	UPrimitiveComponent* capsuleCollider;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UMainCharacterData* data;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UMainCharacterDataAsset* data;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UCharacterState* characterState;
 
 	UPROPERTY(VisibleAnywhere)

@@ -4,7 +4,7 @@
 #include "PlayerStateManager.h"
 
 #include "InputQueueOutputState.h"
-#include "MainCharacter/MainCharacterData.h"
+#include "MainCharacter/MainCharacterDataAsset.h"
 #include "MainCharacter/CharacterState.h"
 #include "PlayerStateBase.h"
 #include "PlayerStateGroupBase.h"
