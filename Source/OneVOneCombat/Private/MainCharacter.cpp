@@ -31,8 +31,6 @@ AMainCharacter::AMainCharacter()
 	characterState = CreateDefaultSubobject<UCharacterState>("CharacterState");
 
 	movementComponent = CreateDefaultSubobject<UMainCharacterMovementComponent>("MovementComponent");
-
-	CreateInputHandlers();
 }
 
 void AMainCharacter::PreRegisterAllComponents()
@@ -43,10 +41,10 @@ void AMainCharacter::PreRegisterAllComponents()
 
 void AMainCharacter::CreateInputHandlers()
 {
-	horizontalMovementInputHandler = NewObject<UUserActionAndAxisInputHandler>();
-	verticalMovementInputHandler = NewObject<UUserActionAndAxisInputHandler>();
-	horizontalLookInputHandler = NewObject<UUserActionAndAxisInputHandler>();
-	verticalLookInputHandler = NewObject<UUserActionAndAxisInputHandler>();
+	horizontalMovementInputHandler = NewObject<UUserActionAndAxisInputHandler>(this);
+	verticalMovementInputHandler = NewObject<UUserActionAndAxisInputHandler>(this);
+	horizontalLookInputHandler = NewObject<UUserActionAndAxisInputHandler>(this);
+	verticalLookInputHandler = NewObject<UUserActionAndAxisInputHandler>(this);
 }
 
 // Called when the game starts or when spawned
@@ -123,6 +121,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	CreateInputHandlers();
 	BindInputHandlerFunctions();
 	BindMovementInputs();
 	BindLookInputs();

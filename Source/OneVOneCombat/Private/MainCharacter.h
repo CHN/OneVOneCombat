@@ -73,9 +73,16 @@ protected:
 
 private:
 
+	UPROPERTY()
 	UUserActionAndAxisInputHandler* horizontalMovementInputHandler;
+
+	UPROPERTY()
 	UUserActionAndAxisInputHandler* verticalMovementInputHandler;
+
+	UPROPERTY()
 	UUserActionAndAxisInputHandler* horizontalLookInputHandler;
+
+	UPROPERTY()
 	UUserActionAndAxisInputHandler* verticalLookInputHandler;
 
 	UPROPERTY(VisibleAnywhere)
@@ -93,7 +100,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMainCharacterDataAsset* data;
 
-	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UCharacterState* characterState;
 
 	UPROPERTY(VisibleAnywhere)
