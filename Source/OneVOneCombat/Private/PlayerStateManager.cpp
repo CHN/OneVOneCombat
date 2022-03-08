@@ -96,7 +96,7 @@ void UPlayerStateManager::PopStateGroup()
 	for (UPlayerStateBase* state : unloadedStates)
 	{
 		state->OnStateDeactive();
-		stateFlowManager->DeactiveState(state->GetPlayerState());
+		stateFlowManager->ClearState(state->GetPlayerState());
 	}
 
 	for (UPlayerStateBase* state : loadedStates)

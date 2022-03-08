@@ -27,7 +27,7 @@ public:
 	bool TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason);
 	TWeakObjectPtr<UPlayerStateBase> ReusePlayerState(const UPlayerStateBase* ownerState, EPlayerState state) const;
 
-	TWeakObjectPtr<UPlayerStateBase> DeactiveState(EPlayerState stateType);
+	TWeakObjectPtr<UPlayerStateBase> ClearState(EPlayerState stateType);
 	TWeakObjectPtr<UPlayerStateBase> ReplaceStateWith(UPlayerStateBase* playerState);
 	TWeakObjectPtr<UPlayerStateBase> GetState(EPlayerState stateType) const;
 

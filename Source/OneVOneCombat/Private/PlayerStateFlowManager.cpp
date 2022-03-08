@@ -59,7 +59,7 @@ TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::ReusePlayerState(const
 	return reusedPlayerState;
 }
 
-TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::DeactiveState(EPlayerState stateType)
+TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::ClearState(EPlayerState stateType)
 {
 	UPlayerStateBase* previousState = activeStates[stateType];
 	activeStates[stateType] = nullptr;
