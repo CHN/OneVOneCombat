@@ -12,9 +12,8 @@
 UENUM()
 enum class EPlayerStateGroup : uint8
 {
-	MELEE_ATTACK,
-	WEAPON_ATTACK,
-
 	DEFAULT_GROUP,
+	MELEE_ATTACK,
+
 	END_OF_ENUM
 };

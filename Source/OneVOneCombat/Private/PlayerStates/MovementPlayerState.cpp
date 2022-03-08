@@ -17,20 +17,14 @@ UMovementPlayerState::UMovementPlayerState()
 void UMovementPlayerState::OnStateInitialized()
 {
 	mainCharacter->GetCharacterData()->animationRelatedDataOwner.BecomeSubOwner(&animationRelatedData);
-}
-
-
-void UMovementPlayerState::OnStateBeginPlay()
-{
 	movementComponent = mainCharacter->GetMainMovementComponent();
 }
-
 
 void UMovementPlayerState::OnStateUpdate(float deltaTime)
 {
 	if (!movementComponent->IsMovementBeingApplied())
 	{
-		movementComponent->MoveByDelta(deltaTime, animationRelatedData.data->rootMotionMoveDelta, FQuat::MakeFromEuler(FVector(0.f, 0.f, mainCharacter->GetCharacterData()->GetRawRotateInput().X)));
+		movementComponent->MoveByDelta(deltaTime, animationRelatedData.data->rootMotionMoveDelta);
 	}
 }
 

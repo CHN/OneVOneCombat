@@ -18,6 +18,14 @@ void UPlayerStateGroupBase::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter
 	OnInitialized();
 }
 
+void UPlayerStateGroupBase::InitPlayerStates()
+{
+	for (UPlayerStateBase* state : playerStates)
+	{
+		state->Init(mainCharacter);
+	}
+}
+
 void UPlayerStateGroupBase::CreatePlayerStatesInitially()
 {
 	playerStates.Reserve(playerStateTypes.Num());
@@ -25,7 +33,6 @@ void UPlayerStateGroupBase::CreatePlayerStatesInitially()
 	for (TSubclassOf<UPlayerStateBase> stateType : playerStateTypes)
 	{
 		UPlayerStateBase* state = NewObject<UPlayerStateBase>(this, stateType);
-		state->Init(mainCharacter);
 		playerStates.Push(state);
 	}
 

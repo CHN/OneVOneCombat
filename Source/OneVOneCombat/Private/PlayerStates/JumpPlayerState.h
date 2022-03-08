@@ -42,5 +42,7 @@ private:
 	TWeakObjectPtr<UMainCharacterDataAsset> characterData;
 	TWeakObjectPtr<UCharacterState> characterState;
 
+	TWeakObjectPtr<UPlayerStateBase> lookState;
+
 	FDelegateHandle handle;
 };

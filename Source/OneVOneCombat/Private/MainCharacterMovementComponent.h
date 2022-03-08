@@ -27,7 +27,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetMoveableComponent(UPrimitiveComponent* NewMoveableComponent);
 
-	void MoveByDelta(const float deltaTime, const FVector& delta, const FQuat& deltaRotation, bool constrainInputToGround = true);
+	void MoveByDelta(const float deltaTime, const FVector& delta, bool constrainInputToGround = true);
+	void RotateByDelta(const FQuat& deltaRotation);
 	void AddVelocity(const FVector& NewVelocity);
 
 	bool IsGrounding() const { return data->isGrounding; }

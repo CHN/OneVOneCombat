@@ -10,6 +10,7 @@ enum class EInputQueueOutputState : uint8;
 enum class EPlayerState : uint8;
 class AMainCharacter;
 class UPlayerStateManager;
+class UPlayerStateFlowManager;
 
 DECLARE_DELEGATE_OneParam(FPlayerStateStateEndCallback, EPlayerState);
 
@@ -52,6 +53,7 @@ protected:
 	EPlayerState playerState;
 	TWeakObjectPtr<AMainCharacter> mainCharacter;
 	TWeakObjectPtr<UPlayerStateManager> playerStateManager;
+	TWeakObjectPtr<UPlayerStateFlowManager> playerStateFlowManager;
 
 	void EndState(EPlayerState nextState);
 

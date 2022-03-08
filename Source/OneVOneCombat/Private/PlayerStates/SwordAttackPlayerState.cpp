@@ -6,6 +6,7 @@
 #include "MainCharacter/MainCharacterDataAsset.h"
 #include "MainCharacter/CharacterState.h"
 #include "MainCharacter.h"
+#include "PlayerStateFlowManager.h"
 
 USwordAttackPlayerState::USwordAttackPlayerState()
 	: Super()
@@ -21,11 +22,12 @@ void USwordAttackPlayerState::OnStateInitialized()
 void USwordAttackPlayerState::OnStateBeginPlay()
 {
 	mainCharacter->GetCharacterState()->swordAttackState->SetTriggerValue(true);
+	lookState = playerStateFlowManager->ReusePlayerState(this, EPlayerState::LOOK);
 }
 
 bool USwordAttackPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState)
 {
-	return previousState == EPlayerState::MOVE;
+	return previousState == EPlayerState::BASIC_MOVEMENT;
 }
 
 void USwordAttackPlayerState::OnStateActive()
@@ -38,16 +40,23 @@ void USwordAttackPlayerState::OnStateDeactive()
 	mainCharacter->GetInputQueueSystem()->UnbindEvent(EInputQueueOutputState::MELEE_ATTACK, inputEventHandle);
 }
 
+bool USwordAttackPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState)
+{
+	return newState == EPlayerState::JUMP;
+}
+
 void USwordAttackPlayerState::OnAttackInputTriggered()
 {
-	playerStateManager->TryToChangeCurrentState(EPlayerState::ATTACK, EInputQueueOutputState::MELEE_ATTACK);
+	playerStateFlowManager->TryToChangeCurrentState(EPlayerState::ATTACK, EInputQueueOutputState::MELEE_ATTACK);
 }
 
 void USwordAttackPlayerState::OnStateUpdate(float deltaTime)
 {
+	lookState->OnStateUpdate(deltaTime);
+
 	if (!mainCharacter->GetCharacterState()->swordAttackState->IsAnimationContinue())
 	{
-		EndState(EPlayerState::MOVE);
+		EndState(EPlayerState::BASIC_MOVEMENT);
 	}
 }
 

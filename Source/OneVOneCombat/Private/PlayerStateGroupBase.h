@@ -20,6 +20,7 @@ public:
 	UPlayerStateGroupBase();
 
 	void Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter);
+	void InitPlayerStates();
 
 	virtual void OnInitialized() {}
 	virtual void OnLoaded() {}

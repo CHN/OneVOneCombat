@@ -9,11 +9,13 @@
 #include "PlayerStateBase.h"
 #include "PlayerStateGroupBase.h"
 #include "PlayerStateGroupEnum.h"
+#include "PlayerStateFlowManager.h"
+
 #include "EditorUtilities.h"
 
 UPlayerStateManager::UPlayerStateManager()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	stateFlowManager = CreateDefaultSubobject<UPlayerStateFlowManager>("StateFlowManager");
 }
 
 void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
@@ -21,10 +23,12 @@ void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 	mainCharacter = NewMainCharacter;
 
 	CreateStateGroups();
+	InitPlayerStates();
 
 	PushStateGroup(EPlayerStateGroup::DEFAULT_GROUP);
 	PushStateGroup(EPlayerStateGroup::MELEE_ATTACK);
-	TryToChangeCurrentState(EPlayerState::MOVE, EInputQueueOutputState::NONE);
+
+	stateFlowManager->TryToChangeCurrentState(EPlayerState::BASIC_MOVEMENT, EInputQueueOutputState::NONE);
 }
 
 void UPlayerStateManager::CreateStateGroups()
@@ -39,52 +43,13 @@ void UPlayerStateManager::CreateStateGroups()
 	stateGroupTypes.Empty();
 }
 
-bool UPlayerStateManager::TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason)
+void UPlayerStateManager::InitPlayerStates()
 {
-	const bool isCurrentStateValid = currentState.IsValid();
-	const bool isCurrentStatePlaying = isCurrentStateValid && currentState->IsStatePlaying();
-	
-	if (isCurrentStatePlaying)
+	auto& stateGroupArray = stateGroups.GetUnderlyingArray();
+	for (UPlayerStateGroupBase* stateGroup : stateGroupArray)
 	{
-		const bool isInterruptible = currentState->IsStateInterruptible(nextState);
-		const bool isInputInterruptible = currentState->IsStateInterruptibleByInputStateOutput(inputReason, nextState);
-
-		if (!isInterruptible && !isInputInterruptible)
-		{
-			return false;
-		}
+		stateGroup->InitPlayerStates();
 	}
-
-	auto newState = activeStates[nextState];
-
-	const EPlayerState currentPlayerState = isCurrentStateValid ? currentState->GetPlayerState() : EPlayerState::NONE;
-
-	const bool isTransitionAllowed = newState->IsStateTransitionInAllowed(currentPlayerState);
-	const bool isInputTransitionAllowed = newState->IsStateTransitionInAllowedByInputStateOutput(inputReason, currentPlayerState);
-
-	if (!isTransitionAllowed || !isInputTransitionAllowed)
-	{
-		return false;
-	}
-
-	if (isCurrentStateValid)
-	{
-		currentState->EndState_Internal();
-	}
-
-	newState->oneTimeStateEndCallback.BindUObject(this, &UPlayerStateManager::OnCurrentStateEndCallback);
-	newState->StartState_Internal();
-	currentState = newState;
-
-	return true;
-}
-
-TWeakObjectPtr<UPlayerStateBase> UPlayerStateManager::ReusePlayerState(const UPlayerStateBase* ownerState, EPlayerState state) const
-{
-	auto reusedPlayerState = activeStates[state];
-	reusedPlayerState->OnStateReused(ownerState->GetPlayerState());
-
-	return reusedPlayerState;
 }
 
 void UPlayerStateManager::PushStateGroup(EPlayerStateGroup playerStateGroup)
@@ -98,14 +63,15 @@ void UPlayerStateManager::PushStateGroup(EPlayerStateGroup playerStateGroup)
 	for (UPlayerStateBase* state : loadedStates)
 	{
 		EPlayerState stateType = state->GetPlayerState();
-		
-		if (activeStates[stateType].IsValid())
+		TWeakObjectPtr<UPlayerStateBase> activeState = stateFlowManager->GetState(stateType);
+
+		if (activeState.IsValid())
 		{
-			activeStates[stateType]->OnStateDeactive();
-			previousStatesSnapshot.Push(activeStates[stateType].Get()); // FIXME: Weak ptr to ptr 
+			activeState->OnStateDeactive();
+			previousStatesSnapshot.Push(activeState.Get()); // FIXME: Weak ptr to ptr 
 		}
 
-		activeStates[stateType] = state;
+		stateFlowManager->ReplaceStateWith(state);
 		state->OnStateActive();
 	}
 
@@ -130,22 +96,23 @@ void UPlayerStateManager::PopStateGroup()
 	for (UPlayerStateBase* state : unloadedStates)
 	{
 		state->OnStateDeactive();
-		activeStates[state->GetPlayerState()] = nullptr;
+		stateFlowManager->DeactiveState(state->GetPlayerState());
 	}
 
 	for (UPlayerStateBase* state : loadedStates)
 	{
-		activeStates[state->GetPlayerState()] = state;
+		stateFlowManager->ReplaceStateWith(state);
 		state->OnStateActive();
 	}
 
 	for (UPlayerStateBase* state : poppedStateGroupData.previousStateGroupSnapshot)
 	{
 		EPlayerState stateType = state->GetPlayerState();
+		TWeakObjectPtr<UPlayerStateBase> activeState = stateFlowManager->GetState(stateType);
 
-		if (!activeStates[stateType].IsValid())
+		if (!activeState.IsValid())
 		{
-			activeStates[stateType] = state;
+			stateFlowManager->ReplaceStateWith(state);
 			state->OnStateActive();
 		}
 	}
@@ -154,18 +121,6 @@ void UPlayerStateManager::PopStateGroup()
 	stateGroups[loadedStateGroupData.stateGroup]->OnLoaded();
 
 	loadedStateGroups.RemoveAt(loadedStateGroups.Num() - 1);
-}
-
-void UPlayerStateManager::OnCurrentStateEndCallback(EPlayerState nextState)
-{
-	TryToChangeCurrentState(nextState, EInputQueueOutputState::NONE);
-}
-
-void UPlayerStateManager::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	currentState->OnStateUpdate(DeltaTime);
 }
 
 UPlayerStateManager::LoadedStateGroupData::LoadedStateGroupData(EPlayerStateGroup NewStateGroup, TArray<UPlayerStateBase*>&& NewPreviousStateGroupSnapshot)

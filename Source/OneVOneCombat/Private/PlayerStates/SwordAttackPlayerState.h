@@ -34,10 +34,15 @@ public:
 	void OnStateActive() override;
 	void OnStateDeactive() override;
 
+
+	bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState) override;
+
 private:
 
 	void OnAttackInputTriggered();
 
 	DataInlineSubOwner<FCharacterStateData> characterStateData;
 	FDelegateHandle inputEventHandle;
+
+	TWeakObjectPtr<UPlayerStateBase> lookState;
 };

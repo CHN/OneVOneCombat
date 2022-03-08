@@ -9,6 +9,7 @@
 #include "MainCharacter/MainCharacterDataAsset.h"
 #include "MainCharacter/CharacterState.h"
 #include "PlayerStateManager.h"
+#include "PlayerStateFlowManager.h"
 #include "InputQueueOutputState.h"
 #include "MainCharacter.h"
 #include "InputQueueSystem.h"
@@ -35,6 +36,7 @@ void UJumpPlayerState::OnStateBeginPlay()
 	movementComponent->AddVelocity(FVector::UpVector * 500.f + characterData->GetCurrentRotation() * FVector::RightVector * 400.f);
 
 	characterState->jumpState->SetTriggerValue(true);
+	lookState = playerStateFlowManager->ReusePlayerState(this, EPlayerState::LOOK);
 }
 
 bool UJumpPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState)
@@ -44,19 +46,21 @@ bool UJumpPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueO
 
 bool UJumpPlayerState::IsStateInterruptible(EPlayerState newState)
 {
-	return newState == EPlayerState::ATTACK;
+	return newState == EPlayerState::ATTACK; // FIXME: This conditions should be handled with masks
 }
 
 void UJumpPlayerState::OnJumpActionExecuted()
 {
-	playerStateManager->TryToChangeCurrentState(EPlayerState::JUMP, EInputQueueOutputState::JUMP); // FIXME
+	playerStateFlowManager->TryToChangeCurrentState(EPlayerState::JUMP, EInputQueueOutputState::JUMP); // FIXME
 }
 
 void UJumpPlayerState::OnStateUpdate(float deltaTime)
 {
+	lookState->OnStateUpdate(deltaTime);
+
 	if (!characterState->jumpState->IsAnimationContinue() && characterData->IsGrounded())
 	{
-		EndState(EPlayerState::MOVE);
+		EndState(EPlayerState::BASIC_MOVEMENT);
 	}
 }
 

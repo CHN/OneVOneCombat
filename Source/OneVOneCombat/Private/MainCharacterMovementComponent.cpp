@@ -40,7 +40,7 @@ void UMainCharacterMovementComponent::SetMoveableComponent(UPrimitiveComponent* 
 	data->currentRotation = moveableComponent->GetComponentRotation().Quaternion();
 }
 
-void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FVector& delta, const FQuat& deltaRotation, bool constrainInputToGround)
+void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FVector& delta, bool constrainInputToGround)
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when MoveByDelta is invoked"));
 	
@@ -51,6 +51,10 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 	data->movementDuration = duration;
 	data->currentDuration = data->movementDuration;
 	data->constrainInputToGround = constrainInputToGround;
+}
+
+void UMainCharacterMovementComponent::RotateByDelta(const FQuat& deltaRotation) // FIXME: Duration may be needed
+{
 	data->currentRotation = deltaRotation * data->currentRotation;
 }
 

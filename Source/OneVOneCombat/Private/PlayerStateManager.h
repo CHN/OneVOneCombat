@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+
 #include "TEnumArray.h"
 
 #include "PlayerStateManager.generated.h"
@@ -11,11 +12,14 @@
 enum class EPlayerStateGroup : uint8;
 class UPlayerStateBase;
 class UPlayerStateGroupBase;
+class UPlayerStateFlowManager;
 
 UENUM()
 enum class EPlayerState : uint8
 {
+	BASIC_MOVEMENT,
 	MOVE,
+	LOOK,
 	JUMP,
 	ATTACK,
 
@@ -34,27 +38,27 @@ public:
 
 	void Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter);
 
-	bool TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason);
-	TWeakObjectPtr<UPlayerStateBase> ReusePlayerState(const UPlayerStateBase* ownerState, EPlayerState state) const;
-
 	void PushStateGroup(EPlayerStateGroup playerStateGroup);
 	void PopStateGroup();
+	
+	inline UPlayerStateFlowManager* GetStateFlowManager() const
+	{
+		return stateFlowManager;
+	}
 
 private:
 
-	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	void CreateStateGroups();
-	void OnCurrentStateEndCallback(EPlayerState nextState);
+	void InitPlayerStates();
 
 	TWeakObjectPtr<AMainCharacter> mainCharacter;
-
-	TEnumArray<TWeakObjectPtr<UPlayerStateBase>, EPlayerState> activeStates;
-	TEnumArray<TWeakObjectPtr<UPlayerStateGroupBase>, EPlayerStateGroup> stateGroups;
-	TWeakObjectPtr<UPlayerStateBase> currentState;
+	TEnumArray<UPlayerStateGroupBase*, EPlayerStateGroup> stateGroups;
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<UPlayerStateGroupBase>> stateGroupTypes;
+
+	UPROPERTY()
+	UPlayerStateFlowManager* stateFlowManager;
 
 	struct LoadedStateGroupData
 	{

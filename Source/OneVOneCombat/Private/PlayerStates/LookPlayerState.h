@@ -6,10 +6,10 @@
 
 #include "DataInlineSubOwner.h"
 
-#include "MovementPlayerState.generated.h"
+#include "LookPlayerState.generated.h"
 
 /**
- * 
+ *
  */
 
 class UMainCharacterMovementComponent;
@@ -17,13 +17,13 @@ class UMainCharacterMovementComponent;
 struct FAnimationRelatedData;
 
 UCLASS()
-class UMovementPlayerState : public UPlayerStateBase
+class ULookPlayerState : public UPlayerStateBase
 {
 public:
 
 	GENERATED_BODY()
 
-	UMovementPlayerState();
+	ULookPlayerState();
 
 	void OnStateInitialized() override;
 	void OnStateUpdate(float deltaTime) override;
@@ -32,5 +32,4 @@ public:
 
 private:
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
-	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;
 };

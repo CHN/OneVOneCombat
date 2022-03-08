@@ -18,6 +18,7 @@ void UPlayerStateBase::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 {
 	mainCharacter = NewMainCharacter;
 	playerStateManager = mainCharacter->GetPlayerStateManager();
+	playerStateFlowManager = playerStateManager->GetStateFlowManager();
 	OnStateInitialized();
 }
 
