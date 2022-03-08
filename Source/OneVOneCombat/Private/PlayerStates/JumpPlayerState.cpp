@@ -36,15 +36,15 @@ void UJumpPlayerState::OnStateBeginPlay()
 	movementComponent->AddVelocity(FVector::UpVector * 500.f + characterData->GetCurrentRotation() * FVector::RightVector * 400.f);
 
 	characterState->jumpState->SetTriggerValue(true);
-	lookState = playerStateFlowManager->ReusePlayerState(this, EPlayerState::LOOK);
+	lookState = playerStateFlowManager->ReuseState(this, EPlayerState::LOOK);
 }
 
-bool UJumpPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState)
+bool UJumpPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState)
 {
 	return previousState != EPlayerState::JUMP && characterData->IsGrounded();
 }
 
-bool UJumpPlayerState::IsStateInterruptible(EPlayerState newState)
+bool UJumpPlayerState::IsStateInterruptible(uint32 newState)
 {
 	return newState == EPlayerState::ATTACK; // FIXME: This conditions should be handled with masks
 }

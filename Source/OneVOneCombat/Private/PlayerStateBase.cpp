@@ -11,7 +11,7 @@ UPlayerStateBase::UPlayerStateBase()
 	: Super()
 {
 	isStatePlaying = false;
-	playerState = EPlayerState::END_OF_ENUM;
+	playerState = uint32(-1);
 }
 
 void UPlayerStateBase::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
@@ -34,12 +34,12 @@ void UPlayerStateBase::EndState_Internal()
 	OnStateEndPlay(isInterrupted);
 }
 
-EPlayerState UPlayerStateBase::GetPlayerState() const
+uint32 UPlayerStateBase::GetPlayerState() const
 {
 	return playerState;
 }
 
-void UPlayerStateBase::EndState(EPlayerState nextState)
+void UPlayerStateBase::EndState(uint32 nextState)
 {
 	isStatePlaying = false;
 	oneTimeStateEndCallback.ExecuteIfBound(nextState);

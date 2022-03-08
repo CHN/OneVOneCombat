@@ -15,12 +15,14 @@
 
 UPlayerStateManager::UPlayerStateManager()
 {
+	PrimaryComponentTick.bCanEverTick = true;
 	stateFlowManager = CreateDefaultSubobject<UPlayerStateFlowManager>("StateFlowManager");
 }
 
 void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 {
 	mainCharacter = NewMainCharacter;
+	stateFlowManager->Init(EPlayerState::END_OF_ENUM);
 
 	CreateStateGroups();
 	InitPlayerStates();
@@ -52,6 +54,13 @@ void UPlayerStateManager::InitPlayerStates()
 	}
 }
 
+void UPlayerStateManager::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	stateFlowManager->UpdateCurrentState(DeltaTime);
+}
+
 void UPlayerStateManager::PushStateGroup(EPlayerStateGroup playerStateGroup)
 {
 	// Load
@@ -62,7 +71,7 @@ void UPlayerStateManager::PushStateGroup(EPlayerStateGroup playerStateGroup)
 
 	for (UPlayerStateBase* state : loadedStates)
 	{
-		EPlayerState stateType = state->GetPlayerState();
+		uint32 stateType = state->GetPlayerState();
 		TWeakObjectPtr<UPlayerStateBase> activeState = stateFlowManager->GetState(stateType);
 
 		if (activeState.IsValid())
@@ -107,7 +116,7 @@ void UPlayerStateManager::PopStateGroup()
 
 	for (UPlayerStateBase* state : poppedStateGroupData.previousStateGroupSnapshot)
 	{
-		EPlayerState stateType = state->GetPlayerState();
+		uint32 stateType = state->GetPlayerState();
 		TWeakObjectPtr<UPlayerStateBase> activeState = stateFlowManager->GetState(stateType);
 
 		if (!activeState.IsValid())

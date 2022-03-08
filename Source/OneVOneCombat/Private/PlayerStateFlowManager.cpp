@@ -6,12 +6,12 @@
 #include "PlayerStateManager.h" // FIXME: Did I include player state manager just for an enum?
 #include "PlayerStateBase.h"
 
-UPlayerStateFlowManager::UPlayerStateFlowManager()
+void UPlayerStateFlowManager::Init(uint32 stateCount)
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	activeStates.SetNum(stateCount);
 }
 
-bool UPlayerStateFlowManager::TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason)
+bool UPlayerStateFlowManager::TryToChangeCurrentState(uint32 nextState, EInputQueueOutputState inputReason)
 {
 	const bool isCurrentStateValid = currentState.IsValid();
 	const bool isCurrentStatePlaying = isCurrentStateValid && currentState->IsStatePlaying();
@@ -29,7 +29,7 @@ bool UPlayerStateFlowManager::TryToChangeCurrentState(EPlayerState nextState, EI
 
 	UPlayerStateBase* newState = activeStates[nextState];
 
-	const EPlayerState currentPlayerState = isCurrentStateValid ? currentState->GetPlayerState() : EPlayerState::NONE;
+	const uint32 currentPlayerState = isCurrentStateValid ? currentState->GetPlayerState() : EPlayerState::NONE;
 
 	const bool isTransitionAllowed = newState->IsStateTransitionInAllowed(currentPlayerState);
 	const bool isInputTransitionAllowed = newState->IsStateTransitionInAllowedByInputStateOutput(inputReason, currentPlayerState);
@@ -51,7 +51,7 @@ bool UPlayerStateFlowManager::TryToChangeCurrentState(EPlayerState nextState, EI
 	return true;
 }
 
-TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::ReusePlayerState(const UPlayerStateBase* ownerState, EPlayerState state) const
+TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::ReuseState(const UPlayerStateBase* ownerState, uint32 state) const
 {
 	auto reusedPlayerState = activeStates[state];
 	reusedPlayerState->OnStateReused(ownerState->GetPlayerState());
@@ -59,7 +59,7 @@ TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::ReusePlayerState(const
 	return reusedPlayerState;
 }
 
-TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::ClearState(EPlayerState stateType)
+TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::ClearState(uint32 stateType)
 {
 	UPlayerStateBase* previousState = activeStates[stateType];
 	activeStates[stateType] = nullptr;
@@ -68,25 +68,23 @@ TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::ClearState(EPlayerStat
 
 TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::ReplaceStateWith(UPlayerStateBase* playerState)
 {
-	EPlayerState stateType = playerState->GetPlayerState();
+	uint32 stateType = playerState->GetPlayerState();
 	UPlayerStateBase* previousState = activeStates[stateType];
 	activeStates[stateType] = playerState;
 	return previousState;
 }
 
-TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::GetState(EPlayerState stateType) const
+TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::GetState(uint32 stateType) const
 {
 	return activeStates[stateType];
 }
 
-void UPlayerStateFlowManager::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UPlayerStateFlowManager::UpdateCurrentState(float deltaTime)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	currentState->OnStateUpdate(DeltaTime);
+	currentState->OnStateUpdate(deltaTime);
 }
 
-void UPlayerStateFlowManager::OnCurrentStateEndCallback(EPlayerState nextState)
+void UPlayerStateFlowManager::OnCurrentStateEndCallback(uint32 nextState)
 {
 	TryToChangeCurrentState(nextState, EInputQueueOutputState::NONE);
 }

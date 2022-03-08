@@ -7,12 +7,11 @@
 #include "PlayerStateBase.generated.h"
 
 enum class EInputQueueOutputState : uint8;
-enum class EPlayerState : uint8;
 class AMainCharacter;
 class UPlayerStateManager;
 class UPlayerStateFlowManager;
 
-DECLARE_DELEGATE_OneParam(FPlayerStateStateEndCallback, EPlayerState);
+DECLARE_DELEGATE_OneParam(FPlayerStateStateEndCallback, uint32);
 
 UCLASS(Abstract, Blueprintable)
 class UPlayerStateBase : public UActorComponent
@@ -25,14 +24,14 @@ public:
 
 	void Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter);
 
-	virtual bool IsStateInterruptible(EPlayerState newState) { return false; }
-	virtual bool IsStateTransitionInAllowed(EPlayerState previousState) { return true; }
+	virtual bool IsStateInterruptible(uint32 newState) { return false; }
+	virtual bool IsStateTransitionInAllowed(uint32 previousState) { return true; }
 
-	virtual bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState) { return false; }
-	virtual bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) { return true; }
+	virtual bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState) { return false; }
+	virtual bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState) { return true; }
 
 	virtual void OnStateInitialized() {}
-	virtual void OnStateReused(EPlayerState ownerState) {}
+	virtual void OnStateReused(uint32 ownerState) {}
 	virtual void OnStateBeginPlay() {}
 	virtual void OnStateUpdate(float deltaTime) {}
 	virtual void OnStateEndPlay(bool isInterrupted) {}
@@ -42,7 +41,7 @@ public:
 	void StartState_Internal();
 	void EndState_Internal();
 
-	EPlayerState GetPlayerState() const;
+	uint32 GetPlayerState() const;
 
 	inline bool IsStatePlaying() const { return isStatePlaying; }
 
@@ -50,12 +49,12 @@ public:
 
 protected:
 
-	EPlayerState playerState;
+	uint32 playerState;
 	TWeakObjectPtr<AMainCharacter> mainCharacter;
 	TWeakObjectPtr<UPlayerStateManager> playerStateManager;
 	TWeakObjectPtr<UPlayerStateFlowManager> playerStateFlowManager;
 
-	void EndState(EPlayerState nextState);
+	void EndState(uint32 nextState);
 
 private:
 

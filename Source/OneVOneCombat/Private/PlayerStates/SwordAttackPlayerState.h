@@ -27,15 +27,11 @@ public:
 	void OnStateInitialized() override;
 	void OnStateUpdate(float deltaTime) override;
 	void OnStateEndPlay(bool isInterrupted) override;
-
-	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) override;
-
-
 	void OnStateActive() override;
 	void OnStateDeactive() override;
 
-
-	bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState) override;
+	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState) override;
+	bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState) override;
 
 private:
 

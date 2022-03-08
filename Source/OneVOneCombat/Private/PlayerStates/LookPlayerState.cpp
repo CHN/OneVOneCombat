@@ -22,12 +22,12 @@ void ULookPlayerState::OnStateUpdate(float deltaTime)
 	movementComponent->RotateByDelta(FQuat::MakeFromEuler(FVector(0.f, 0.f, mainCharacter->GetCharacterData()->GetRawRotateInput().X)));
 }
 
-bool ULookPlayerState::IsStateInterruptible(EPlayerState newState)
+bool ULookPlayerState::IsStateInterruptible(uint32 newState)
 {
 	return true;
 }
 
-bool ULookPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState)
+bool ULookPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState)
 {
 	return true;
 }

@@ -12,31 +12,29 @@
  * 
  */
 
-enum class EPlayerState : uint8;
 class UPlayerStateBase;
 
 UCLASS()
-class UPlayerStateFlowManager : public UActorComponent
+class UPlayerStateFlowManager : public UObject
 {
 public:
 
 	GENERATED_BODY()
 
-	UPlayerStateFlowManager();
+	void Init(uint32 stateCount);
+	void UpdateCurrentState(float deltaTime);
 
-	bool TryToChangeCurrentState(EPlayerState nextState, EInputQueueOutputState inputReason);
-	TWeakObjectPtr<UPlayerStateBase> ReusePlayerState(const UPlayerStateBase* ownerState, EPlayerState state) const;
+	bool TryToChangeCurrentState(uint32 nextState, EInputQueueOutputState inputReason);
+	TWeakObjectPtr<UPlayerStateBase> ReuseState(const UPlayerStateBase* ownerState, uint32 state) const;
 
-	TWeakObjectPtr<UPlayerStateBase> ClearState(EPlayerState stateType);
+	TWeakObjectPtr<UPlayerStateBase> ClearState(uint32 stateType);
 	TWeakObjectPtr<UPlayerStateBase> ReplaceStateWith(UPlayerStateBase* playerState);
-	TWeakObjectPtr<UPlayerStateBase> GetState(EPlayerState stateType) const;
+	TWeakObjectPtr<UPlayerStateBase> GetState(uint32 stateType) const;
 
 private:
 
-	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void OnCurrentStateEndCallback(uint32 nextState);
 
-	void OnCurrentStateEndCallback(EPlayerState nextState);
-
-	TEnumArray<UPlayerStateBase*, EPlayerState> activeStates;
+	TArray<UPlayerStateBase*> activeStates;
 	TWeakObjectPtr<UPlayerStateBase> currentState;
 };

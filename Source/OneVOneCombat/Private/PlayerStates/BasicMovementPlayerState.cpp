@@ -12,8 +12,8 @@ UBasicMovementPlayerState::UBasicMovementPlayerState()
 
 void UBasicMovementPlayerState::OnStateBeginPlay()
 {
-	movePlayerState = playerStateFlowManager->ReusePlayerState(this, EPlayerState::MOVE);
-	lookPlayerState = playerStateFlowManager->ReusePlayerState(this, EPlayerState::LOOK);
+	movePlayerState = playerStateFlowManager->ReuseState(this, EPlayerState::MOVE);
+	lookPlayerState = playerStateFlowManager->ReuseState(this, EPlayerState::LOOK);
 }
 
 void UBasicMovementPlayerState::OnStateUpdate(float deltaTime)
@@ -22,12 +22,12 @@ void UBasicMovementPlayerState::OnStateUpdate(float deltaTime)
 	lookPlayerState->OnStateUpdate(deltaTime);
 }
 
-bool UBasicMovementPlayerState::IsStateInterruptible(EPlayerState newState)
+bool UBasicMovementPlayerState::IsStateInterruptible(uint32 newState)
 {
 	return true;
 }
 
-bool UBasicMovementPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState)
+bool UBasicMovementPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState)
 {
 	return true;
 }

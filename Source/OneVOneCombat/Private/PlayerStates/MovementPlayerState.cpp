@@ -28,12 +28,12 @@ void UMovementPlayerState::OnStateUpdate(float deltaTime)
 	}
 }
 
-bool UMovementPlayerState::IsStateInterruptible(EPlayerState newState)
+bool UMovementPlayerState::IsStateInterruptible(uint32 newState)
 {
 	return true;
 }
 
-bool UMovementPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState)
+bool UMovementPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState)
 {
 	return true;
 }

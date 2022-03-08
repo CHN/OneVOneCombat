@@ -30,9 +30,9 @@ public:
 	void OnStateUpdate(float deltaTime) override;
 	void OnStateEndPlay(bool isInterrupted) override;
 
-	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState) override;
+	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState) override;
 
-	bool IsStateInterruptible(EPlayerState newState) override;
+	bool IsStateInterruptible(uint32 newState) override;
 
 private:
 

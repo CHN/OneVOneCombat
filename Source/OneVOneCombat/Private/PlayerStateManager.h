@@ -15,7 +15,7 @@ class UPlayerStateGroupBase;
 class UPlayerStateFlowManager;
 
 UENUM()
-enum class EPlayerState : uint8
+enum EPlayerState
 {
 	BASIC_MOVEMENT,
 	MOVE,
@@ -47,6 +47,8 @@ public:
 	}
 
 private:
+
+	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void CreateStateGroups();
 	void InitPlayerStates();

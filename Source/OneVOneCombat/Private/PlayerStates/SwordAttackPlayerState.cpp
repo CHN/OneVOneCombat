@@ -22,12 +22,7 @@ void USwordAttackPlayerState::OnStateInitialized()
 void USwordAttackPlayerState::OnStateBeginPlay()
 {
 	mainCharacter->GetCharacterState()->swordAttackState->SetTriggerValue(true);
-	lookState = playerStateFlowManager->ReusePlayerState(this, EPlayerState::LOOK);
-}
-
-bool USwordAttackPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState previousState)
-{
-	return previousState == EPlayerState::BASIC_MOVEMENT;
+	lookState = playerStateFlowManager->ReuseState(this, EPlayerState::LOOK);
 }
 
 void USwordAttackPlayerState::OnStateActive()
@@ -40,14 +35,19 @@ void USwordAttackPlayerState::OnStateDeactive()
 	mainCharacter->GetInputQueueSystem()->UnbindEvent(EInputQueueOutputState::MELEE_ATTACK, inputEventHandle);
 }
 
-bool USwordAttackPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState)
-{
-	return newState == EPlayerState::JUMP;
-}
-
 void USwordAttackPlayerState::OnAttackInputTriggered()
 {
 	playerStateFlowManager->TryToChangeCurrentState(EPlayerState::ATTACK, EInputQueueOutputState::MELEE_ATTACK);
+}
+
+bool USwordAttackPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState)
+{
+	return previousState == EPlayerState::BASIC_MOVEMENT;
+}
+
+bool USwordAttackPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState)
+{
+	return newState == EPlayerState::JUMP;
 }
 
 void USwordAttackPlayerState::OnStateUpdate(float deltaTime)

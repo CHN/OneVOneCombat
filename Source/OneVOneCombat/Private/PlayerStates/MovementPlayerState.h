@@ -27,8 +27,8 @@ public:
 
 	void OnStateInitialized() override;
 	void OnStateUpdate(float deltaTime) override;
-	bool IsStateInterruptible(EPlayerState newState) override;
-	bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, EPlayerState newState) override;
+	bool IsStateInterruptible(uint32 newState) override;
+	bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState) override;
 
 private:
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;

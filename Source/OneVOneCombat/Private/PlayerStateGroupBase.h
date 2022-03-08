@@ -9,7 +9,6 @@
 
 class AMainCharacter;
 class UPlayerStateBase;
-enum class EPlayerState : uint8;
 
 UCLASS(Abstract, Blueprintable)
 class UPlayerStateGroupBase : public UActorComponent
