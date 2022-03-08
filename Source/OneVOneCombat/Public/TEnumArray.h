@@ -11,7 +11,6 @@
 template<typename ValueType, typename EnumType>
 class ONEVONECOMBAT_API TEnumArray
 {
-	using NonPtrValueType = std::remove_pointer_t<ValueType>;
 	using ArrayType = TArray<ValueType>;
 	using SizeType = typename ArrayType::SizeType;
 
@@ -51,25 +50,11 @@ public:
 		std::move(array, inArray);
 	}
 
-	template<typename T = bool, typename std::enable_if_t<IsPointerType, T> = true>
-	NonPtrValueType& operator[](EnumType enumIndex)
-	{
-		return *array[static_cast<SizeType>(enumIndex)];
-	}
-
-	template<typename T = bool, typename std::enable_if_t<IsPointerType, T> = true>
-	const NonPtrValueType& operator[](EnumType enumIndex) const
-	{
-		return *array[static_cast<SizeType>(enumIndex)];
-	}
-
-	template<typename T = bool, typename std::enable_if_t<!IsPointerType, T> = true>
 	ValueType& operator[](EnumType enumIndex)
 	{
 		return array[static_cast<SizeType>(enumIndex)];
 	}
 
-	template<typename T = bool, typename std::enable_if_t<!IsPointerType, T> = true>
 	const ValueType& operator[](EnumType enumIndex) const
 	{
 		return array[static_cast<SizeType>(enumIndex)];
