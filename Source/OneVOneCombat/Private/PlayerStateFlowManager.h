@@ -35,6 +35,7 @@ private:
 
 	void OnCurrentStateEndCallback(uint32 nextState);
 
+	UPROPERTY()
 	TArray<UPlayerStateBase*> activeStates;
 	TWeakObjectPtr<UPlayerStateBase> currentState;
 };
