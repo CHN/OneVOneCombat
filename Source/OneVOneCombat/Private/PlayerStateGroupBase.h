@@ -43,6 +43,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	EPlayerStateGroup stateGroupType;
 
+	UPROPERTY()
 	TArray<UPlayerStateBase*> playerStates;
 	TWeakObjectPtr<AMainCharacter> mainCharacter;
 
