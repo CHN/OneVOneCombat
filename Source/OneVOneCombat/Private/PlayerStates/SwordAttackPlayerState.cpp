@@ -53,6 +53,7 @@ bool USwordAttackPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueue
 void USwordAttackPlayerState::OnStateUpdate(float deltaTime)
 {
 	lookState->OnStateUpdate(deltaTime);
+	mainCharacter->GetMainMovementComponent()->MoveByDelta(deltaTime, mainCharacter->GetCharacterData()->GetCurrentRotation() * mainCharacter->GetCharacterData()->GetRawMoveInput() * 5);
 
 	if (!mainCharacter->GetCharacterState()->swordAttackState->IsAnimationContinue())
 	{
