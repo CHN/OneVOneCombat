@@ -13,7 +13,6 @@
 class UPlayerInputPollingSystem;
 class UInputQueueSystem;
 class UMainCharacterDataAsset;
-class UCharacterState;
 class UPlayerStateManager;
 class UMainCharacterMovementComponent;
 
@@ -49,15 +48,12 @@ public:
 	void SetVerticalLookAxis(float value);
 
 	inline UMainCharacterDataAsset* GetCharacterData() const { return data; }
-	inline UCharacterState* GetCharacterState() const { return characterState; }
 	inline UMainCharacterMovementComponent* GetMainMovementComponent() const { return movementComponent; }
 	inline UPlayerStateManager* GetPlayerStateManager() const { return playerStateManager; }
 	inline UInputQueueSystem* GetInputQueueSystem() const { return inputQueueSystem; }
+	inline UAnimInstance* GetAnimInstance() const { return characterAnimInstance; }
 
 	void HandleActionInput(EUserInputType inputType, EInputEvent inputEvent);
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	USkeletalMeshComponent* SkeletalMeshComp1;
 
 	UPROPERTY(BlueprintReadWrite)
 	USceneComponent* cameraBoom;
@@ -97,11 +93,14 @@ private:
 	UPROPERTY(EditAnywhere)
 	UPrimitiveComponent* capsuleCollider;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* characterSkeletalMesh;
+
+	UPROPERTY()
+	UAnimInstance* characterAnimInstance;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMainCharacterDataAsset* data;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UCharacterState* characterState;
 
 	UPROPERTY(VisibleAnywhere)
 	UMainCharacterMovementComponent* movementComponent;

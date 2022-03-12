@@ -3,12 +3,13 @@
 
 #include "MainCharacter/MainCharacterDataAsset.h"
 
-UMainCharacterDataAsset::UMainCharacterDataAsset()
-	: Super(), 
-	movementComponentDataOwner(&movementComponentData),
-	walkableGroundPropertiesDataOwner(&walkableGroundPropertiesData),
-	characterInputDataOwner(&characterInputData),
-	animationRelatedDataOwner(&animationRelatedData)
+void UMainCharacterDataAsset::PostLoad()
 {
+	Super::PostLoad();
 	
+	movementComponentDataOwner = &movementComponentData;
+	walkableGroundPropertiesDataOwner = &walkableGroundPropertiesData;
+	characterInputDataOwner = &characterInputData;
+	animationRelatedDataOwner = &animationRelatedData;
+	characterStateDataOwner = &characterStateData;
 }

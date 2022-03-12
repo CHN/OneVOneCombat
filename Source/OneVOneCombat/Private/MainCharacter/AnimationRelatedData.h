@@ -22,4 +22,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector rootMotionMoveDelta;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FQuat rootMotionRotation;
 };

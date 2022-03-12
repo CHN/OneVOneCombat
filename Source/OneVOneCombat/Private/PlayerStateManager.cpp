@@ -5,7 +5,6 @@
 
 #include "InputQueueOutputState.h"
 #include "MainCharacter/MainCharacterDataAsset.h"
-#include "MainCharacter/CharacterState.h"
 #include "PlayerStateBase.h"
 #include "PlayerStateGroupBase.h"
 #include "PlayerStateGroupEnum.h"
@@ -26,6 +25,7 @@ void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 
 	CreateStateGroups();
 	InitPlayerStates();
+	mainCharacter->GetAnimInstance()->InitializeAnimation();
 
 	PushStateGroup(EPlayerStateGroup::DEFAULT_GROUP);
 	PushStateGroup(EPlayerStateGroup::MELEE_ATTACK);

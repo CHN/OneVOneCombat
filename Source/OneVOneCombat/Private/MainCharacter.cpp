@@ -27,8 +27,8 @@ AMainCharacter::AMainCharacter()
 	playerStateManager = CreateDefaultSubobject<UPlayerStateManager>("PlayerStateManager");
 
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>("CapsuleCollider");
-
-	characterState = CreateDefaultSubobject<UCharacterState>("CharacterState");
+	characterSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
+	characterSkeletalMesh->AttachToComponent(capsuleCollider, FAttachmentTransformRules::KeepRelativeTransform);
 
 	movementComponent = CreateDefaultSubobject<UMainCharacterMovementComponent>("MovementComponent");
 }
@@ -56,10 +56,12 @@ void AMainCharacter::BeginPlay()
 
 	movementComponent->SetMoveableComponent(capsuleCollider);
 
-	playerStateManager->Init(this);
-
 	data->characterInputDataOwner.BecomeSubOwner(&inputData);
 	data->animationRelatedDataOwner.BecomeSubOwner(&animationRelatedData);
+
+	characterAnimInstance = characterSkeletalMesh->AnimScriptInstance;
+
+	playerStateManager->Init(this);
 }
 
 // Called every frame
@@ -69,16 +71,16 @@ void AMainCharacter::Tick(float DeltaTime)
 
 	ResetInputHandlerAccumulations();
 
-	if (SkeletalMeshComp1->IsPlayingRootMotion())
+	if (characterSkeletalMesh->IsPlayingRootMotion())
 	{
-		FRootMotionMovementParams RootMotion = SkeletalMeshComp1->ConsumeRootMotion();
+		FRootMotionMovementParams RootMotion = characterSkeletalMesh->ConsumeRootMotion();
 
 		if (RootMotion.bHasRootMotion)
 		{
-			const FTransform WorldSpaceRootMotionTransform = SkeletalMeshComp1->ConvertLocalRootMotionToWorld(RootMotion.GetRootMotionTransform());
+			const FTransform WorldSpaceRootMotionTransform = characterSkeletalMesh->ConvertLocalRootMotionToWorld(RootMotion.GetRootMotionTransform());
 
 			// FIXME: NewRotation never used
-			FQuat NewRotation = WorldSpaceRootMotionTransform.GetRotation() * GetRootComponent()->GetComponentRotation().Quaternion();
+			animationRelatedData.data->rootMotionRotation = WorldSpaceRootMotionTransform.GetRotation() * GetRootComponent()->GetComponentRotation().Quaternion();
 			animationRelatedData.data->rootMotionMoveDelta = WorldSpaceRootMotionTransform.GetLocation();
 			animationRelatedData.data->isRootMotionBeingUsed = true;
 		}

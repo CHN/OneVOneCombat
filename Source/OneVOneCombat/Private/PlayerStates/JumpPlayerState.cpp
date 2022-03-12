@@ -7,7 +7,7 @@
 
 #include "../MainCharacterMovementComponent.h"
 #include "MainCharacter/MainCharacterDataAsset.h"
-#include "MainCharacter/CharacterState.h"
+#include "MainCharacter/CharacterStateData.h"
 #include "PlayerStateManager.h"
 #include "PlayerStateFlowManager.h"
 #include "InputQueueOutputState.h"
@@ -26,16 +26,19 @@ void UJumpPlayerState::OnStateInitialized()
 {
 	movementComponent = mainCharacter->GetMainMovementComponent();
 	characterData = mainCharacter->GetCharacterData();
-	characterState = mainCharacter->GetCharacterState();
+	characterData->characterStateDataOwner.BecomeSubOwner(&characterStateData);
 
 	handle = mainCharacter->GetInputQueueSystem()->BindEvent(EInputQueueOutputState::JUMP, this, &UJumpPlayerState::OnJumpActionExecuted);
+
+	mainCharacter->GetAnimInstance()->AddNativeStateExitBinding(FName("DefaultMachine"), FName("Jumping"), FOnGraphStateChanged::CreateUObject(this, &UJumpPlayerState::OnJumpAnimExit));
 }
 
 void UJumpPlayerState::OnStateBeginPlay()
 {
 	movementComponent->AddVelocity(FVector::UpVector * 500.f + characterData->GetCurrentRotation() * FVector::RightVector * 400.f);
 
-	characterState->jumpState->SetTriggerValue(true);
+	characterStateData.data->isJumping = true;
+	characterStateData.data->isJumpingAnimationActive = true;
 	lookState = playerStateFlowManager->ReuseState(this, EPlayerState::LOOK);
 }
 
@@ -54,11 +57,16 @@ void UJumpPlayerState::OnJumpActionExecuted()
 	playerStateFlowManager->TryToChangeCurrentState(EPlayerState::JUMP, EInputQueueOutputState::JUMP); // FIXME
 }
 
+void UJumpPlayerState::OnJumpAnimExit(const struct FAnimNode_StateMachine& /*Machine*/, int32 /*PrevStateIndex*/, int32 /*NextStateIndex*/)
+{
+	characterStateData.data->isJumping = false;
+}
+
 void UJumpPlayerState::OnStateUpdate(float deltaTime)
 {
 	lookState->OnStateUpdate(deltaTime);
 
-	if (!characterState->jumpState->IsAnimationContinue() && characterData->IsGrounded())
+	if (!characterStateData.data->isJumping && characterData->IsGrounded())
 	{
 		EndState(EPlayerState::BASIC_MOVEMENT);
 	}
@@ -66,5 +74,5 @@ void UJumpPlayerState::OnStateUpdate(float deltaTime)
 
 void UJumpPlayerState::OnStateEndPlay(bool isInterrupted)
 {
-	characterState->jumpState->SetTriggerValue(false);
+	characterStateData.data->isJumping = false;
 }

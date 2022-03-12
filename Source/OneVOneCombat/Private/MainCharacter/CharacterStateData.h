@@ -4,25 +4,23 @@
 
 #include "CoreMinimal.h"
 
-#include "AnimationFlaggedBool.h"
-
-#include "CharacterState.generated.h"
+#include "CharacterStateData.generated.h"
 
 /**
  * 
  */
 
-UCLASS(BlueprintType)
-class UCharacterState : public UObject
+USTRUCT(BlueprintType)
+struct FCharacterStateData
 {
-public:
 	GENERATED_BODY()
 
-	UCharacterState();
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool isJumping;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UAnimationFlaggedBool* jumpState;
+	bool isJumpingAnimationActive;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UAnimationFlaggedBool* swordAttackState;
+	bool isAttacking;
 };

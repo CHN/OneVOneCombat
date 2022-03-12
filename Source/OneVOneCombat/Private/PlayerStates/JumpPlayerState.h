@@ -14,7 +14,7 @@
 
 class UMainCharacterMovementComponent;
 class UMainCharacterDataAsset;
-class UCharacterState;
+struct FCharacterStateData;
 
 UCLASS()
 class UJumpPlayerState : public UPlayerStateBase
@@ -37,12 +37,14 @@ public:
 private:
 
 	void OnJumpActionExecuted();
+	void OnJumpAnimExit(const struct FAnimNode_StateMachine& /*Machine*/, int32 /*PrevStateIndex*/, int32 /*NextStateIndex*/);
 
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 	TWeakObjectPtr<UMainCharacterDataAsset> characterData;
-	TWeakObjectPtr<UCharacterState> characterState;
 
 	TWeakObjectPtr<UPlayerStateBase> lookState;
 
 	FDelegateHandle handle;
+
+	DataInlineSubOwner<FCharacterStateData> characterStateData;
 };

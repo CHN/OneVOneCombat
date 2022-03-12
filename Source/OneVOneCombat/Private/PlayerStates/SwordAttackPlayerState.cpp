@@ -4,7 +4,7 @@
 #include "PlayerStates/SwordAttackPlayerState.h"
 
 #include "MainCharacter/MainCharacterDataAsset.h"
-#include "MainCharacter/CharacterState.h"
+#include "MainCharacter/CharacterStateData.h"
 #include "MainCharacter.h"
 #include "PlayerStateFlowManager.h"
 
@@ -16,12 +16,12 @@ USwordAttackPlayerState::USwordAttackPlayerState()
 
 void USwordAttackPlayerState::OnStateInitialized()
 {
-
+	mainCharacter->GetCharacterData()->characterStateDataOwner.BecomeSubOwner(&characterStateData);
 }
 
 void USwordAttackPlayerState::OnStateBeginPlay()
 {
-	mainCharacter->GetCharacterState()->swordAttackState->SetTriggerValue(true);
+	characterStateData.data->isAttacking = true;
 	lookState = playerStateFlowManager->ReuseState(this, EPlayerState::LOOK);
 }
 
@@ -55,7 +55,7 @@ void USwordAttackPlayerState::OnStateUpdate(float deltaTime)
 	lookState->OnStateUpdate(deltaTime);
 	mainCharacter->GetMainMovementComponent()->MoveByDelta(deltaTime, mainCharacter->GetCharacterData()->GetCurrentRotation() * mainCharacter->GetCharacterData()->GetRawMoveInput() * 5);
 
-	if (!mainCharacter->GetCharacterState()->swordAttackState->IsAnimationContinue())
+	if (!characterStateData.data->isAttacking)
 	{
 		EndState(EPlayerState::BASIC_MOVEMENT);
 	}
@@ -63,5 +63,5 @@ void USwordAttackPlayerState::OnStateUpdate(float deltaTime)
 
 void USwordAttackPlayerState::OnStateEndPlay(bool isInterrupted)
 {
-	mainCharacter->GetCharacterState()->swordAttackState->SetTriggerValue(false);
+	characterStateData.data->isAttacking = false;
 }
