@@ -7,12 +7,14 @@
 #include "MainCharacterMovementComponent.h"
 #include "PlayerStateManager.h"
 #include "Components/CapsuleComponent.h"
+#include "CharacterAnimInstance.h"
+#include "CharacterEvents/CharacterEvents.h"
+#include "CharacterEvents/StateEvents.h"
 
 #include "MainCharacter/MainCharacterDataAsset.h"
-
 #include "MainCharacter/CharacterInputData.h"
 #include "MainCharacter/AnimationRelatedData.h"
-#include "Engine/AssetManager.h"
+
 #include "EditorUtilities.h"
 
 // Sets default values
@@ -31,6 +33,8 @@ AMainCharacter::AMainCharacter()
 	characterSkeletalMesh->AttachToComponent(capsuleCollider, FAttachmentTransformRules::KeepRelativeTransform);
 
 	movementComponent = CreateDefaultSubobject<UMainCharacterMovementComponent>("MovementComponent");
+	characterEvents = CreateDefaultSubobject<UCharacterEvents>("CharacterEvents");
+	stateEvents = CreateDefaultSubobject<UStateEvents>("StateEvents");
 }
 
 void AMainCharacter::PreRegisterAllComponents()
@@ -59,7 +63,7 @@ void AMainCharacter::BeginPlay()
 	data->characterInputDataOwner.BecomeSubOwner(&inputData);
 	data->animationRelatedDataOwner.BecomeSubOwner(&animationRelatedData);
 
-	characterAnimInstance = characterSkeletalMesh->AnimScriptInstance;
+	characterAnimInstance = Cast<UCharacterAnimInstance>(characterSkeletalMesh->AnimScriptInstance);
 
 	playerStateManager->Init(this);
 }

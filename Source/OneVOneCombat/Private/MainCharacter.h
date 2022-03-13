@@ -4,17 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-
 #include "UserInputType.h"
 #include "DataInlineSubOwner.h"
 
 #include "MainCharacter.generated.h"
+
+class UDataTable;
 
 class UPlayerInputPollingSystem;
 class UInputQueueSystem;
 class UMainCharacterDataAsset;
 class UPlayerStateManager;
 class UMainCharacterMovementComponent;
+class UUserActionAndAxisInputHandler;
+class UCharacterAnimInstance;
+class UCharacterEvents;
+class UStateEvents;
 
 struct FCharacterInputData;
 struct FAnimationRelatedData;
@@ -51,7 +56,10 @@ public:
 	inline UMainCharacterMovementComponent* GetMainMovementComponent() const { return movementComponent; }
 	inline UPlayerStateManager* GetPlayerStateManager() const { return playerStateManager; }
 	inline UInputQueueSystem* GetInputQueueSystem() const { return inputQueueSystem; }
-	inline UAnimInstance* GetAnimInstance() const { return characterAnimInstance; }
+	inline UCharacterAnimInstance* GetAnimInstance() const { return characterAnimInstance; }
+	inline UCharacterEvents* GetCharacterEvents() const { return characterEvents; }
+	inline UStateEvents* GetStateEvents() const { return stateEvents; }
+ 	inline const UDataTable* GetAnimationStateEventDataTable() const { return animationStateEventDataTable; }
 
 	void HandleActionInput(EUserInputType inputType, EInputEvent inputEvent);
 
@@ -97,13 +105,22 @@ private:
 	USkeletalMeshComponent* characterSkeletalMesh;
 
 	UPROPERTY()
-	UAnimInstance* characterAnimInstance;
+	UCharacterAnimInstance* characterAnimInstance;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMainCharacterDataAsset* data;
 
 	UPROPERTY(VisibleAnywhere)
 	UMainCharacterMovementComponent* movementComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UCharacterEvents* characterEvents;
+	
+	UPROPERTY(VisibleAnywhere)
+	UStateEvents* stateEvents;
+
+	UPROPERTY(EditDefaultsOnly)
+	UDataTable* animationStateEventDataTable;
 
 	DataInlineSubOwner<FCharacterInputData> inputData;
 	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;

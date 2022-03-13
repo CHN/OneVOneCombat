@@ -10,11 +10,27 @@
 /**
  * 
  */
+
+class UDataTable;
+class UCharacterEvents;
+class UMainCharacterDataAsset;
+
 UCLASS()
 class UCharacterAnimInstance : public UAnimInstance
 {	
 	GENERATED_BODY()
-public:
-	void NativeBeginPlay() override;
 
+private:
+
+	void NativeInitializeAnimation() override;
+	void BindAnimationEvents(const UDataTable* eventTable, TWeakObjectPtr<UCharacterEvents> characterEvents);
+
+	UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe = "true", AllowPrivateAccess = "true"))
+	UMainCharacterDataAsset* GetCharacterData() const
+	{
+		return characterData;
+	}
+
+	UPROPERTY(BlueprintGetter = "GetCharacterData", meta = (AllowPrivateAccess = "true"))
+	UMainCharacterDataAsset* characterData;
 };

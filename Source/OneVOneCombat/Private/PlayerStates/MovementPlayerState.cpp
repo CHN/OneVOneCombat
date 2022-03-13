@@ -24,7 +24,7 @@ void UMovementPlayerState::OnStateUpdate(float deltaTime)
 {
 	if (!movementComponent->IsMovementBeingApplied())
 	{
-		movementComponent->MoveByDelta(deltaTime, mainCharacter->GetActorRotation().Quaternion() * mainCharacter->GetCharacterData()->GetRawMoveInput() * 12.f);
+		movementComponent->MoveByDelta(deltaTime, animationRelatedData.data->rootMotionMoveDelta);
 	}
 }
 

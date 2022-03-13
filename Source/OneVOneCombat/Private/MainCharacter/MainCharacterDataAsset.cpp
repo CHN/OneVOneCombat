@@ -12,4 +12,5 @@ void UMainCharacterDataAsset::PostLoad()
 	characterInputDataOwner = &characterInputData;
 	animationRelatedDataOwner = &animationRelatedData;
 	characterStateDataOwner = &characterStateData;
+	inventoryDataOwner = &inventoryData;
 }

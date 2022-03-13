@@ -30,7 +30,7 @@ void UJumpPlayerState::OnStateInitialized()
 
 	handle = mainCharacter->GetInputQueueSystem()->BindEvent(EInputQueueOutputState::JUMP, this, &UJumpPlayerState::OnJumpActionExecuted);
 
-	mainCharacter->GetAnimInstance()->AddNativeStateExitBinding(FName("DefaultMachine"), FName("Jumping"), FOnGraphStateChanged::CreateUObject(this, &UJumpPlayerState::OnJumpAnimExit));
+	mainCharacter->GetCharacterEvents()->animationStateExitEvents["DefaultMachine"]["Jumping"].AddUObject(this, &UJumpPlayerState::OnJumpAnimExit);
 }
 
 void UJumpPlayerState::OnStateBeginPlay()
@@ -57,7 +57,7 @@ void UJumpPlayerState::OnJumpActionExecuted()
 	playerStateFlowManager->TryToChangeCurrentState(EPlayerState::JUMP, EInputQueueOutputState::JUMP); // FIXME
 }
 
-void UJumpPlayerState::OnJumpAnimExit(const struct FAnimNode_StateMachine& /*Machine*/, int32 /*PrevStateIndex*/, int32 /*NextStateIndex*/)
+void UJumpPlayerState::OnJumpAnimExit(const FName& /*Machine Name*/, const FName& /*State Name*/)
 {
 	characterStateData.data->isJumping = false;
 }

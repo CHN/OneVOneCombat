@@ -37,7 +37,7 @@ public:
 private:
 
 	void OnJumpActionExecuted();
-	void OnJumpAnimExit(const struct FAnimNode_StateMachine& /*Machine*/, int32 /*PrevStateIndex*/, int32 /*NextStateIndex*/);
+	void OnJumpAnimExit(const FName& /*Machine Name*/, const FName& /*State Name*/);
 
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 	TWeakObjectPtr<UMainCharacterDataAsset> characterData;
