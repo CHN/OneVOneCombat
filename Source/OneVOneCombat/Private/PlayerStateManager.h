@@ -27,7 +27,7 @@ enum EPlayerState
 	NONE
 };
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom), meta = (BlueprintSpawnableComponent))
 class UPlayerStateManager : public UActorComponent
 {
 	GENERATED_BODY()

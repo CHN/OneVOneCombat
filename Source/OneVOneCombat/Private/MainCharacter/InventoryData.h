@@ -10,6 +10,8 @@
  *
  */
 
+class UInventoryItem;
+
 USTRUCT()
 struct FInventoryItemInfo
 {
@@ -17,6 +19,12 @@ struct FInventoryItemInfo
 
 	UPROPERTY(VisibleAnywhere)
 	uint32 count;
+
+	UPROPERTY(VisibleAnywhere)
+	uint32 maxStackCount;
+
+	UPROPERTY(VisibleAnywhere)
+	UInventoryItem* item;
 };
 
 USTRUCT(BlueprintType)
@@ -24,5 +32,9 @@ struct FInventoryData
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditDefaultsOnly)
+	uint32 maxItemCount;
 
+	UPROPERTY(VisibleAnywhere)
+	TArray<FInventoryItemInfo> items;
 };
