@@ -141,12 +141,12 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 
 	LOG_TO_SCREEN("Current Action is {0}", EditorUtilities::EnumToString(TEXT("EInputQueueOutputState"), currentInputQueueData->GetInputQueueOutputState()));
 
-	events[currentInputQueueData->GetInputQueueOutputState()].Broadcast();
+	queueEvents[currentInputQueueData->GetInputQueueOutputState()].Broadcast();
 }
 
-void UInputQueueSystem::UnbindEvent(EInputQueueOutputState state, FDelegateHandle handle)
+void UInputQueueSystem::UnbindQueueEvent(EInputQueueOutputState state, const FDelegateHandle& handle)
 {
-	events[state].Remove(handle);
+	queueEvents[state].Remove(handle);
 }
 
 void UInputQueueSystem::UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset)

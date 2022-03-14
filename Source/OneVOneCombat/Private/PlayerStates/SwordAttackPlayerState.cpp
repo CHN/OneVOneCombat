@@ -27,12 +27,12 @@ void USwordAttackPlayerState::OnStateBeginPlay()
 
 void USwordAttackPlayerState::OnStateActive()
 {
-	inputEventHandle = mainCharacter->GetInputQueueSystem()->BindEvent(EInputQueueOutputState::MELEE_ATTACK, this, &USwordAttackPlayerState::OnAttackInputTriggered);
+	inputEventHandle = mainCharacter->GetInputQueueSystem()->BindQueueEvent(EInputQueueOutputState::MELEE_ATTACK, this, &USwordAttackPlayerState::OnAttackInputTriggered);
 }
 
 void USwordAttackPlayerState::OnStateDeactive()
 {
-	mainCharacter->GetInputQueueSystem()->UnbindEvent(EInputQueueOutputState::MELEE_ATTACK, inputEventHandle);
+	mainCharacter->GetInputQueueSystem()->UnbindQueueEvent(EInputQueueOutputState::MELEE_ATTACK, inputEventHandle);
 }
 
 void USwordAttackPlayerState::OnAttackInputTriggered()

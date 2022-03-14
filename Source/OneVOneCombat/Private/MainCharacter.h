@@ -20,6 +20,7 @@ class UUserActionAndAxisInputHandler;
 class UCharacterAnimInstance;
 class UCharacterEvents;
 class UStateEvents;
+class UInventoryComponent;
 
 struct FCharacterInputData;
 struct FAnimationRelatedData;
@@ -56,6 +57,7 @@ public:
 	inline UMainCharacterMovementComponent* GetMainMovementComponent() const { return movementComponent; }
 	inline UPlayerStateManager* GetPlayerStateManager() const { return playerStateManager; }
 	inline UInputQueueSystem* GetInputQueueSystem() const { return inputQueueSystem; }
+	inline UPlayerInputPollingSystem* GetPlayerInputPollingSystem() const { return playerInputPollingSystem; }
 	inline UCharacterAnimInstance* GetAnimInstance() const { return characterAnimInstance; }
 	inline UCharacterEvents* GetCharacterEvents() const { return characterEvents; }
 	inline UStateEvents* GetStateEvents() const { return stateEvents; }
@@ -121,6 +123,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* animationStateEventDataTable;
+
+	UPROPERTY(VisibleAnywhere)
+	UInventoryComponent* inventoryComponent;
 
 	DataInlineSubOwner<FCharacterInputData> inputData;
 	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;

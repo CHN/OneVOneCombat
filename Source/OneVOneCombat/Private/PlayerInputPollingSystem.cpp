@@ -19,6 +19,8 @@ void UPlayerInputPollingSystem::AddActionToUserInputPollingQueue(EUserInputType 
 	FUserInput userInput = UserInputUtilities::ConvertActionToUserInput(inputType, inputEvent);
 	inputPoll.Insert(std::move(userInput), 0);
 
+	inputEvents[inputType].Broadcast(inputEvent);
+
 	onAnInputTriggered.ExecuteIfBound(this);
 }
 
@@ -35,4 +37,9 @@ void UPlayerInputPollingSystem::RemoveFromPolling(int32 inputSequenceCount)
 void UPlayerInputPollingSystem::RemoveFromPollingAt(int32 index)
 {
 	inputPoll.RemoveAt(index, 1);
+}
+
+void UPlayerInputPollingSystem::UnbindInputEvent(EUserInputType inputType, const FDelegateHandle& handle)
+{
+	inputEvents[inputType].Remove(handle);
 }

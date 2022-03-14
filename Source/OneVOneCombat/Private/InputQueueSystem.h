@@ -23,14 +23,14 @@ struct FInputQueueData
 	TArray<UInputQueueDataAsset*> inputQueueDataAssets;
 };
 
+DECLARE_EVENT(UInputQueueSystem, FInputQueueSystemEvent)
+
 UCLASS(Blueprintable)
 class UInputQueueSystem : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-
-	DECLARE_EVENT(UInputQueueSystem, FInputQueueSystemEvent)
+public:
 
 	// Sets default values for this component's properties
 	UInputQueueSystem();
@@ -40,12 +40,12 @@ public:
 	void ConsumeInputs(UPlayerInputPollingSystem* inputPollingSystem);
 
 	template<typename UserClass>
-	FDelegateHandle BindEvent(EInputQueueOutputState state, UserClass* object, typename TMemFunPtrType<false, UserClass, void()>::Type function)
+	FDelegateHandle BindQueueEvent(EInputQueueOutputState state, UserClass* object, typename TMemFunPtrType<false, UserClass, void()>::Type function)
 	{
-		return events[state].AddUObject(object, function);
+		return queueEvents[state].AddUObject(object, function);
 	}
 
-	void UnbindEvent(EInputQueueOutputState state, FDelegateHandle handle);
+	void UnbindQueueEvent(EInputQueueOutputState state, const FDelegateHandle& handle);
 
 private:
 
@@ -59,7 +59,7 @@ private:
 	};
 
 	TArray<DiscardInputPair> discardInputPairs;
-	TEnumArray<FInputQueueSystemEvent, EInputQueueOutputState> events;
+	TEnumArray<FInputQueueSystemEvent, EInputQueueOutputState> queueEvents;
 
 	void SortInputQueueDataArray();
 	void UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset);

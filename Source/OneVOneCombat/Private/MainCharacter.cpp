@@ -6,6 +6,7 @@
 #include "InputQueueSystem.h"
 #include "MainCharacterMovementComponent.h"
 #include "PlayerStateManager.h"
+#include "InventoryComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "CharacterAnimInstance.h"
 #include "CharacterEvents/CharacterEvents.h"
@@ -35,6 +36,8 @@ AMainCharacter::AMainCharacter()
 	movementComponent = CreateDefaultSubobject<UMainCharacterMovementComponent>("MovementComponent");
 	characterEvents = CreateDefaultSubobject<UCharacterEvents>("CharacterEvents");
 	stateEvents = CreateDefaultSubobject<UStateEvents>("StateEvents");
+
+	inventoryComponent = CreateDefaultSubobject<UInventoryComponent>("InventoryComponent");
 }
 
 void AMainCharacter::PreRegisterAllComponents()
@@ -66,6 +69,7 @@ void AMainCharacter::BeginPlay()
 	characterAnimInstance = Cast<UCharacterAnimInstance>(characterSkeletalMesh->AnimScriptInstance);
 
 	playerStateManager->Init(this);
+	inventoryComponent->Init(this);
 }
 
 // Called every frame

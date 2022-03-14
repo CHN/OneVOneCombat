@@ -28,7 +28,7 @@ void UJumpPlayerState::OnStateInitialized()
 	characterData = mainCharacter->GetCharacterData();
 	characterData->characterStateDataOwner.BecomeSubOwner(&characterStateData);
 
-	handle = mainCharacter->GetInputQueueSystem()->BindEvent(EInputQueueOutputState::JUMP, this, &UJumpPlayerState::OnJumpActionExecuted);
+	handle = mainCharacter->GetInputQueueSystem()->BindQueueEvent(EInputQueueOutputState::JUMP, this, &UJumpPlayerState::OnJumpActionExecuted);
 
 	mainCharacter->GetCharacterEvents()->animationStateExitEvents["DefaultMachine"]["Jumping"].AddUObject(this, &UJumpPlayerState::OnJumpAnimExit);
 }
