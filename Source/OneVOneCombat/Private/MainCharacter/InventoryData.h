@@ -35,6 +35,13 @@ struct FInventoryData
 	UPROPERTY(EditDefaultsOnly)
 	uint32 maxItemCount;
 
+	// items.Num() + quickItems.Num() < maxItemCount
 	UPROPERTY(VisibleAnywhere)
 	TArray<FInventoryItemInfo> items;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<FInventoryItemInfo> quickItems;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 selectedQuickItem = -1;
 };

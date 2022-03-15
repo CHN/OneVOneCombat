@@ -22,6 +22,7 @@ enum EPlayerState
 	LOOK,
 	JUMP,
 	ATTACK,
+	QUICK_ITEM_CHANGED,
 
 	END_OF_ENUM,
 	NONE

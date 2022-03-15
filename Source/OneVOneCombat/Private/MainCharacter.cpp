@@ -46,6 +46,18 @@ void AMainCharacter::PreRegisterAllComponents()
 	data = DuplicateObject(data, this);
 }
 
+void AMainCharacter::SpawnItemOnSocket(const FName& socketName, AActor* actor)
+{
+	if (lastAttachedItem)
+	{
+		lastAttachedItem->SetActorHiddenInGame(true);
+	}
+
+	actor->AttachToComponent(characterSkeletalMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, socketName);
+	actor->SetActorHiddenInGame(false);
+	lastAttachedItem = actor;
+}
+
 void AMainCharacter::CreateInputHandlers()
 {
 	horizontalMovementInputHandler = NewObject<UUserActionAndAxisInputHandler>(this);

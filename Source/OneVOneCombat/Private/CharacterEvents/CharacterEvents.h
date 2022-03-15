@@ -12,7 +12,8 @@
 
 struct FAnimNode_StateMachine;
 
-DECLARE_EVENT_TwoParams(UCharacterEvents, FAnimationStateEvent, const FName& /*Machine Name*/, const FName& /*State Name*/);
+DECLARE_EVENT_TwoParams(UCharacterEvents, FAnimationStateEvent, const FName& /*Machine Name*/, const FName& /*State Name*/); 
+DECLARE_EVENT(UCharacterEvents, FOnInventoryQuickItemChanged);
 
 UCLASS(BlueprintType)
 class UCharacterEvents : public UObject
@@ -24,4 +25,6 @@ public:
 	// FIXME: To use subscript initializer std::map was used, it should be replaced with enums and nested TArrays
 	std::map<FName, std::map<FName, FAnimationStateEvent>> animationStateEntryEvents;
 	std::map<FName, std::map<FName, FAnimationStateEvent>> animationStateExitEvents;
+
+	FOnInventoryQuickItemChanged onInventoryQuickItemChanged;
 };

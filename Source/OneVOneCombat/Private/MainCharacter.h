@@ -70,6 +70,9 @@ public:
 
 	void PreRegisterAllComponents() override;
 
+	// FIXME: For testing purposes
+	void SpawnItemOnSocket(const FName& socketName, AActor* actor);
+
 protected:
 	 
 	virtual void BeginPlay() override;
@@ -115,10 +118,10 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UMainCharacterMovementComponent* movementComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	UCharacterEvents* characterEvents;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 	UStateEvents* stateEvents;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -126,6 +129,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UInventoryComponent* inventoryComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	AActor* lastAttachedItem;
 
 	DataInlineSubOwner<FCharacterInputData> inputData;
 	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;

@@ -23,4 +23,7 @@ struct FCharacterStateData
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool isAttacking;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool isQuickItemChanging;
 };

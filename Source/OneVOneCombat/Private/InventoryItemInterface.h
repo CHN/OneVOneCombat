@@ -11,6 +11,28 @@ UINTERFACE(MinimalAPI)
 class UInventoryItemInterface : public UInterface
 {
 	GENERATED_BODY()
+public:
+
+	UFUNCTION(BlueprintNativeEvent)
+	AActor* GetOwnerActor();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnItemPickedUp();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnItemStartedToUse();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnItemActivated();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnItemDeactivated();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnItemUseFinished();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnItemDropped();
 };
 
 /**
@@ -21,10 +43,11 @@ class IInventoryItemInterface
 	GENERATED_BODY()
 public:
 
-	virtual void OnItemPickedUp() {}
-	virtual void OnItemStartedToUse() {}
-	virtual void OnItemActivated() {}
-	virtual void OnItemDeactivated() {}
-	virtual void OnItemUseFinished() {}
-	virtual void OnItemDropped() {}
+	virtual AActor* GetOwnerActor() = 0;
+	virtual void OnItemPickedUp();
+	virtual void OnItemStartedToUse();
+	virtual void OnItemActivated();
+	virtual void OnItemDeactivated();
+	virtual void OnItemUseFinished();
+	virtual void OnItemDropped();
 };

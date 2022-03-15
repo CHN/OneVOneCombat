@@ -39,6 +39,7 @@ void UCharacterAnimInstance::BindAnimationEvents(const UDataTable* eventTable, T
 				}));
 			break;
 		case EAnimationStateEventType::Exit:
+
 			AddNativeStateExitBinding(eventRow->machineName, eventRow->stateName, FOnGraphStateChanged::CreateLambda([=](const FAnimNode_StateMachine&, int32, int32)
 				{
 					characterEvents->animationStateExitEvents[machineName][stateName].Broadcast(machineName, stateName);

@@ -4,9 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "DataInlineSubOwner.h"
+
 #include "InventoryComponent.generated.h"
 
 class AMainCharacter;
+class IInventoryItemInterface;
+
+struct FInventoryData;
+struct FCharacterStateData;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UInventoryComponent : public UActorComponent
@@ -26,6 +32,14 @@ private:
 	UPROPERTY()
 	AMainCharacter* mainCharacter;
 
-	void OnSelectedItemSwitchedToNext(EInputEvent inputEvent);
-	void OnSelectedItemSwitchedToPrevious(EInputEvent inputEvent);
+	void OnNextItemSelectInputTriggered(EInputEvent inputEvent);
+	void OnPreviousItemSelectInputTriggered(EInputEvent inputEvent);
+
+	void CreateStartingInventoryItems();
+
+	DataInlineSubOwner<FInventoryData> inventoryData;
+	DataInlineSubOwner<FCharacterStateData> characterStateData;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<AActor>> startingItems;
 };
