@@ -37,7 +37,14 @@ void USwordAttackPlayerState::OnStateDeactive()
 
 void USwordAttackPlayerState::OnAttackInputTriggered()
 {
-	playerStateFlowManager->TryToChangeCurrentState(EPlayerState::ATTACK, EInputQueueOutputState::MELEE_ATTACK);
+	if (characterStateData.data->isAttacking)
+	{
+		EndState(EPlayerState::BASIC_MOVEMENT);
+	}
+	else
+	{
+		playerStateFlowManager->TryToChangeCurrentState(EPlayerState::ATTACK, EInputQueueOutputState::MELEE_ATTACK);
+	}
 }
 
 bool USwordAttackPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState)

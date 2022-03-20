@@ -33,6 +33,7 @@ struct FMovementComponentData
 	UPROPERTY(VisibleAnywhere)
 	FQuat currentRotation;
 
+	// FIXME: Booleans can be moved up to fix padding
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool isGrounding;
 

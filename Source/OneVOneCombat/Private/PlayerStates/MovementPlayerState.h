@@ -14,8 +14,6 @@
 
 class UMainCharacterMovementComponent;
 
-struct FAnimationRelatedData;
-
 UCLASS()
 class UMovementPlayerState : public UPlayerStateBase
 {
@@ -31,6 +29,10 @@ public:
 	bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState) override;
 
 private:
+
+	void OnSprintKeyStateChanged(EInputEvent inputEvent);
+
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;
+	DataInlineSubOwner<FCharacterStateData> characterStateData;
 };

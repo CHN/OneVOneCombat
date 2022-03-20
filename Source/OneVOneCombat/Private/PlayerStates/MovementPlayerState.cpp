@@ -17,7 +17,10 @@ UMovementPlayerState::UMovementPlayerState()
 void UMovementPlayerState::OnStateInitialized()
 {
 	mainCharacter->GetCharacterData()->animationRelatedDataOwner.BecomeSubOwner(&animationRelatedData);
+	mainCharacter->GetCharacterData()->characterStateDataOwner.BecomeSubOwner(&characterStateData);
 	movementComponent = mainCharacter->GetMainMovementComponent();
+
+	mainCharacter->GetPlayerInputPollingSystem()->BindInputEvent(EUserInputType::SPRINT, this, &UMovementPlayerState::OnSprintKeyStateChanged);
 }
 
 void UMovementPlayerState::OnStateUpdate(float deltaTime)
@@ -36,4 +39,9 @@ bool UMovementPlayerState::IsStateInterruptible(uint32 newState)
 bool UMovementPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState)
 {
 	return true;
+}
+
+void UMovementPlayerState::OnSprintKeyStateChanged(EInputEvent inputEvent)
+{
+	characterStateData.data->isSprinting = inputEvent == EInputEvent::IE_Pressed;
 }

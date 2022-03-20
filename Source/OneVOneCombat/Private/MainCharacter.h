@@ -112,7 +112,7 @@ private:
 	UPROPERTY()
 	UCharacterAnimInstance* characterAnimInstance;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMainCharacterDataAsset* data;
 
 	UPROPERTY(VisibleAnywhere)

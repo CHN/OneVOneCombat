@@ -32,6 +32,7 @@ public:
 private:
 	void OnQuickItemChanged();
 	void OnQuickItemChangedAnimFinished(const FName& /*Machine Name*/, const FName& /*State Name*/);
+	void OnQuickItemChangedEndAnimFinished(const FName& /*Machine Name*/, const FName& /*State Name*/);
 
 	TWeakObjectPtr<UPlayerStateBase> basicMovement;
 

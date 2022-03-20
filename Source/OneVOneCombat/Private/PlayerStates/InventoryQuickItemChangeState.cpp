@@ -15,6 +15,8 @@ void UInventoryQuickItemChangeState::OnStateInitialized()
 	mainCharacter->GetCharacterEvents()->onInventoryQuickItemChanged.AddUObject(this, &UInventoryQuickItemChangeState::OnQuickItemChanged);
 
 	mainCharacter->GetCharacterEvents()->animationStateExitEvents["DefaultMachine"]["QuickItemChange"].AddUObject(this, &UInventoryQuickItemChangeState::OnQuickItemChangedAnimFinished);
+
+	mainCharacter->GetCharacterEvents()->animationStateExitEvents["DefaultMachine"]["QuickItemEnd"].AddUObject(this, &UInventoryQuickItemChangeState::OnQuickItemChangedEndAnimFinished);
 }
 
 void UInventoryQuickItemChangeState::OnQuickItemChanged()
@@ -40,7 +42,10 @@ void UInventoryQuickItemChangeState::OnQuickItemChangedAnimFinished(const FName&
 	const FInventoryItemInfo& selectedItem = inventoryData.data->quickItems[inventoryData.data->selectedQuickItem];
 
 	mainCharacter->SpawnItemOnSocket(selectedItem.item->GetMeshSocketName(), selectedItem.item->GetOwner()); // FIXME: Need to use a proper way
+}
 
+void UInventoryQuickItemChangeState::OnQuickItemChangedEndAnimFinished(const FName& /*Machine Name*/, const FName& /*State Name*/)
+{
 	EndState(EPlayerState::BASIC_MOVEMENT);
 }
 

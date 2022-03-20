@@ -202,6 +202,9 @@ void AMainCharacter::BindPlayerActionInputs()
 
 	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("ChangeWeapon_Next"), EInputEvent::IE_Pressed, this, &AMainCharacter::HandleActionInput, EUserInputType::CHANGE_WEAPON_NEXT, EInputEvent::IE_Pressed);
 	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("ChangeWeapon_Next"), EInputEvent::IE_Released, this, &AMainCharacter::HandleActionInput, EUserInputType::CHANGE_WEAPON_NEXT, EInputEvent::IE_Released);
+
+	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Sprint"), EInputEvent::IE_Released, this, &AMainCharacter::HandleActionInput, EUserInputType::SPRINT, EInputEvent::IE_Released);
+	InputComponent->BindAction<FHandleActionInputDelegate>(TEXT("Sprint"), EInputEvent::IE_Pressed, this, &AMainCharacter::HandleActionInput, EUserInputType::SPRINT, EInputEvent::IE_Pressed);
 }
 
 void AMainCharacter::SetHorizontalMoveAxis(float value)

@@ -14,6 +14,7 @@ enum class EUserInputType : uint8
 	CROUCH_INPUT,
 	CHANGE_WEAPON_PREVIOUS,
 	CHANGE_WEAPON_NEXT,
+	SPRINT,
 
 	END_OF_ENUM
 };

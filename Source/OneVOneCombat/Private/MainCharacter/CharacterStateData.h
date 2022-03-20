@@ -26,4 +26,7 @@ struct FCharacterStateData
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool isQuickItemChanging;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool isSprinting;
 };
