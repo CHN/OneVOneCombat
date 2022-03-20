@@ -22,7 +22,7 @@ void USwordAttackPlayerState::OnStateInitialized()
 void USwordAttackPlayerState::OnStateBeginPlay()
 {
 	characterStateData.data->isAttacking = true;
-	lookState = playerStateFlowManager->ReuseState(this, EPlayerState::LOOK);
+	basicMovementState = playerStateFlowManager->ReuseState(this, EPlayerState::BASIC_MOVEMENT);
 }
 
 void USwordAttackPlayerState::OnStateActive()
@@ -59,8 +59,7 @@ bool USwordAttackPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueue
 
 void USwordAttackPlayerState::OnStateUpdate(float deltaTime)
 {
-	lookState->OnStateUpdate(deltaTime);
-	mainCharacter->GetMainMovementComponent()->MoveByDelta(deltaTime, mainCharacter->GetCharacterData()->GetCurrentRotation() * mainCharacter->GetCharacterData()->GetRawMoveInput() * 5);
+	basicMovementState->OnStateUpdate(deltaTime);
 
 	if (!characterStateData.data->isAttacking)
 	{

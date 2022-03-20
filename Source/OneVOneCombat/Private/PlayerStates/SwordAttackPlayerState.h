@@ -40,5 +40,5 @@ private:
 	DataInlineSubOwner<FCharacterStateData> characterStateData;
 	FDelegateHandle inputEventHandle;
 
-	TWeakObjectPtr<UPlayerStateBase> lookState;
+	TWeakObjectPtr<UPlayerStateBase> basicMovementState;
 };
