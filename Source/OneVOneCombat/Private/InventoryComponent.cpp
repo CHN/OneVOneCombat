@@ -7,6 +7,7 @@
 #include "UserInputType.h"
 #include "MainCharacter/MainCharacterDataAsset.h"
 #include "InventoryItem.h"
+#include "CharacterEvents/CharacterEvents.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()

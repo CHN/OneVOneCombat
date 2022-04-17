@@ -19,9 +19,6 @@ struct FCharacterStateData
 	bool isJumping;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool isJumpingAnimationActive;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool isAttacking;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

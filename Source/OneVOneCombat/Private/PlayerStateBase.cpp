@@ -6,6 +6,7 @@
 #include "InputQueueOutputState.h"
 #include "MainCharacter.h"
 #include "PlayerStateManager.h"
+#include "PlayerStateFlowManager.h"
 
 UPlayerStateBase::UPlayerStateBase()
 	: Super()

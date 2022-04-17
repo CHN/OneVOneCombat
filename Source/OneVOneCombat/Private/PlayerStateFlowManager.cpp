@@ -5,6 +5,7 @@
 
 #include "PlayerStateManager.h" // FIXME: Did I include player state manager just for an enum?
 #include "PlayerStateBase.h"
+#include "InputQueueOutputState.h"
 
 void UPlayerStateFlowManager::Init(uint32 stateCount)
 {
@@ -41,6 +42,16 @@ bool UPlayerStateFlowManager::TryToChangeCurrentState(uint32 nextState, EInputQu
 
 	if (isCurrentStateValid)
 	{
+		if (!currentReusedStates.IsEmpty())
+		{
+			for (uint32 state : currentReusedStates)
+			{
+				activeStates[state]->OnStateReuseEnd(currentPlayerState);
+			}
+		}
+
+		currentReusedStates.Reset();
+
 		currentState->EndState_Internal();
 	}
 
@@ -51,10 +62,11 @@ bool UPlayerStateFlowManager::TryToChangeCurrentState(uint32 nextState, EInputQu
 	return true;
 }
 
-TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::ReuseState(const UPlayerStateBase* ownerState, uint32 state) const
+TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::ReuseState(const UPlayerStateBase* ownerState, uint32 state)
 {
 	auto reusedPlayerState = activeStates[state];
 	reusedPlayerState->OnStateReused(ownerState->GetPlayerState());
+	currentReusedStates.Add(state);
 
 	return reusedPlayerState;
 }

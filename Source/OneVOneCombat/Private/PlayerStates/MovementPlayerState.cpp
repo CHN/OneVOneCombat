@@ -13,6 +13,8 @@
 #include "MainCharacter/CharacterStateData.h"
 #include "MainCharacter/CharacterInputData.h"
 
+#include "MainCharacter/CharacterAttributeDataAsset.h"
+
 UMovementPlayerState::UMovementPlayerState()
 {
 	playerState = EPlayerState::MOVE;
@@ -39,9 +41,13 @@ void UMovementPlayerState::OnStateUpdate(float deltaTime)
 		}
 		else
 		{
-			FVector moveDelta = characterInputData.data->rawMoveInput.GetClampedToMaxSize(1.f) * (characterStateData.data->isSprinting ? 1000.f : 400.f) * deltaTime;
+			const auto* characterAttributeData = mainCharacter->GetCharacterAttributeDataAsset();
+
+			FVector moveDelta = characterInputData.data->rawMoveInput.GetClampedToMaxSize(1.f) * (characterInputData.data->isSprintInputInitiated ? characterAttributeData->GetSprintSpeed() : characterAttributeData->GetWalkSpeed()) * deltaTime;
 			movementComponent->MoveByDelta(deltaTime, mainCharacter->GetActorQuat() * moveDelta); // FIXME: Refactor, just testing
 		}
+
+		characterStateData.data->isSprinting = movementComponentData.data->movementDelta.Size() > 10.f;
 	}
 }
 
@@ -55,7 +61,13 @@ bool UMovementPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOut
 	return true;
 }
 
+void UMovementPlayerState::OnStateEndPlay(bool isInterrupted)
+{
+	characterStateData.data->isSprinting = false;
+}
+
 void UMovementPlayerState::OnSprintKeyStateChanged(EInputEvent inputEvent)
 {
-	characterStateData.data->isSprinting = inputEvent == EInputEvent::IE_Pressed;
+	characterInputData.data->isSprintInputInitiated = inputEvent == EInputEvent::IE_Pressed;
+	characterStateData.data->isSprinting = false;
 }

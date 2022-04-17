@@ -25,6 +25,9 @@ struct FMovementComponentData
 	FVector movementDelta;
 
 	UPROPERTY(VisibleAnywhere)
+	FVector lastVelocity;
+
+	UPROPERTY(VisibleAnywhere)
 	float movementDuration;
 
 	UPROPERTY(VisibleAnywhere)

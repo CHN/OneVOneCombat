@@ -40,10 +40,13 @@ private:
 	void OnJumpActionExecuted();
 	void OnJumpAnimExit(const FName& /*Machine Name*/, const FName& /*State Name*/);
 
+	bool isUngrounded;
+
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 	TWeakObjectPtr<UMainCharacterDataAsset> characterData;
 
 	TWeakObjectPtr<UPlayerStateBase> lookState;
+	TWeakObjectPtr<UPlayerStateBase> inAirMovementState;
 
 	FDelegateHandle handle;
 

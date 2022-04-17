@@ -19,6 +19,9 @@ struct FCharacterInputData
 	bool useRootMotion;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool isSprintInputInitiated;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector rawMoveInput;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -31,5 +34,5 @@ struct FCharacterInputData
 	FVector scaledRotateInput;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FVector2D rotateSensitivity;
+	FVector rotateSensitivity; // FIXME: Can be move to general settings
 };

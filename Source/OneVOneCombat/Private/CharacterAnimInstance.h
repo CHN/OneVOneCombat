@@ -23,7 +23,6 @@ class UCharacterAnimInstance : public UAnimInstance
 private:
 
 	void NativeInitializeAnimation() override;
-	void BindAnimationEvents(const UDataTable* eventTable, TWeakObjectPtr<UCharacterEvents> characterEvents);
 
 	UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe = "true", AllowPrivateAccess = "true"))
 	UMainCharacterDataAsset* GetCharacterData() const
@@ -33,4 +32,13 @@ private:
 
 	UPROPERTY(BlueprintGetter = "GetCharacterData", meta = (AllowPrivateAccess = "true"))
 	UMainCharacterDataAsset* characterData;
+
+	UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe = "true", AllowPrivateAccess = "true"))
+	UCharacterEvents* GetCharacterEvents() const
+	{
+		return characterEvents;
+	}
+
+	UPROPERTY(BlueprintGetter = "GetCharacterEvents", meta = (AllowPrivateAccess = "true"))
+	UCharacterEvents* characterEvents;
 };

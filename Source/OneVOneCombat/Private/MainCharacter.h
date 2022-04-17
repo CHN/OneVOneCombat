@@ -21,6 +21,7 @@ class UCharacterAnimInstance;
 class UCharacterEvents;
 class UStateEvents;
 class UInventoryComponent;
+class UCharacterAttributeDataAsset;
 
 struct FCharacterInputData;
 struct FAnimationRelatedData;
@@ -62,6 +63,7 @@ public:
 	inline UCharacterEvents* GetCharacterEvents() const { return characterEvents; }
 	inline UStateEvents* GetStateEvents() const { return stateEvents; }
  	inline const UDataTable* GetAnimationStateEventDataTable() const { return animationStateEventDataTable; }
+ 	inline const UCharacterAttributeDataAsset* GetCharacterAttributeDataAsset() const { return characterAttributeDataAsset; }
 
 	void HandleActionInput(EUserInputType inputType, EInputEvent inputEvent);
 
@@ -131,6 +133,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	UDataTable* animationStateEventDataTable;
+
+	UPROPERTY(EditDefaultsOnly)
+	UCharacterAttributeDataAsset* characterAttributeDataAsset;
 
 	UPROPERTY(VisibleAnywhere)
 	UInventoryComponent* inventoryComponent;

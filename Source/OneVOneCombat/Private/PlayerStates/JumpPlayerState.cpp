@@ -31,17 +31,18 @@ void UJumpPlayerState::OnStateInitialized()
 	characterData->characterInputDataOwner.BecomeSubOwner(&characterInputData);
 
 	handle = mainCharacter->GetInputQueueSystem()->BindQueueEvent(EInputQueueOutputState::JUMP, this, &UJumpPlayerState::OnJumpActionExecuted);
-
-	//mainCharacter->GetCharacterEvents()->animationStateExitEvents["DefaultMachine"]["Jumping"].AddUObject(this, &UJumpPlayerState::OnJumpAnimExit);
 }
 
 void UJumpPlayerState::OnStateBeginPlay()
 {
-	movementComponent->AddVelocity(FVector::UpVector * 500.f);
+	FVector jumpVelocity = characterData->GetLastVelocity();
+	jumpVelocity.Z = FMath::Max(jumpVelocity.Z, 500.f);
+	movementComponent->AddVelocity(jumpVelocity);
 
+	isUngrounded = false;
 	characterStateData.data->isJumping = true;
-	characterStateData.data->isJumpingAnimationActive = true;
 	lookState = playerStateFlowManager->ReuseState(this, EPlayerState::LOOK);
+	inAirMovementState = playerStateFlowManager->ReuseState(this, EPlayerState::IN_AIR_MOVEMENT);
 }
 
 bool UJumpPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState)
@@ -59,18 +60,21 @@ void UJumpPlayerState::OnJumpActionExecuted()
 	playerStateFlowManager->TryToChangeCurrentState(EPlayerState::JUMP, EInputQueueOutputState::JUMP); // FIXME
 }
 
-void UJumpPlayerState::OnJumpAnimExit(const FName& /*Machine Name*/, const FName& /*State Name*/)
-{
-	characterStateData.data->isJumping = false;
-}
-
 void UJumpPlayerState::OnStateUpdate(float deltaTime)
 {
 	lookState->OnStateUpdate(deltaTime);
+	inAirMovementState->OnStateUpdate(deltaTime);
 
-	if (/*!characterStateData.data->isJumping && */characterData->IsGrounded())
+	if (isUngrounded)
 	{
-		EndState(EPlayerState::BASIC_MOVEMENT);
+		if (characterData->IsGrounded())
+		{
+			EndState(EPlayerState::BASIC_MOVEMENT);
+		}
+	}
+	else if(!characterData->IsGrounded())
+	{
+		isUngrounded = true;
 	}
 }
 

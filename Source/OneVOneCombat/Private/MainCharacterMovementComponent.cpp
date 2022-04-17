@@ -230,6 +230,8 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 	//DEBUG_CAPSULE(moveableComponent);
 
+	data->lastVelocity = (updatedPos - currentPos) / deltaTime;
+
 	moveableComponent->SetWorldLocationAndRotation(updatedPos, data->currentRotation);
 }
 

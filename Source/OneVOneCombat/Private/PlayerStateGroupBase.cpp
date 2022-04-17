@@ -3,6 +3,7 @@
 #include "PlayerStateGroupBase.h"
 #include "MainCharacter.h"
 #include "PlayerStateManager.h"
+#include "PlayerStateBase.h"
 
 UPlayerStateGroupBase::UPlayerStateGroupBase()
 {

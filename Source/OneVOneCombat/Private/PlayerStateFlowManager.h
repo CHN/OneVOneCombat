@@ -12,6 +12,7 @@
  * 
  */
 
+enum class EInputQueueOutputState : uint8;
 class UPlayerStateBase;
 
 UCLASS()
@@ -25,7 +26,7 @@ public:
 	void UpdateCurrentState(float deltaTime);
 
 	bool TryToChangeCurrentState(uint32 nextState, EInputQueueOutputState inputReason);
-	TWeakObjectPtr<UPlayerStateBase> ReuseState(const UPlayerStateBase* ownerState, uint32 state) const;
+	TWeakObjectPtr<UPlayerStateBase> ReuseState(const UPlayerStateBase* ownerState, uint32 state);
 
 	TWeakObjectPtr<UPlayerStateBase> ClearState(uint32 stateType);
 	TWeakObjectPtr<UPlayerStateBase> ReplaceStateWith(UPlayerStateBase* playerState);
@@ -38,4 +39,7 @@ private:
 	UPROPERTY()
 	TArray<UPlayerStateBase*> activeStates;
 	TWeakObjectPtr<UPlayerStateBase> currentState;
+
+	TArray<uint32> currentReusedStates;
 };
+ 

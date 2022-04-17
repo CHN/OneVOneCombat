@@ -104,8 +104,8 @@ void AMainCharacter::Tick(float DeltaTime)
 
 	ResetInputHandlerAccumulations();
 
-	inputData.data->scaledMoveInput = inputData.data->rawMoveInput * inputData.data->rotateSensitivity.X;
-	inputData.data->scaledRotateInput = inputData.data->rawRotateInput * inputData.data->rotateSensitivity.Y;
+	inputData.data->scaledMoveInput = inputData.data->rawMoveInput;
+	inputData.data->scaledRotateInput = inputData.data->rawRotateInput * inputData.data->rotateSensitivity;
 
 	if (characterSkeletalMesh->IsPlayingRootMotion())
 	{

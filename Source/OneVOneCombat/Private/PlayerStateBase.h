@@ -31,10 +31,11 @@ public:
 	virtual bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState) { return true; }
 
 	virtual void OnStateInitialized() {}
-	virtual void OnStateReused(uint32 ownerState) {}
+	virtual void OnStateReused(uint32 ownerState) { OnStateBeginPlay(); }
 	virtual void OnStateBeginPlay() {}
 	virtual void OnStateUpdate(float deltaTime) {}
 	virtual void OnStateEndPlay(bool isInterrupted) {}
+	virtual void OnStateReuseEnd(uint32 ownerState) { EndState_Internal(); }
 	virtual void OnStateActive() {}
 	virtual void OnStateDeactive() {}
 

@@ -7,6 +7,7 @@
 
 #include "PlayerInputPollingSystem.h"
 #include "InputQueueDataAsset.h"
+#include "UserInputType.h"
 #include "TEnumArray.h"
 
 #include "InputQueueSystem.generated.h"

@@ -6,40 +6,33 @@
 
 #include "DataInlineSubOwner.h"
 
-#include "MovementPlayerState.generated.h"
+#include "InAirMovementState.generated.h"
 
 /**
- * 
+ *
  */
 
 class UMainCharacterMovementComponent;
 struct FAnimationRelatedData;
-struct FCharacterStateData;
 struct FCharacterInputData;
-struct FMovementComponentData;
 
 UCLASS()
-class UMovementPlayerState : public UPlayerStateBase
+class UInAirMovementState : public UPlayerStateBase
 {
 public:
 
 	GENERATED_BODY()
 
-	UMovementPlayerState();
+	UInAirMovementState();
 
 	void OnStateInitialized() override;
 	void OnStateUpdate(float deltaTime) override;
 	bool IsStateInterruptible(uint32 newState) override;
 	bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState) override;
-	void OnStateEndPlay(bool isInterrupted) override;
 
 private:
 
-	void OnSprintKeyStateChanged(EInputEvent inputEvent);
-
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;
-	DataInlineSubOwner<FCharacterStateData> characterStateData;
 	DataInlineSubOwner<FCharacterInputData> characterInputData;
-	DataInlineSubOwner<FMovementComponentData> movementComponentData;
 };

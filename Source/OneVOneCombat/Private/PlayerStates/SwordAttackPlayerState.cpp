@@ -7,6 +7,8 @@
 #include "MainCharacter/CharacterStateData.h"
 #include "MainCharacter.h"
 #include "PlayerStateFlowManager.h"
+#include "InputQueueSystem.h"
+#include "PlayerStateManager.h"
 
 USwordAttackPlayerState::USwordAttackPlayerState()
 	: Super()

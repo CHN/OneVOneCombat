@@ -53,6 +53,11 @@ public:
 		return characterInputData.rawRotateInput;
 	}
 
+	inline const FVector& GetLastVelocity() const
+	{
+		return movementComponentData.lastVelocity;
+	}
+
 private:
 
 	void PostLoad() override;
