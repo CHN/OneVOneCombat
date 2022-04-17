@@ -9,7 +9,6 @@
 #include "InventoryComponent.generated.h"
 
 class AMainCharacter;
-class IInventoryItemInterface;
 
 struct FInventoryData;
 struct FCharacterStateData;
@@ -40,6 +39,6 @@ private:
 	DataInlineSubOwner<FInventoryData> inventoryData;
 	DataInlineSubOwner<FCharacterStateData> characterStateData;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, meta = (MustImplement = "InventoryItemInterface"))
 	TArray<TSubclassOf<AActor>> startingItems;
 };

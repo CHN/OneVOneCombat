@@ -7,6 +7,7 @@
 #include "UserInputType.h"
 #include "MainCharacter/MainCharacterDataAsset.h"
 #include "InventoryItem.h"
+#include "InventoryItemInterface.h"
 #include "CharacterEvents/CharacterEvents.h"
 
 // Sets default values for this component's properties
@@ -37,8 +38,8 @@ void UInventoryComponent::CreateStartingInventoryItems()
 	for (TSubclassOf<AActor> actorClass : startingItems)
 	{
 		AActor* actor = GetWorld()->SpawnActor<AActor>(actorClass);
-		// FIXME: Need to use a proper way
-		UInventoryItem* item = Cast<UInventoryItem>(actor->GetComponentByClass(UInventoryItem::StaticClass())); 
+		
+		UInventoryItem* item = IInventoryItemInterface::Execute_GetItem(actor);
 		
 		FInventoryItemInfo itemInfo;
 		itemInfo.count = 1;

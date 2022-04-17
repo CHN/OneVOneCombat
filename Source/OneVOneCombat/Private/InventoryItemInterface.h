@@ -6,6 +6,8 @@
 #include "UObject/Interface.h"
 #include "InventoryItemInterface.generated.h"
 
+class UInventoryItem;
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UInventoryItemInterface : public UInterface
@@ -14,7 +16,7 @@ class UInventoryItemInterface : public UInterface
 public:
 
 	UFUNCTION(BlueprintNativeEvent)
-	AActor* GetOwnerActor();
+	UInventoryItem* GetItem();
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnItemPickedUp();
@@ -43,7 +45,7 @@ class IInventoryItemInterface
 	GENERATED_BODY()
 public:
 
-	virtual AActor* GetOwnerActor() = 0;
+	virtual UInventoryItem* GetItem() = 0;
 	virtual void OnItemPickedUp();
 	virtual void OnItemStartedToUse();
 	virtual void OnItemActivated();
