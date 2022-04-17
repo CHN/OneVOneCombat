@@ -33,6 +33,12 @@ struct FMovementComponentData
 	UPROPERTY(VisibleAnywhere)
 	FQuat currentRotation;
 
+	UPROPERTY(EditAnywhere)
+	float verticalRotationMinDegree;
+
+	UPROPERTY(EditAnywhere)
+	float verticalRotationMaxDegree;
+
 	// FIXME: Booleans can be moved up to fix padding
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool isGrounding;

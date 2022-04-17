@@ -30,10 +30,16 @@ AMainCharacter::AMainCharacter()
 	playerStateManager = CreateDefaultSubobject<UPlayerStateManager>("PlayerStateManager");
 
 	capsuleCollider = CreateDefaultSubobject<UCapsuleComponent>("CapsuleCollider");
-	characterSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
-	characterSkeletalMesh->AttachToComponent(capsuleCollider, FAttachmentTransformRules::KeepRelativeTransform);
 
 	movementComponent = CreateDefaultSubobject<UMainCharacterMovementComponent>("MovementComponent");
+
+	verticalRotationComponent = CreateDefaultSubobject<USceneComponent>("VerticalRotation");
+	verticalRotationComponent->AttachToComponent(capsuleCollider, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	movementComponent->SetVerticalRotationComponent(verticalRotationComponent);
+
+	characterSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
+	characterSkeletalMesh->AttachToComponent(verticalRotationComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
 	characterEvents = CreateDefaultSubobject<UCharacterEvents>("CharacterEvents");
 	stateEvents = CreateDefaultSubobject<UStateEvents>("StateEvents");
 
@@ -56,6 +62,11 @@ void AMainCharacter::SpawnItemOnSocket(const FName& socketName, AActor* actor)
 	actor->AttachToComponent(characterSkeletalMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, socketName);
 	actor->SetActorHiddenInGame(false);
 	lastAttachedItem = actor;
+}
+
+float AMainCharacter::GetLastDeltaTime() const
+{
+	return lastDeltaTime;
 }
 
 void AMainCharacter::CreateInputHandlers()
@@ -89,7 +100,12 @@ void AMainCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	lastDeltaTime = DeltaTime;
+
 	ResetInputHandlerAccumulations();
+
+	inputData.data->scaledMoveInput = inputData.data->rawMoveInput * inputData.data->rotateSensitivity.X;
+	inputData.data->scaledRotateInput = inputData.data->rawRotateInput * inputData.data->rotateSensitivity.Y;
 
 	if (characterSkeletalMesh->IsPlayingRootMotion())
 	{
@@ -115,21 +131,6 @@ void AMainCharacter::Tick(float DeltaTime)
 		animationRelatedData.data->rootMotionMoveDelta = FVector::ZeroVector;
 		animationRelatedData.data->isRootMotionBeingUsed = false;
 	}
-
-	FQuat x = cameraBoom->GetComponentRotation().Quaternion() * FQuat::MakeFromEuler(FVector(0.f, inputData.data->rawRotateInput.Y, 0.f));
-	
-	FQuat swing;
-	FQuat twist;
-
-	x.ToSwingTwist(FVector::RightVector, swing, twist);
-
-	auto e = twist.Euler();
-
-	e.Y = FMath::ClampAngle(e.Y, -70.f, 50.f);
-
-	twist = FQuat::MakeFromEuler(e);
-
-	cameraBoom->SetWorldRotation(swing * twist);
 }
 
 void AMainCharacter::ResetInputHandlerAccumulations()
@@ -219,12 +220,12 @@ void AMainCharacter::SetVerticalMoveAxis(float value)
 
 void AMainCharacter::SetHorizontalLookAxis(float value)
 {
-	inputData.data->rawRotateInput.X = value * 10.f;
+	inputData.data->rawRotateInput.X = value;
 }
 
 void AMainCharacter::SetVerticalLookAxis(float value)
 {
-	inputData.data->rawRotateInput.Y = value * 10.f;
+	inputData.data->rawRotateInput.Y = value;
 }
 
 void AMainCharacter::HandleActionInput(EUserInputType inputType, EInputEvent inputEvent)

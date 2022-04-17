@@ -13,6 +13,7 @@ enum class EPlayerStateGroup : uint8;
 class UPlayerStateBase;
 class UPlayerStateGroupBase;
 class UPlayerStateFlowManager;
+class AMainCharacter;
 
 UENUM()
 enum EPlayerState

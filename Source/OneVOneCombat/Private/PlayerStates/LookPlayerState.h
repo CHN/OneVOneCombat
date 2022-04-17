@@ -14,7 +14,7 @@
 
 class UMainCharacterMovementComponent;
 
-struct FAnimationRelatedData;
+struct FCharacterInputData;
 
 UCLASS()
 class ULookPlayerState : public UPlayerStateBase
@@ -32,4 +32,5 @@ public:
 
 private:
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
+	DataInlineSubOwner<FCharacterInputData> inputData;
 };

@@ -40,6 +40,11 @@ void UMainCharacterMovementComponent::SetMoveableComponent(UPrimitiveComponent* 
 	data->currentRotation = moveableComponent->GetComponentRotation().Quaternion();
 }
 
+void UMainCharacterMovementComponent::SetVerticalRotationComponent(USceneComponent* NewVerticalRotationComponent)
+{
+	verticalRotationComponent = NewVerticalRotationComponent;
+}
+
 void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FVector& delta, bool constrainInputToGround)
 {
 	checkf(moveableComponent, TEXT("Moveable component can not be null when MoveByDelta is invoked"));
@@ -56,6 +61,27 @@ void UMainCharacterMovementComponent::MoveByDelta(const float duration, const FV
 void UMainCharacterMovementComponent::RotateByDelta(const FQuat& deltaRotation) // FIXME: Duration may be needed
 {
 	data->currentRotation = deltaRotation * data->currentRotation;
+}
+
+void UMainCharacterMovementComponent::RotateByDeltaXY(const FQuat& deltaRotationX, const FQuat& deltaRotationY) // FIXME: Duration may be needed
+{
+	data->currentRotation = deltaRotationX * data->currentRotation * deltaRotationY;
+}
+
+void UMainCharacterMovementComponent::RotateVerticalRotationComponent(const FQuat& deltaRotation)
+{
+	FQuat rotation = verticalRotationComponent->GetComponentRotation().Quaternion() * deltaRotation;
+
+	FQuat swing;
+	FQuat twist;
+
+	rotation.ToSwingTwist(FVector::ForwardVector, swing, twist);
+
+	FVector twistEuler = twist.Euler();
+	twistEuler.X = FMath::ClampAngle(twistEuler.X, data->verticalRotationMinDegree, data->verticalRotationMaxDegree);
+	twist = FQuat::MakeFromEuler(twistEuler);
+
+	verticalRotationComponent->SetWorldRotation(swing * twist);
 }
 
 void UMainCharacterMovementComponent::AddVelocity(const FVector& NewVelocity)
@@ -96,7 +122,7 @@ UMainCharacterMovementComponent::LedgeReturnData UMainCharacterMovementComponent
 	LedgeReturnData ledgeReturnData;
 	
 	ledgeReturnData.isDetected = ledgeAmount < 1.f && ledgeAmount > 0.3f; // TODO: Should be changed with editor ui
-	ledgeReturnData.ledgeHeight = moveableCompShape.GetCapsuleRadius() - FVector::DotProduct(impactVector, moveableComponent->GetUpVector());
+	ledgeReturnData.ledgeHeight = FMath::Max(moveableCompShape.GetCapsuleRadius() - FVector::DotProduct(impactVector, moveableComponent->GetUpVector()), 10.f);
 
 	return ledgeReturnData;
 }
@@ -178,7 +204,7 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 
 			if (ledgeReturnData.isDetected)
 			{
-				updatedPos += moveableComponent->GetUpVector() * ledgeReturnData.ledgeHeight * deltaTime; // TODO: Fix use of ledge height instead of using climbing velocity
+				updatedPos += moveableComponent->GetUpVector() * ledgeReturnData.ledgeHeight * deltaTime * 12.f; // TODO: Fix use of ledge height instead of using climbing velocity
 			}
 			else
 			{
@@ -202,7 +228,7 @@ void UMainCharacterMovementComponent::UpdateMoveableComponent(const float deltaT
 		
 	updatedPos = FindNonCollidingClosestPosition(currentPos, updatedPos);
 
-	DEBUG_CAPSULE(moveableComponent);
+	//DEBUG_CAPSULE(moveableComponent);
 
 	moveableComponent->SetWorldLocationAndRotation(updatedPos, data->currentRotation);
 }

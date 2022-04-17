@@ -28,5 +28,5 @@ float UserInputUtilities::ConvertActionToAxisInputByBools(bool negativeInputEven
 	float negativeInput = negativeInputEvent ? -1.f : 0.f;
 	float positiveInput = positiveInputEvent ? 1.f : 0.f;
 
-	return negativeInput + positiveInput;
+	return (negativeInput + positiveInput);
 }

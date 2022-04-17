@@ -3,6 +3,7 @@
 
 #include "BasicMovementPlayerState.h"
 
+#include "PlayerStateManager.h"
 #include "PlayerStateFlowManager.h"
 
 UBasicMovementPlayerState::UBasicMovementPlayerState()

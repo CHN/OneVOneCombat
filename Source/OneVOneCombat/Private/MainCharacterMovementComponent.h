@@ -27,8 +27,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetMoveableComponent(UPrimitiveComponent* NewMoveableComponent);
 
+	UFUNCTION(BlueprintCallable)
+	void SetVerticalRotationComponent(USceneComponent* NewVerticalRotationComponent);
+
 	void MoveByDelta(const float deltaTime, const FVector& delta, bool constrainInputToGround = true);
 	void RotateByDelta(const FQuat& deltaRotation);
+	void RotateByDeltaXY(const FQuat& deltaRotationX, const FQuat& deltaRotationY);
+	void RotateVerticalRotationComponent(const FQuat& deltaRotation);
 	void AddVelocity(const FVector& NewVelocity);
 
 	bool IsGrounding() const { return data->isGrounding; }
@@ -43,7 +48,11 @@ private:
 
 	DataInlineSubOwner<FWalkableGroundPropertiesData> walkableGroundPropertiesSubOwner;
 
+	UPROPERTY()
 	TObjectPtr<UPrimitiveComponent> moveableComponent;
+
+	UPROPERTY()
+	TObjectPtr<USceneComponent> verticalRotationComponent;
 
 	FCollisionQueryParams groundHitSweepQueryParams;
 

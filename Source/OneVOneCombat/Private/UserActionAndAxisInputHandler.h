@@ -23,6 +23,7 @@ public:
 	void HandlePositiveInputPressed();
 	void HandlePositiveInputReleased();
 	void HandleAxisInput(float value);
+	void HandleAxisInputWithDeltaTime(float value);
 	void ResetAxisAccumulation();
 
 	template<typename UserClass>

@@ -15,6 +15,7 @@
 class UMainCharacterMovementComponent;
 class UMainCharacterDataAsset;
 struct FCharacterStateData;
+struct FCharacterInputData;
 
 UCLASS()
 class UJumpPlayerState : public UPlayerStateBase
@@ -47,4 +48,5 @@ private:
 	FDelegateHandle handle;
 
 	DataInlineSubOwner<FCharacterStateData> characterStateData;
+	DataInlineSubOwner<FCharacterInputData> characterInputData;
 };

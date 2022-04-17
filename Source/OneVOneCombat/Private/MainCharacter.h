@@ -73,6 +73,8 @@ public:
 	// FIXME: For testing purposes
 	void SpawnItemOnSocket(const FName& socketName, AActor* actor);
 
+	float GetLastDeltaTime() const;
+
 protected:
 	 
 	virtual void BeginPlay() override;
@@ -106,6 +108,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	UPrimitiveComponent* capsuleCollider;
 
+	UPROPERTY(EditAnywhere)
+	USceneComponent* verticalRotationComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* characterSkeletalMesh;
 
@@ -135,4 +140,6 @@ private:
 
 	DataInlineSubOwner<FCharacterInputData> inputData;
 	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;
+
+	float lastDeltaTime;
 };

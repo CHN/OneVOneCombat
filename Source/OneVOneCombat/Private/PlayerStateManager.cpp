@@ -3,6 +3,8 @@
 
 #include "PlayerStateManager.h"
 
+#include "MainCharacter.h"
+#include "CharacterAnimInstance.h"
 #include "InputQueueOutputState.h"
 #include "MainCharacter/MainCharacterDataAsset.h"
 #include "PlayerStateBase.h"
@@ -25,7 +27,7 @@ void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
 
 	CreateStateGroups();
 	InitPlayerStates();
-	mainCharacter->GetAnimInstance()->InitializeAnimation();
+	//mainCharacter->GetAnimInstance()->InitializeAnimation(); // FIXME: Enable line or delete
 
 	PushStateGroup(EPlayerStateGroup::DEFAULT_GROUP);
 	PushStateGroup(EPlayerStateGroup::MELEE_ATTACK);

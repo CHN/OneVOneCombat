@@ -6,6 +6,8 @@
 #include "MainCharacterMovementComponent.h"
 #include "MainCharacter/MainCharacterDataAsset.h"
 #include "MainCharacter.h"
+#include "PlayerStateManager.h"
+#include "MainCharacter/CharacterInputData.h"
 
 ULookPlayerState::ULookPlayerState()
 {
@@ -15,11 +17,13 @@ ULookPlayerState::ULookPlayerState()
 void ULookPlayerState::OnStateInitialized()
 {
 	movementComponent = mainCharacter->GetMainMovementComponent();
+	mainCharacter->GetCharacterData()->characterInputDataOwner.BecomeSubOwner(&inputData);
 }
 
 void ULookPlayerState::OnStateUpdate(float deltaTime)
 {
-	movementComponent->RotateByDelta(FQuat::MakeFromEuler(FVector(0.f, 0.f, mainCharacter->GetCharacterData()->GetRawRotateInput().X)));
+	movementComponent->RotateByDelta(FQuat(FVector::UpVector, inputData.data->scaledRotateInput.X));
+	movementComponent->RotateVerticalRotationComponent(FQuat(FVector::ForwardVector, inputData.data->scaledRotateInput.Y));
 }
 
 bool ULookPlayerState::IsStateInterruptible(uint32 newState)

@@ -15,9 +15,21 @@ struct FCharacterInputData
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere)
+	bool useRootMotion;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector rawMoveInput;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector rawRotateInput;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FVector scaledMoveInput;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FVector scaledRotateInput;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FVector2D rotateSensitivity;
 };

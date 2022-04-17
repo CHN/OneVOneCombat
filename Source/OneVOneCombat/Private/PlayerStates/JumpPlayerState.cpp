@@ -13,6 +13,7 @@
 #include "InputQueueOutputState.h"
 #include "MainCharacter.h"
 #include "InputQueueSystem.h"
+#include "CharacterEvents/CharacterEvents.h"
 
 #include "EditorUtilities.h"
 
@@ -27,15 +28,16 @@ void UJumpPlayerState::OnStateInitialized()
 	movementComponent = mainCharacter->GetMainMovementComponent();
 	characterData = mainCharacter->GetCharacterData();
 	characterData->characterStateDataOwner.BecomeSubOwner(&characterStateData);
+	characterData->characterInputDataOwner.BecomeSubOwner(&characterInputData);
 
 	handle = mainCharacter->GetInputQueueSystem()->BindQueueEvent(EInputQueueOutputState::JUMP, this, &UJumpPlayerState::OnJumpActionExecuted);
 
-	mainCharacter->GetCharacterEvents()->animationStateExitEvents["DefaultMachine"]["Jumping"].AddUObject(this, &UJumpPlayerState::OnJumpAnimExit);
+	//mainCharacter->GetCharacterEvents()->animationStateExitEvents["DefaultMachine"]["Jumping"].AddUObject(this, &UJumpPlayerState::OnJumpAnimExit);
 }
 
 void UJumpPlayerState::OnStateBeginPlay()
 {
-	movementComponent->AddVelocity(FVector::UpVector * 500.f + characterData->GetCurrentRotation() * FVector::RightVector * 400.f);
+	movementComponent->AddVelocity(FVector::UpVector * 500.f);
 
 	characterStateData.data->isJumping = true;
 	characterStateData.data->isJumpingAnimationActive = true;
@@ -46,7 +48,7 @@ bool UJumpPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueO
 {
 	return previousState != EPlayerState::JUMP && characterData->IsGrounded();
 }
-
+	
 bool UJumpPlayerState::IsStateInterruptible(uint32 newState)
 {
 	return newState == EPlayerState::ATTACK; // FIXME: This conditions should be handled with masks
@@ -66,7 +68,7 @@ void UJumpPlayerState::OnStateUpdate(float deltaTime)
 {
 	lookState->OnStateUpdate(deltaTime);
 
-	if (!characterStateData.data->isJumping && characterData->IsGrounded())
+	if (/*!characterStateData.data->isJumping && */characterData->IsGrounded())
 	{
 		EndState(EPlayerState::BASIC_MOVEMENT);
 	}

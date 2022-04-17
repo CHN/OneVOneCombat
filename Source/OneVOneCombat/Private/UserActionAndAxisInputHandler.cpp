@@ -2,6 +2,7 @@
 
 
 #include "UserActionAndAxisInputHandler.h"
+#include "Misc/App.h"
 
 void UUserActionAndAxisInputHandler::HandleNegativeInputPressed()
 {
@@ -33,8 +34,22 @@ void UUserActionAndAxisInputHandler::HandlePositiveInputReleased()
 
 void UUserActionAndAxisInputHandler::HandleAxisInput(float value)
 {
-	axisValue += GetAxisValue() + value;
-	axisHandler.Execute(FMath::Clamp(axisValue, -1.f, 1.f));
+	if (FMath::Abs(axisValue) < 1.f)
+	{
+		axisValue += GetAxisValue() + value;
+	}
+
+	axisHandler.Execute(axisValue);
+}
+
+void UUserActionAndAxisInputHandler::HandleAxisInputWithDeltaTime(float value)
+{
+	if (FMath::Abs(axisValue) < 1.f)
+	{
+		axisValue += GetAxisValue() + value * FApp::GetDeltaTime();
+	}
+
+	axisHandler.Execute(axisValue);
 }
 
 void UUserActionAndAxisInputHandler::ResetAxisAccumulation()

@@ -3,6 +3,14 @@
 
 #include "PlayerStates/InventoryQuickItemChangeState.h"
 
+#include "MainCharacter.h"
+#include "MainCharacter/MainCharacterDataAsset.h"
+#include "PlayerStateManager.h"
+#include "PlayerStateFlowManager.h"
+#include "CharacterEvents/CharacterEvents.h"
+#include "InputQueueOutputState.h"
+#include "InventoryItem.h"
+
 UInventoryQuickItemChangeState::UInventoryQuickItemChangeState()
 {
 	playerState = EPlayerState::QUICK_ITEM_CHANGED;
@@ -14,9 +22,8 @@ void UInventoryQuickItemChangeState::OnStateInitialized()
 	mainCharacter->GetCharacterData()->characterStateDataOwner.BecomeSubOwner(&characterStateData);
 	mainCharacter->GetCharacterEvents()->onInventoryQuickItemChanged.AddUObject(this, &UInventoryQuickItemChangeState::OnQuickItemChanged);
 
-	mainCharacter->GetCharacterEvents()->animationStateExitEvents["DefaultMachine"]["QuickItemChange"].AddUObject(this, &UInventoryQuickItemChangeState::OnQuickItemChangedAnimFinished);
-
-	mainCharacter->GetCharacterEvents()->animationStateExitEvents["DefaultMachine"]["QuickItemEnd"].AddUObject(this, &UInventoryQuickItemChangeState::OnQuickItemChangedEndAnimFinished);
+	//mainCharacter->GetCharacterEvents()->animationStateExitEvents["DefaultMachine"]["QuickItemChange"].AddUObject(this, &UInventoryQuickItemChangeState::OnQuickItemChangedAnimFinished);
+	//mainCharacter->GetCharacterEvents()->animationStateExitEvents["DefaultMachine"]["QuickItemEnd"].AddUObject(this, &UInventoryQuickItemChangeState::OnQuickItemChangedEndAnimFinished);
 }
 
 void UInventoryQuickItemChangeState::OnQuickItemChanged()

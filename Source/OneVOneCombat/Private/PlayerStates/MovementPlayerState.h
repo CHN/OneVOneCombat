@@ -13,6 +13,10 @@
  */
 
 class UMainCharacterMovementComponent;
+struct FAnimationRelatedData;
+struct FCharacterStateData;
+struct FCharacterInputData;
+struct FMovementComponentData;
 
 UCLASS()
 class UMovementPlayerState : public UPlayerStateBase
@@ -35,4 +39,6 @@ private:
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;
 	DataInlineSubOwner<FCharacterStateData> characterStateData;
+	DataInlineSubOwner<FCharacterInputData> characterInputData;
+	DataInlineSubOwner<FMovementComponentData> movementComponentData;
 };
