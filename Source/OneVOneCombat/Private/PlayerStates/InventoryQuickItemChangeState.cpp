@@ -37,6 +37,9 @@ void UInventoryQuickItemChangeState::OnStateBeginPlay()
 
 	characterStateData.data->isQuickItemChanging = true;
 	basicMovement = playerStateFlowManager->ReuseState(this, EPlayerState::BASIC_MOVEMENT);
+
+	OnQuickItemChangedAnimFinished("", "");
+	OnQuickItemChangedEndAnimFinished("", "");
 }
 
 void UInventoryQuickItemChangeState::OnStateUpdate(float deltaTime)

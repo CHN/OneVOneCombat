@@ -56,8 +56,8 @@ bool UPlayerStateFlowManager::TryToChangeCurrentState(uint32 nextState, EInputQu
 	}
 
 	newState->oneTimeStateEndCallback.BindUObject(this, &UPlayerStateFlowManager::OnCurrentStateEndCallback);
-	newState->StartState_Internal();
 	currentState = newState;
+	newState->StartState_Internal();
 
 	return true;
 }
