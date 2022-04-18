@@ -23,7 +23,7 @@ void USwordAttackPlayerState::OnStateInitialized()
 
 void USwordAttackPlayerState::OnStateBeginPlay()
 {
-	characterStateData.data->isAttacking = true;
+	characterStateData->isAttacking = true;
 	basicMovementState = playerStateFlowManager->ReuseState(this, EPlayerState::BASIC_MOVEMENT);
 }
 
@@ -39,7 +39,7 @@ void USwordAttackPlayerState::OnStateDeactive()
 
 void USwordAttackPlayerState::OnAttackInputTriggered()
 {
-	if (characterStateData.data->isAttacking)
+	if (characterStateData->isAttacking)
 	{
 		EndState(EPlayerState::BASIC_MOVEMENT);
 	}
@@ -63,7 +63,7 @@ void USwordAttackPlayerState::OnStateUpdate(float deltaTime)
 {
 	basicMovementState->OnStateUpdate(deltaTime);
 
-	if (!characterStateData.data->isAttacking)
+	if (!characterStateData->isAttacking)
 	{
 		EndState(EPlayerState::BASIC_MOVEMENT);
 	}
@@ -71,5 +71,5 @@ void USwordAttackPlayerState::OnStateUpdate(float deltaTime)
 
 void USwordAttackPlayerState::OnStateEndPlay(bool isInterrupted)
 {
-	characterStateData.data->isAttacking = false;
+	characterStateData->isAttacking = false;
 }

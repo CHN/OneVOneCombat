@@ -29,13 +29,13 @@ void UInAirMovementState::OnStateUpdate(float deltaTime)
 {
 	if (!movementComponent->IsMovementBeingApplied())
 	{
-		if (characterInputData.data->useRootMotion)
+		if (characterInputData->useRootMotion)
 		{
-			movementComponent->AddVelocity(animationRelatedData.data->rootMotionMoveDelta * deltaTime);
+			movementComponent->AddVelocity(animationRelatedData->rootMotionMoveDelta * deltaTime);
 		}
 		else
 		{
-			FVector moveDelta = characterInputData.data->rawMoveInput.GetClampedToMaxSize(1.f) * 450.f * deltaTime;
+			FVector moveDelta = characterInputData->rawMoveInput.GetClampedToMaxSize(1.f) * 450.f * deltaTime;
 			movementComponent->AddVelocity(mainCharacter->GetActorQuat() * moveDelta);
 		}
 	}

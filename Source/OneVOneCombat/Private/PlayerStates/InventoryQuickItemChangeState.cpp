@@ -33,9 +33,9 @@ void UInventoryQuickItemChangeState::OnQuickItemChanged()
 
 void UInventoryQuickItemChangeState::OnStateBeginPlay()
 {
-	checkf(inventoryData.data->selectedQuickItem >= 0, TEXT("SelectedQuickItem can not be less than 0"));
+	checkf(inventoryData->selectedQuickItem >= 0, TEXT("SelectedQuickItem can not be less than 0"));
 
-	characterStateData.data->isQuickItemChanging = true;
+	characterStateData->isQuickItemChanging = true;
 	basicMovement = playerStateFlowManager->ReuseState(this, EPlayerState::BASIC_MOVEMENT);
 
 	OnQuickItemChangedAnimFinished("", "");
@@ -49,7 +49,7 @@ void UInventoryQuickItemChangeState::OnStateUpdate(float deltaTime)
 
 void UInventoryQuickItemChangeState::OnQuickItemChangedAnimFinished(const FName& /*Machine Name*/, const FName& /*State Name*/)
 {
-	const FInventoryItemInfo& selectedItem = inventoryData.data->quickItems[inventoryData.data->selectedQuickItem];
+	const FInventoryItemInfo& selectedItem = inventoryData->quickItems[inventoryData->selectedQuickItem];
 
 	mainCharacter->SpawnItemOnSocket(selectedItem.item->GetMeshSocketName(), selectedItem.item->GetOwner()); // FIXME: Need to use a proper way
 }
@@ -61,5 +61,5 @@ void UInventoryQuickItemChangeState::OnQuickItemChangedEndAnimFinished(const FNa
 
 void UInventoryQuickItemChangeState::OnStateEndPlay(bool isInterrupted)
 {
-	characterStateData.data->isQuickItemChanging = false;
+	characterStateData->isQuickItemChanging = false;
 }

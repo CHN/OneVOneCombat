@@ -14,6 +14,11 @@ class ONEVONECOMBAT_API DataInlineSubOwner : public DataSubOwner<DataType>
 public:
 	using DataSubOwner::data;
 
+	inline DataType* operator->() const
+	{
+		return data;
+	}
+
 private:
 	void* operator new(size_t);
 	void* operator new(size_t, void*);

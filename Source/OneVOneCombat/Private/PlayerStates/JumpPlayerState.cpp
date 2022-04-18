@@ -40,7 +40,7 @@ void UJumpPlayerState::OnStateBeginPlay()
 	movementComponent->AddVelocity(jumpVelocity);
 
 	isUngrounded = false;
-	characterStateData.data->isJumping = true;
+	characterStateData->isJumping = true;
 	lookState = playerStateFlowManager->ReuseState(this, EPlayerState::LOOK);
 	inAirMovementState = playerStateFlowManager->ReuseState(this, EPlayerState::IN_AIR_MOVEMENT);
 }
@@ -80,5 +80,5 @@ void UJumpPlayerState::OnStateUpdate(float deltaTime)
 
 void UJumpPlayerState::OnStateEndPlay(bool isInterrupted)
 {
-	characterStateData.data->isJumping = false;
+	characterStateData->isJumping = false;
 }

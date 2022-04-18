@@ -22,8 +22,8 @@ void ULookPlayerState::OnStateInitialized()
 
 void ULookPlayerState::OnStateUpdate(float deltaTime)
 {
-	movementComponent->RotateByDelta(FQuat(FVector::UpVector, inputData.data->scaledRotateInput.X));
-	movementComponent->RotateVerticalRotationComponent(FQuat(FVector::ForwardVector, inputData.data->scaledRotateInput.Y));
+	movementComponent->RotateByDelta(FQuat(FVector::UpVector, inputData->scaledRotateInput.X));
+	movementComponent->RotateVerticalRotationComponent(FQuat(FVector::ForwardVector, inputData->scaledRotateInput.Y));
 }
 
 bool ULookPlayerState::IsStateInterruptible(uint32 newState)
