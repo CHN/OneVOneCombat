@@ -46,7 +46,7 @@ void UInventoryComponent::CreateStartingInventoryItems()
 		itemInfo.maxStackCount = 1;
 		itemInfo.item = item;
 
-		inventoryData.data->quickItems.Add(itemInfo);
+		inventoryData->quickItems.Add(itemInfo);
 	}
 }
 
@@ -62,7 +62,7 @@ void UInventoryComponent::OnNextItemSelectInputTriggered(EInputEvent inputEvent)
 
 	if (inputEvent != IE_Pressed || 
 		data->quickItems.Num() == 0 ||
-		characterStateData.data->isQuickItemChanging)
+		characterStateData->isQuickItemChanging)
 	{
 		return;
 	}
@@ -83,7 +83,7 @@ void UInventoryComponent::OnPreviousItemSelectInputTriggered(EInputEvent inputEv
 
 	if (inputEvent != IE_Pressed ||
 		data->quickItems.Num() == 0 ||
-		characterStateData.data->isQuickItemChanging)
+		characterStateData->isQuickItemChanging)
 	{
 		return;
 	}

@@ -52,6 +52,7 @@ void AMainCharacter::PreRegisterAllComponents()
 	data = DuplicateObject(data, this);
 }
 
+// FIXME: DELETE THIS
 void AMainCharacter::SpawnItemOnSocket(const FName& socketName, AActor* actor)
 {
 	if (lastAttachedItem)
@@ -104,8 +105,8 @@ void AMainCharacter::Tick(float DeltaTime)
 
 	ResetInputHandlerAccumulations();
 
-	inputData.data->scaledMoveInput = inputData.data->rawMoveInput;
-	inputData.data->scaledRotateInput = inputData.data->rawRotateInput * inputData.data->rotateSensitivity;
+	inputData->scaledMoveInput = inputData->rawMoveInput;
+	inputData->scaledRotateInput = inputData->rawRotateInput * inputData->rotateSensitivity;
 
 	if (characterSkeletalMesh->IsPlayingRootMotion())
 	{
@@ -116,20 +117,20 @@ void AMainCharacter::Tick(float DeltaTime)
 			const FTransform WorldSpaceRootMotionTransform = characterSkeletalMesh->ConvertLocalRootMotionToWorld(RootMotion.GetRootMotionTransform());
 
 			// FIXME: NewRotation never used
-			animationRelatedData.data->rootMotionRotation = WorldSpaceRootMotionTransform.GetRotation() * GetRootComponent()->GetComponentRotation().Quaternion();
-			animationRelatedData.data->rootMotionMoveDelta = WorldSpaceRootMotionTransform.GetLocation();
-			animationRelatedData.data->isRootMotionBeingUsed = true;
+			animationRelatedData->rootMotionRotation = WorldSpaceRootMotionTransform.GetRotation() * GetRootComponent()->GetComponentRotation().Quaternion();
+			animationRelatedData->rootMotionMoveDelta = WorldSpaceRootMotionTransform.GetLocation();
+			animationRelatedData->isRootMotionBeingUsed = true;
 		}
 		else
 		{
-			animationRelatedData.data->rootMotionMoveDelta = FVector::ZeroVector;
-			animationRelatedData.data->isRootMotionBeingUsed = false;
+			animationRelatedData->rootMotionMoveDelta = FVector::ZeroVector;
+			animationRelatedData->isRootMotionBeingUsed = false;
 		}
 	}
 	else
 	{
-		animationRelatedData.data->rootMotionMoveDelta = FVector::ZeroVector;
-		animationRelatedData.data->isRootMotionBeingUsed = false;
+		animationRelatedData->rootMotionMoveDelta = FVector::ZeroVector;
+		animationRelatedData->isRootMotionBeingUsed = false;
 	}
 }
 
@@ -210,22 +211,22 @@ void AMainCharacter::BindPlayerActionInputs()
 
 void AMainCharacter::SetHorizontalMoveAxis(float value)
 {
-	inputData.data->rawMoveInput.X = value;
+	inputData->rawMoveInput.X = value;
 }
 
 void AMainCharacter::SetVerticalMoveAxis(float value)
 {
-	inputData.data->rawMoveInput.Y = value;
+	inputData->rawMoveInput.Y = value;
 }
 
 void AMainCharacter::SetHorizontalLookAxis(float value)
 {
-	inputData.data->rawRotateInput.X = value;
+	inputData->rawRotateInput.X = value;
 }
 
 void AMainCharacter::SetVerticalLookAxis(float value)
 {
-	inputData.data->rawRotateInput.Y = value;
+	inputData->rawRotateInput.Y = value;
 }
 
 void AMainCharacter::HandleActionInput(EUserInputType inputType, EInputEvent inputEvent)

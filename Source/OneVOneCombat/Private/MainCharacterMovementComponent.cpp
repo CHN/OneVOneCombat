@@ -93,7 +93,7 @@ FVector UMainCharacterMovementComponent::FindNonCollidingClosestPosition(const F
 {
 	TArray<FHitResult> hitResults;
 		
-	const bool isHitting = GetWorld()->SweepMultiByChannel(NO_CONST_REF hitResults, initialPosition, sweepEndPosition, moveableComponent->GetComponentQuat(), walkableGroundPropertiesSubOwner.data->collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
+	const bool isHitting = GetWorld()->SweepMultiByChannel(NO_CONST_REF hitResults, initialPosition, sweepEndPosition, moveableComponent->GetComponentQuat(), walkableGroundPropertiesSubOwner->collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
 
 	if (!isHitting)
 	{
