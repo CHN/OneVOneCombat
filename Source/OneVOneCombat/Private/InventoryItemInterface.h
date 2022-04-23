@@ -7,8 +7,8 @@
 #include "InventoryItemInterface.generated.h"
 
 class UInventoryItem;
+class UCharacterAnimInstance;
 
-// This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UInventoryItemInterface : public UInterface
 {
@@ -22,7 +22,7 @@ public:
 	void OnItemPickedUp();
 
 	UFUNCTION(BlueprintNativeEvent)
-	void OnItemStartedToUse();
+	void OnItemStartedToUse(UCharacterAnimInstance* characterAnimInstance);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnItemActivated();
@@ -47,7 +47,7 @@ public:
 
 	virtual UInventoryItem* GetItem() = 0;
 	virtual void OnItemPickedUp();
-	virtual void OnItemStartedToUse();
+	virtual void OnItemStartedToUse(UCharacterAnimInstance* characterAnimInstance);
 	virtual void OnItemActivated();
 	virtual void OnItemDeactivated();
 	virtual void OnItemUseFinished();

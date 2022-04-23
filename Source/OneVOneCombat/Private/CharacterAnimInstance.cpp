@@ -6,6 +6,7 @@
 #include "MainCharacter.h"
 #include "CharacterEvents/AnimationStateEventTableRow.h"
 #include "CharacterEvents/CharacterEvents.h"
+#include "CharacterAnimSetterDataAsset.h"
 #include "EditorUtilities.h"
 
 void UCharacterAnimInstance::NativeInitializeAnimation()
@@ -19,4 +20,11 @@ void UCharacterAnimInstance::NativeInitializeAnimation()
 	}
 
 	Super::NativeInitializeAnimation();
+}
+
+void UCharacterAnimInstance::SetCharacterAnimations(UCharacterAnimSetterDataAsset* characterAnimDataAsset)
+{
+	idlePoseAnim = characterAnimDataAsset->idlePoseAnim;
+	aimPoseAnim = characterAnimDataAsset->aimPoseAnim;
+	runLoopPoseAnim = characterAnimDataAsset->runLoopPoseAnim;
 }

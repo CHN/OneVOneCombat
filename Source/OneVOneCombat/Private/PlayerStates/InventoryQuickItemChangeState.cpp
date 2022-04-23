@@ -10,6 +10,7 @@
 #include "CharacterEvents/CharacterEvents.h"
 #include "InputQueueOutputState.h"
 #include "InventoryItem.h"
+#include "InventoryItemInterface.h"
 
 UInventoryQuickItemChangeState::UInventoryQuickItemChangeState()
 {
@@ -52,6 +53,8 @@ void UInventoryQuickItemChangeState::OnQuickItemChangedAnimFinished(const FName&
 	const FInventoryItemInfo& selectedItem = inventoryData->quickItems[inventoryData->selectedQuickItem];
 
 	mainCharacter->SpawnItemOnSocket(selectedItem.item->GetMeshSocketName(), selectedItem.item->GetOwner()); // FIXME: Need to use a proper way
+
+	IInventoryItemInterface::Execute_OnItemStartedToUse(selectedItem.item->GetOwner(), mainCharacter->GetAnimInstance());
 }
 
 void UInventoryQuickItemChangeState::OnQuickItemChangedEndAnimFinished(const FName& /*Machine Name*/, const FName& /*State Name*/)
