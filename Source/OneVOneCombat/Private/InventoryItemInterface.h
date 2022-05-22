@@ -22,16 +22,16 @@ public:
 	void OnItemPickedUp();
 
 	UFUNCTION(BlueprintNativeEvent)
-	void OnItemStartedToUse(UCharacterAnimInstance* characterAnimInstance);
+	void OnItemSelected(AMainCharacter* mainCharacter, UCharacterAnimInstance* characterAnimInstance);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnItemActivated();
 
 	UFUNCTION(BlueprintNativeEvent)
-	void OnItemDeactivated();
+	void OnItemUsed(USkeletalMeshComponent* characterSkeletalMesh);
 
 	UFUNCTION(BlueprintNativeEvent)
-	void OnItemUseFinished();
+	void OnItemDeactivated();
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnItemDropped();
@@ -47,9 +47,9 @@ public:
 
 	virtual UInventoryItem* GetItem() = 0;
 	virtual void OnItemPickedUp();
-	virtual void OnItemStartedToUse(UCharacterAnimInstance* characterAnimInstance);
+	virtual void OnItemSelected(AMainCharacter* mainCharacter, UCharacterAnimInstance* characterAnimInstance);
 	virtual void OnItemActivated();
+	virtual void OnItemUsed(USkeletalMeshComponent* characterSkeletalMesh);
 	virtual void OnItemDeactivated();
-	virtual void OnItemUseFinished();
 	virtual void OnItemDropped();
 };

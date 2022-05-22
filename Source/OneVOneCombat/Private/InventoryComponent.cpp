@@ -27,8 +27,8 @@ void UInventoryComponent::Init(AMainCharacter* NewMainCharacter)
 
 	inputPollingSystem->BindInputEvent(EUserInputType::CHANGE_WEAPON_PREVIOUS, this, &UInventoryComponent::OnPreviousItemSelectInputTriggered);
 
-	mainCharacter->GetCharacterData()->inventoryDataOwner.BecomeSubOwner(&inventoryData);
-	mainCharacter->GetCharacterData()->characterStateDataOwner.BecomeSubOwner(&characterStateData);
+	mainCharacter->GetCharacterData()->inventoryDataOwner.BeSubOwner(&inventoryData);
+	mainCharacter->GetCharacterData()->characterStateDataOwner.BeReadOwner(&characterStateData);
 
 	CreateStartingInventoryItems();
 }
@@ -58,20 +58,18 @@ void UInventoryComponent::BeginPlay()
 
 void UInventoryComponent::OnNextItemSelectInputTriggered(EInputEvent inputEvent)
 {
-	auto* data = inventoryData.data;
-
 	if (inputEvent != IE_Pressed || 
-		data->quickItems.Num() == 0 ||
+		inventoryData->quickItems.Num() == 0 ||
 		characterStateData->isQuickItemChanging)
 	{
 		return;
 	}
 
-	++data->selectedQuickItem;
+	++inventoryData->selectedQuickItem;
 
-	if (data->selectedQuickItem == data->quickItems.Num())
+	if (inventoryData->selectedQuickItem == inventoryData->quickItems.Num())
 	{
-		data->selectedQuickItem = 0;
+		inventoryData->selectedQuickItem = 0;
 	}
 
 	mainCharacter->GetCharacterEvents()->onInventoryQuickItemChanged.Broadcast();
@@ -79,20 +77,18 @@ void UInventoryComponent::OnNextItemSelectInputTriggered(EInputEvent inputEvent)
 
 void UInventoryComponent::OnPreviousItemSelectInputTriggered(EInputEvent inputEvent)
 {
-	auto* data = inventoryData.data;
-
 	if (inputEvent != IE_Pressed ||
-		data->quickItems.Num() == 0 ||
+		inventoryData->quickItems.Num() == 0 ||
 		characterStateData->isQuickItemChanging)
 	{
 		return;
 	}
 
-	--data->selectedQuickItem;
+	--inventoryData->selectedQuickItem;
 
-	if (data->selectedQuickItem < 0)
+	if (inventoryData->selectedQuickItem < 0)
 	{
-		data->selectedQuickItem = data->quickItems.Num() - 1;
+		inventoryData->selectedQuickItem = inventoryData->quickItems.Num() - 1;
 	}
 
 	mainCharacter->GetCharacterEvents()->onInventoryQuickItemChanged.Broadcast();

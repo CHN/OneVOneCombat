@@ -20,8 +20,8 @@ UInAirMovementState::UInAirMovementState()
 
 void UInAirMovementState::OnStateInitialized()
 {
-	mainCharacter->GetCharacterData()->animationRelatedDataOwner.BecomeSubOwner(&animationRelatedData);
-	mainCharacter->GetCharacterData()->characterInputDataOwner.BecomeSubOwner(&characterInputData);
+	mainCharacter->GetCharacterData()->animationRelatedDataOwner.BeReadOwner(&animationRelatedData);
+	mainCharacter->GetCharacterData()->characterInputDataOwner.BeReadOwner(&characterInputData);
 	movementComponent = mainCharacter->GetMainMovementComponent();
 }
 
@@ -35,8 +35,12 @@ void UInAirMovementState::OnStateUpdate(float deltaTime)
 		}
 		else
 		{
-			FVector moveDelta = characterInputData->rawMoveInput.GetClampedToMaxSize(1.f) * 450.f * deltaTime;
-			movementComponent->AddVelocity(mainCharacter->GetActorQuat() * moveDelta);
+			FVector moveDelta = mainCharacter->GetActorQuat() * characterInputData->rawMoveInput;
+			if (FVector::DotProduct(moveDelta, mainCharacter->GetCharacterData()->GetVelocity().GetUnsafeNormal()) <= 0.3f)
+			{
+				moveDelta = moveDelta.GetClampedToMaxSize(1.f) * 600.f * deltaTime;
+				movementComponent->AddVelocity(moveDelta);
+			}
 		}
 	}
 }

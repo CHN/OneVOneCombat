@@ -2,3 +2,10 @@
 
 
 #include "InventoryItem.h"
+
+void UInventoryItem::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	extraData = DuplicateObject<UDataAsset>(extraData, this);
+}

@@ -4,7 +4,8 @@
 
 #include "PlayerStateBase.h"
 
-#include "DataInlineSubOwner.h"
+#include "DataSubOwner.h"
+#include "DataReadOwner.h"
 
 #include "InventoryQuickItemChangeState.generated.h"
 
@@ -27,7 +28,7 @@ public:
 	void OnStateInitialized() override;
 	void OnStateBeginPlay() override;
 	void OnStateUpdate(float deltaTime) override;
-	void OnStateEndPlay(bool isInterrupted) override;
+	void OnStateEndPlay(bool isInterrupted, uint32 nextState) override;
 
 private:
 	void OnQuickItemChanged();
@@ -36,6 +37,6 @@ private:
 
 	TWeakObjectPtr<UPlayerStateBase> basicMovement;
 
-	DataInlineSubOwner<FInventoryData> inventoryData;
-	DataInlineSubOwner<FCharacterStateData> characterStateData;
+	DataReadOwner<FInventoryData> inventoryData;
+	DataSubOwner<FCharacterStateData> characterStateData;
 };

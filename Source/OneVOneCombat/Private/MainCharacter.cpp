@@ -87,13 +87,16 @@ void AMainCharacter::BeginPlay()
 
 	movementComponent->SetMoveableComponent(capsuleCollider);
 
-	data->characterInputDataOwner.BecomeSubOwner(&inputData);
-	data->animationRelatedDataOwner.BecomeSubOwner(&animationRelatedData);
+	data->characterInputDataOwner.BeSubOwner(&inputData);
+	data->animationRelatedDataOwner.BeSubOwner(&animationRelatedData);
+	data->characterStateDataOwner.BeSubOwner(&characterStateData);
 
 	characterAnimInstance = Cast<UCharacterAnimInstance>(characterSkeletalMesh->AnimScriptInstance);
 
 	playerStateManager->Init(this);
 	inventoryComponent->Init(this);
+
+	characterEvents->onSprintDisableStateChanged.AddUObject(this, &AMainCharacter::OnSprintDisableStateChanged);
 }
 
 // Called every frame
@@ -140,6 +143,11 @@ void AMainCharacter::ResetInputHandlerAccumulations()
 	verticalMovementInputHandler->ResetAxisAccumulation();
 	horizontalLookInputHandler->ResetAxisAccumulation();
 	verticalLookInputHandler->ResetAxisAccumulation();
+}
+
+void AMainCharacter::OnSprintDisableStateChanged(bool state)
+{
+	characterStateData->isSprintDisabled = state;
 }
 
 // Called to bind functionality to input

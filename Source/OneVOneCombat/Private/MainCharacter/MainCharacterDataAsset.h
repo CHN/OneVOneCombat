@@ -58,6 +58,11 @@ public:
 		return movementComponentData.lastVelocity;
 	}
 
+	inline const FVector& GetVelocity() const
+	{
+		return movementComponentData.velocity;
+	}
+
 private:
 
 	void PostLoad() override;

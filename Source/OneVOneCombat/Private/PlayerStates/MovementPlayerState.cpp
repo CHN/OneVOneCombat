@@ -8,6 +8,7 @@
 #include "MainCharacter.h"
 #include "PlayerStateManager.h"
 #include "PlayerInputPollingSystem.h"
+#include "CharacterEvents/CharacterEvents.h"
 
 #include "MainCharacter/AnimationRelatedData.h"
 #include "MainCharacter/CharacterStateData.h"
@@ -22,13 +23,18 @@ UMovementPlayerState::UMovementPlayerState()
 
 void UMovementPlayerState::OnStateInitialized()
 {
-	mainCharacter->GetCharacterData()->animationRelatedDataOwner.BecomeSubOwner(&animationRelatedData);
-	mainCharacter->GetCharacterData()->characterStateDataOwner.BecomeSubOwner(&characterStateData);
-	mainCharacter->GetCharacterData()->characterInputDataOwner.BecomeSubOwner(&characterInputData);
-	mainCharacter->GetCharacterData()->movementComponentDataOwner.BecomeSubOwner(&movementComponentData);
+	mainCharacter->GetCharacterData()->animationRelatedDataOwner.BeReadOwner(&animationRelatedData);
+	mainCharacter->GetCharacterData()->movementComponentDataOwner.BeReadOwner(&movementComponentData);
+	mainCharacter->GetCharacterData()->characterStateDataOwner.BeSubOwner(&characterStateData);
+	mainCharacter->GetCharacterData()->characterInputDataOwner.BeSubOwner(&characterInputData);
 	movementComponent = mainCharacter->GetMainMovementComponent();
+}
 
-	mainCharacter->GetPlayerInputPollingSystem()->BindInputEvent(EUserInputType::SPRINT, this, &UMovementPlayerState::OnSprintKeyStateChanged);
+void UMovementPlayerState::OnStateBeginPlay()
+{
+	sprintInputHandle = mainCharacter->GetPlayerInputPollingSystem()->BindInputEvent(EUserInputType::SPRINT, this, &UMovementPlayerState::OnSprintKeyStateChanged);
+
+	sprintDisableStateOnChangeHandle = mainCharacter->GetCharacterEvents()->onSprintDisableStateChanged.AddUObject(this, &UMovementPlayerState::OnSprintDisableStateChanged);
 }
 
 void UMovementPlayerState::OnStateUpdate(float deltaTime)
@@ -61,13 +67,28 @@ bool UMovementPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOut
 	return true;
 }
 
-void UMovementPlayerState::OnStateEndPlay(bool isInterrupted)
+void UMovementPlayerState::OnStateEndPlay(bool isInterrupted, uint32 nextState)
 {
 	characterStateData->isSprinting = false;
+	mainCharacter->GetPlayerInputPollingSystem()->UnbindInputEvent(EUserInputType::SPRINT, sprintInputHandle);
+	mainCharacter->GetCharacterEvents()->onSprintDisableStateChanged.Remove(sprintDisableStateOnChangeHandle);
 }
 
 void UMovementPlayerState::OnSprintKeyStateChanged(EInputEvent inputEvent)
 {
-	characterInputData->isSprintInputInitiated = inputEvent == EInputEvent::IE_Pressed;
+	characterInputData->isSprintInputInitiated = !characterStateData->isSprintDisabled && inputEvent == EInputEvent::IE_Pressed;
 	characterStateData->isSprinting = false;
+}
+
+void UMovementPlayerState::OnSprintDisableStateChanged(bool state)
+{
+	if (state)
+	{
+		isSprintInterrupted = characterInputData->isSprintInputInitiated;
+		characterInputData->isSprintInputInitiated = false;
+	}
+	else
+	{
+		characterInputData->isSprintInputInitiated = isSprintInterrupted;
+	}
 }

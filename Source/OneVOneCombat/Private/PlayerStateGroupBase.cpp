@@ -11,7 +11,7 @@ UPlayerStateGroupBase::UPlayerStateGroupBase()
 	stateGroupType = EPlayerStateGroup::END_OF_ENUM;
 }
 
-void UPlayerStateGroupBase::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
+void UPlayerStateGroupBase::Init(AMainCharacter* NewMainCharacter)
 {
 	mainCharacter = NewMainCharacter;
 

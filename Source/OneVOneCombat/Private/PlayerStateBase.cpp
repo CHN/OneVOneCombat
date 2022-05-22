@@ -15,7 +15,7 @@ UPlayerStateBase::UPlayerStateBase()
 	playerState = uint32(-1);
 }
 
-void UPlayerStateBase::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
+void UPlayerStateBase::Init(AMainCharacter* NewMainCharacter)
 {
 	mainCharacter = NewMainCharacter;
 	playerStateManager = mainCharacter->GetPlayerStateManager();
@@ -29,10 +29,10 @@ void UPlayerStateBase::StartState_Internal()
 	OnStateBeginPlay();
 }
 
-void UPlayerStateBase::EndState_Internal()
+void UPlayerStateBase::EndState_Internal(uint32 nextState)
 {
 	const bool isInterrupted = IsStatePlaying();
-	OnStateEndPlay(isInterrupted);
+	OnStateEndPlay(isInterrupted, nextState);
 }
 
 uint32 UPlayerStateBase::GetPlayerState() const

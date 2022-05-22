@@ -20,17 +20,16 @@ UPlayerStateManager::UPlayerStateManager()
 	stateFlowManager = CreateDefaultSubobject<UPlayerStateFlowManager>("StateFlowManager");
 }
 
-void UPlayerStateManager::Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter)
+void UPlayerStateManager::Init(AMainCharacter* NewMainCharacter)
 {
 	mainCharacter = NewMainCharacter;
-	stateFlowManager->Init(EPlayerState::END_OF_ENUM);
+	stateFlowManager->Init(EPlayerState::END_OF_ENUM, EPlayerState::BASIC_MOVEMENT);
 
 	CreateStateGroups();
 	InitPlayerStates();
-	//mainCharacter->GetAnimInstance()->InitializeAnimation(); // FIXME: Enable line or delete
 
 	PushStateGroup(EPlayerStateGroup::DEFAULT_GROUP);
-	PushStateGroup(EPlayerStateGroup::MELEE_ATTACK);
+	//PushStateGroup(EPlayerStateGroup::MELEE_ATTACK);
 
 	stateFlowManager->TryToChangeCurrentState(EPlayerState::BASIC_MOVEMENT, EInputQueueOutputState::NONE);
 }

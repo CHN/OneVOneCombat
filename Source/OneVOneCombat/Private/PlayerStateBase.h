@@ -22,7 +22,7 @@ public:
 
 	UPlayerStateBase();
 
-	void Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter);
+	void Init(AMainCharacter* NewMainCharacter);
 
 	virtual bool IsStateInterruptible(uint32 newState) { return false; }
 	virtual bool IsStateTransitionInAllowed(uint32 previousState) { return true; }
@@ -34,13 +34,13 @@ public:
 	virtual void OnStateReused(uint32 ownerState) { OnStateBeginPlay(); }
 	virtual void OnStateBeginPlay() {}
 	virtual void OnStateUpdate(float deltaTime) {}
-	virtual void OnStateEndPlay(bool isInterrupted) {}
-	virtual void OnStateReuseEnd(uint32 ownerState) { EndState_Internal(); }
+	virtual void OnStateEndPlay(bool isInterrupted, uint32 nextState) {}
+	virtual void OnStateReuseEnd(uint32 ownerState, uint32 nextState) { EndState_Internal(nextState); }
 	virtual void OnStateActive() {}
 	virtual void OnStateDeactive() {}
 
 	void StartState_Internal();
-	void EndState_Internal();
+	void EndState_Internal(uint32 nextState);
 
 	uint32 GetPlayerState() const;
 
@@ -51,9 +51,15 @@ public:
 protected:
 
 	uint32 playerState;
-	TWeakObjectPtr<AMainCharacter> mainCharacter;
-	TWeakObjectPtr<UPlayerStateManager> playerStateManager;
-	TWeakObjectPtr<UPlayerStateFlowManager> playerStateFlowManager;
+
+	UPROPERTY()
+	AMainCharacter* mainCharacter;
+
+	UPROPERTY()
+	UPlayerStateManager* playerStateManager;
+
+	UPROPERTY()
+	UPlayerStateFlowManager* playerStateFlowManager;
 
 	void EndState(uint32 nextState);
 

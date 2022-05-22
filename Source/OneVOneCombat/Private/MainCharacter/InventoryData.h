@@ -44,4 +44,6 @@ struct FInventoryData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 selectedQuickItem = -1;
+
+	float currentFireCounter;
 };

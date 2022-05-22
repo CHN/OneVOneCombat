@@ -4,7 +4,7 @@
 
 #include "PlayerStateBase.h"
 
-#include "DataInlineSubOwner.h"
+#include "DataSubOwner.h"
 
 #include "JumpPlayerState.generated.h"
 
@@ -29,7 +29,7 @@ public:
 	void OnStateBeginPlay() override;
 	void OnStateInitialized() override;
 	void OnStateUpdate(float deltaTime) override;
-	void OnStateEndPlay(bool isInterrupted) override;
+	void OnStateEndPlay(bool isInterrupted, uint32 nextState) override;
 
 	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState) override;
 
@@ -41,6 +41,7 @@ private:
 	void OnJumpAnimExit(const FName& /*Machine Name*/, const FName& /*State Name*/);
 
 	bool isUngrounded;
+	uint8 groundedFrameCount = 0;
 
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
 	TWeakObjectPtr<UMainCharacterDataAsset> characterData;
@@ -50,6 +51,5 @@ private:
 
 	FDelegateHandle handle;
 
-	DataInlineSubOwner<FCharacterStateData> characterStateData;
-	DataInlineSubOwner<FCharacterInputData> characterInputData;
+	DataSubOwner<FCharacterStateData> characterStateData;
 };

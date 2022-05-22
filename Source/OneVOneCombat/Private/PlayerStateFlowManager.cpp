@@ -7,13 +7,30 @@
 #include "PlayerStateBase.h"
 #include "InputQueueOutputState.h"
 
-void UPlayerStateFlowManager::Init(uint32 stateCount)
+#include "EditorUtilities.h"
+
+void UPlayerStateFlowManager::Init(uint32 stateCount, uint32 NewIdleState)
 {
 	activeStates.SetNum(stateCount);
+	returnState = -1;
+	SetIdleState(NewIdleState);
+}
+
+void UPlayerStateFlowManager::SetIdleState(uint32 NewIdleState)
+{
+	idleState = NewIdleState;
 }
 
 bool UPlayerStateFlowManager::TryToChangeCurrentState(uint32 nextState, EInputQueueOutputState inputReason)
 {
+	if (nextState == idleState && returnState >= 0)
+	{
+		nextState = returnState;
+		returnState = -1;
+
+		LOG_TO_SCREEN("Current State is redirected to return state: {0}", nextState);
+	}
+
 	const bool isCurrentStateValid = currentState.IsValid();
 	const bool isCurrentStatePlaying = isCurrentStateValid && currentState->IsStatePlaying();
 
@@ -42,17 +59,17 @@ bool UPlayerStateFlowManager::TryToChangeCurrentState(uint32 nextState, EInputQu
 
 	if (isCurrentStateValid)
 	{
+		currentState->EndState_Internal(nextState);
+
 		if (!currentReusedStates.IsEmpty())
 		{
 			for (uint32 state : currentReusedStates)
 			{
-				activeStates[state]->OnStateReuseEnd(currentPlayerState);
+				activeStates[state]->OnStateReuseEnd(currentPlayerState, nextState);
 			}
 		}
 
 		currentReusedStates.Reset();
-
-		currentState->EndState_Internal();
 	}
 
 	newState->oneTimeStateEndCallback.BindUObject(this, &UPlayerStateFlowManager::OnCurrentStateEndCallback);
@@ -94,6 +111,11 @@ TWeakObjectPtr<UPlayerStateBase> UPlayerStateFlowManager::GetState(uint32 stateT
 void UPlayerStateFlowManager::UpdateCurrentState(float deltaTime)
 {
 	currentState->OnStateUpdate(deltaTime);
+}
+
+void UPlayerStateFlowManager::SetReturnState(uint32 NewReturnState)
+{
+	returnState = NewReturnState;
 }
 
 void UPlayerStateFlowManager::OnCurrentStateEndCallback(uint32 nextState)

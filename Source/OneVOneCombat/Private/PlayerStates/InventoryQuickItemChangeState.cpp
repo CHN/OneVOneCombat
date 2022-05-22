@@ -19,8 +19,8 @@ UInventoryQuickItemChangeState::UInventoryQuickItemChangeState()
 
 void UInventoryQuickItemChangeState::OnStateInitialized()
 {
-	mainCharacter->GetCharacterData()->inventoryDataOwner.BecomeSubOwner(&inventoryData);
-	mainCharacter->GetCharacterData()->characterStateDataOwner.BecomeSubOwner(&characterStateData);
+	mainCharacter->GetCharacterData()->inventoryDataOwner.BeReadOwner(&inventoryData);
+	mainCharacter->GetCharacterData()->characterStateDataOwner.BeSubOwner(&characterStateData);
 	mainCharacter->GetCharacterEvents()->onInventoryQuickItemChanged.AddUObject(this, &UInventoryQuickItemChangeState::OnQuickItemChanged);
 
 	//mainCharacter->GetCharacterEvents()->animationStateExitEvents["DefaultMachine"]["QuickItemChange"].AddUObject(this, &UInventoryQuickItemChangeState::OnQuickItemChangedAnimFinished);
@@ -54,7 +54,7 @@ void UInventoryQuickItemChangeState::OnQuickItemChangedAnimFinished(const FName&
 
 	mainCharacter->SpawnItemOnSocket(selectedItem.item->GetMeshSocketName(), selectedItem.item->GetOwner()); // FIXME: Need to use a proper way
 
-	IInventoryItemInterface::Execute_OnItemStartedToUse(selectedItem.item->GetOwner(), mainCharacter->GetAnimInstance());
+	IInventoryItemInterface::Execute_OnItemSelected(selectedItem.item->GetOwner(), mainCharacter, mainCharacter->GetAnimInstance());
 }
 
 void UInventoryQuickItemChangeState::OnQuickItemChangedEndAnimFinished(const FName& /*Machine Name*/, const FName& /*State Name*/)
@@ -62,7 +62,7 @@ void UInventoryQuickItemChangeState::OnQuickItemChangedEndAnimFinished(const FNa
 	EndState(EPlayerState::BASIC_MOVEMENT);
 }
 
-void UInventoryQuickItemChangeState::OnStateEndPlay(bool isInterrupted)
+void UInventoryQuickItemChangeState::OnStateEndPlay(bool isInterrupted, uint32 nextState)
 {
 	characterStateData->isQuickItemChanging = false;
 }

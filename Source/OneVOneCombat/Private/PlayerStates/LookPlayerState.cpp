@@ -17,7 +17,7 @@ ULookPlayerState::ULookPlayerState()
 void ULookPlayerState::OnStateInitialized()
 {
 	movementComponent = mainCharacter->GetMainMovementComponent();
-	mainCharacter->GetCharacterData()->characterInputDataOwner.BecomeSubOwner(&inputData);
+	mainCharacter->GetCharacterData()->characterInputDataOwner.BeReadOwner(&inputData);
 }
 
 void ULookPlayerState::OnStateUpdate(float deltaTime)

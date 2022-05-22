@@ -11,6 +11,7 @@
 
 DECLARE_EVENT(UCharacterEvents, FOnInventoryQuickItemChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAnimChangedMulticaster, UAnimationAsset*, animationAsset);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnStateChanged, bool);
 
 UCLASS(BlueprintType)
 class UCharacterEvents : public UObject
@@ -20,4 +21,5 @@ class UCharacterEvents : public UObject
 public:
 
 	FOnInventoryQuickItemChanged onInventoryQuickItemChanged;
+	FOnStateChanged onSprintDisableStateChanged;
 };

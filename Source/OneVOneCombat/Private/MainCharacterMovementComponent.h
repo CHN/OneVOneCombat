@@ -7,7 +7,7 @@
 
 #include "CachedVector.h"
 #include "DataSubOwner.h"
-#include "DataInlineSubOwner.h"
+#include "DataReadOwner.h"
 #include "MainCharacter/MovementComponentData.h"
 #include "MainCharacter/WalkableGroundPropertiesData.h"
 
@@ -46,7 +46,7 @@ private:
 
 	void UpdateMoveableComponent(const float deltaTime);
 
-	DataInlineSubOwner<FWalkableGroundPropertiesData> walkableGroundPropertiesSubOwner;
+	DataReadOwner<FWalkableGroundPropertiesData> walkableGroundPropertiesData;
 
 	UPROPERTY()
 	TObjectPtr<UPrimitiveComponent> moveableComponent;

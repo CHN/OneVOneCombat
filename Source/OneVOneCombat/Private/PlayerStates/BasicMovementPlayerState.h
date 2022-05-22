@@ -4,7 +4,7 @@
 
 #include "PlayerStateBase.h"
 
-#include "DataInlineSubOwner.h"
+#include "DataSubOwner.h"
 
 #include "BasicMovementPlayerState.generated.h"
 

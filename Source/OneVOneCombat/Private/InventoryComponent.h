@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "DataInlineSubOwner.h"
+#include "DataSubOwner.h"
+#include "DataReadOwner.h"
 
 #include "InventoryComponent.generated.h"
 
@@ -36,8 +37,8 @@ private:
 
 	void CreateStartingInventoryItems();
 
-	DataInlineSubOwner<FInventoryData> inventoryData;
-	DataInlineSubOwner<FCharacterStateData> characterStateData;
+	DataSubOwner<FInventoryData> inventoryData;
+	DataReadOwner<FCharacterStateData> characterStateData;
 
 	UPROPERTY(EditDefaultsOnly, meta = (MustImplement = "InventoryItemInterface"))
 	TArray<TSubclassOf<AActor>> startingItems;

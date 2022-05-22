@@ -18,7 +18,7 @@ class UPlayerStateGroupBase : public UActorComponent
 public:	
 	UPlayerStateGroupBase();
 
-	void Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter);
+	void Init(AMainCharacter* NewMainCharacter);
 	void InitPlayerStates();
 
 	virtual void OnInitialized() {}
@@ -45,7 +45,9 @@ protected:
 
 	UPROPERTY()
 	TArray<UPlayerStateBase*> playerStates;
-	TWeakObjectPtr<AMainCharacter> mainCharacter;
+
+	UPROPERTY()
+	AMainCharacter* mainCharacter;
 
 private:
 

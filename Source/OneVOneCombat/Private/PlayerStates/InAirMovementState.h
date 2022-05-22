@@ -4,7 +4,7 @@
 
 #include "PlayerStateBase.h"
 
-#include "DataInlineSubOwner.h"
+#include "DataReadOwner.h"
 
 #include "InAirMovementState.generated.h"
 
@@ -33,6 +33,6 @@ public:
 private:
 
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
-	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;
-	DataInlineSubOwner<FCharacterInputData> characterInputData;
+	DataReadOwner<FAnimationRelatedData> animationRelatedData;
+	DataReadOwner<FCharacterInputData> characterInputData;
 };

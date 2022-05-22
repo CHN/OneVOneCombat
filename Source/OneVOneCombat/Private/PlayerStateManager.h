@@ -30,7 +30,7 @@ enum EPlayerState
 	NONE
 };
 
-UCLASS( ClassGroup=(Custom), meta = (BlueprintSpawnableComponent))
+UCLASS(BlueprintType)
 class UPlayerStateManager : public UActorComponent
 {
 	GENERATED_BODY()
@@ -39,9 +39,12 @@ public:
 
 	UPlayerStateManager();
 
-	void Init(TWeakObjectPtr<AMainCharacter> NewMainCharacter);
+	void Init(AMainCharacter* NewMainCharacter);
 
+	UFUNCTION(BlueprintCallable)
 	void PushStateGroup(EPlayerStateGroup playerStateGroup);
+
+	UFUNCTION(BlueprintCallable)
 	void PopStateGroup();
 	
 	inline UPlayerStateFlowManager* GetStateFlowManager() const
@@ -56,7 +59,8 @@ private:
 	void CreateStateGroups();
 	void InitPlayerStates();
 
-	TWeakObjectPtr<AMainCharacter> mainCharacter;
+	UPROPERTY()
+	AMainCharacter* mainCharacter;
 	TEnumArray<UPlayerStateGroupBase*, EPlayerStateGroup> stateGroups;
 
 	UPROPERTY(EditDefaultsOnly)

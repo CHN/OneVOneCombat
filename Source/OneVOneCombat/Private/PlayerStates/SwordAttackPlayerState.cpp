@@ -18,7 +18,7 @@ USwordAttackPlayerState::USwordAttackPlayerState()
 
 void USwordAttackPlayerState::OnStateInitialized()
 {
-	mainCharacter->GetCharacterData()->characterStateDataOwner.BecomeSubOwner(&characterStateData);
+	mainCharacter->GetCharacterData()->characterStateDataOwner.BeSubOwner(&characterStateData);
 }
 
 void USwordAttackPlayerState::OnStateBeginPlay()
@@ -69,7 +69,7 @@ void USwordAttackPlayerState::OnStateUpdate(float deltaTime)
 	}
 }
 
-void USwordAttackPlayerState::OnStateEndPlay(bool isInterrupted)
+void USwordAttackPlayerState::OnStateEndPlay(bool isInterrupted, uint32 nextState)
 {
 	characterStateData->isAttacking = false;
 }

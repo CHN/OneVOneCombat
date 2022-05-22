@@ -26,4 +26,7 @@ struct FCharacterStateData
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool isSprinting;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool isSprintDisabled;
 };

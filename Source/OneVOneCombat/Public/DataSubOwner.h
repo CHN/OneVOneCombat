@@ -2,17 +2,18 @@
 
 #pragma once
 
-template<typename DataType>
-class DataOwner;
-
 /**
  * 
  */
 
 template<typename DataType>
+class DataOwner;
+
+template<typename DataType>
 class ONEVONECOMBAT_API DataSubOwner
 {
 public:
+
 	DataSubOwner() {}
 	~DataSubOwner();
 
@@ -30,20 +31,26 @@ public:
 		dataOwner = newDataOwner;
 	}
 
+	inline DataType* operator->() const
+	{
+		return data;
+	}
+
 	int32 GetId() { return id; }
 	bool IsDataAvailable() { return data != nullptr; }
-
-private:
-	int32 id = -1;
 
 protected:
 	DataType* data;
 
 private:
+	void* operator new(size_t);
+	void* operator new(size_t, void*);
+	void* operator new[](size_t);
+	void* operator new[](size_t, void*);
+
+	int32 id = -1;
 	DataOwner<DataType>* dataOwner;
 };
-
-#include "DataOwner.h"
 
 template<typename DataType>
 void DataSubOwner<DataType>::OnDataOwnerDestroyed()

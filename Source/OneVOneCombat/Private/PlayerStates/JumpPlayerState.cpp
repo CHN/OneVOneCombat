@@ -27,8 +27,7 @@ void UJumpPlayerState::OnStateInitialized()
 {
 	movementComponent = mainCharacter->GetMainMovementComponent();
 	characterData = mainCharacter->GetCharacterData();
-	characterData->characterStateDataOwner.BecomeSubOwner(&characterStateData);
-	characterData->characterInputDataOwner.BecomeSubOwner(&characterInputData);
+	characterData->characterStateDataOwner.BeSubOwner(&characterStateData);
 
 	handle = mainCharacter->GetInputQueueSystem()->BindQueueEvent(EInputQueueOutputState::JUMP, this, &UJumpPlayerState::OnJumpActionExecuted);
 }
@@ -40,6 +39,7 @@ void UJumpPlayerState::OnStateBeginPlay()
 	movementComponent->AddVelocity(jumpVelocity);
 
 	isUngrounded = false;
+	groundedFrameCount = 0;
 	characterStateData->isJumping = true;
 	lookState = playerStateFlowManager->ReuseState(this, EPlayerState::LOOK);
 	inAirMovementState = playerStateFlowManager->ReuseState(this, EPlayerState::IN_AIR_MOVEMENT);
@@ -76,9 +76,18 @@ void UJumpPlayerState::OnStateUpdate(float deltaTime)
 	{
 		isUngrounded = true;
 	}
+	else
+	{
+		++groundedFrameCount;
+
+		if (groundedFrameCount > 5)
+		{
+			EndState(EPlayerState::BASIC_MOVEMENT);
+		}
+	}
 }
 
-void UJumpPlayerState::OnStateEndPlay(bool isInterrupted)
+void UJumpPlayerState::OnStateEndPlay(bool isInterrupted, uint32 nextState)
 {
 	characterStateData->isJumping = false;
 }

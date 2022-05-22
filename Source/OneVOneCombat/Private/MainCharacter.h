@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "UserInputType.h"
-#include "DataInlineSubOwner.h"
+#include "DataSubOwner.h"
 
 #include "MainCharacter.generated.h"
 
@@ -25,6 +25,7 @@ class UCharacterAttributeDataAsset;
 
 struct FCharacterInputData;
 struct FAnimationRelatedData;
+struct FCharacterStateData;
 
 enum class EUserInputType : uint8;
 
@@ -56,6 +57,7 @@ public:
 
 	inline UMainCharacterDataAsset* GetCharacterData() const { return data; }
 	inline UMainCharacterMovementComponent* GetMainMovementComponent() const { return movementComponent; }
+	UFUNCTION(BlueprintPure)
 	inline UPlayerStateManager* GetPlayerStateManager() const { return playerStateManager; }
 	inline UInputQueueSystem* GetInputQueueSystem() const { return inputQueueSystem; }
 	inline UPlayerInputPollingSystem* GetPlayerInputPollingSystem() const { return playerInputPollingSystem; }
@@ -64,6 +66,7 @@ public:
 	inline UStateEvents* GetStateEvents() const { return stateEvents; }
  	inline const UDataTable* GetAnimationStateEventDataTable() const { return animationStateEventDataTable; }
  	inline const UCharacterAttributeDataAsset* GetCharacterAttributeDataAsset() const { return characterAttributeDataAsset; }
+ 	inline USkeletalMeshComponent* GetCharacterSkeletalMesh() const { return characterSkeletalMesh; }
 
 	void HandleActionInput(EUserInputType inputType, EInputEvent inputEvent);
 
@@ -98,7 +101,7 @@ private:
 	UPROPERTY()
 	UUserActionAndAxisInputHandler* verticalLookInputHandler;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintGetter = "GetPlayerStateManager")
 	UPlayerStateManager* playerStateManager;
 
 	UPROPERTY(VisibleAnywhere)
@@ -143,8 +146,11 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	AActor* lastAttachedItem;
 
-	DataInlineSubOwner<FCharacterInputData> inputData;
-	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;
+	DataSubOwner<FCharacterInputData> inputData;
+	DataSubOwner<FAnimationRelatedData> animationRelatedData;
+	DataSubOwner<FCharacterStateData> characterStateData;
 
 	float lastDeltaTime;
+
+	void OnSprintDisableStateChanged(bool state);
 };

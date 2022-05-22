@@ -22,8 +22,8 @@ void UMainCharacterMovementComponent::BeginPlay()
 
 	auto* characterData = Cast<AMainCharacter>(GetOwner())->GetCharacterData();
 
-	characterData->movementComponentDataOwner.BecomeSubOwner(this);
-	characterData->walkableGroundPropertiesDataOwner.BecomeSubOwner(&walkableGroundPropertiesSubOwner);
+	characterData->movementComponentDataOwner.BeSubOwner(this);
+	characterData->walkableGroundPropertiesDataOwner.BeReadOwner(&walkableGroundPropertiesData);
 
 	data->gravity = FCachedVector(0, 0, -980.f);
 }
@@ -93,7 +93,7 @@ FVector UMainCharacterMovementComponent::FindNonCollidingClosestPosition(const F
 {
 	TArray<FHitResult> hitResults;
 		
-	const bool isHitting = GetWorld()->SweepMultiByChannel(NO_CONST_REF hitResults, initialPosition, sweepEndPosition, moveableComponent->GetComponentQuat(), walkableGroundPropertiesSubOwner->collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
+	const bool isHitting = GetWorld()->SweepMultiByChannel(NO_CONST_REF hitResults, initialPosition, sweepEndPosition, moveableComponent->GetComponentQuat(), walkableGroundPropertiesData->collisionChannel, moveableComponent->GetCollisionShape(), groundHitSweepQueryParams);
 
 	if (!isHitting)
 	{

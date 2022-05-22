@@ -4,7 +4,7 @@
 
 #include "PlayerStateBase.h"
 
-#include "DataInlineSubOwner.h"
+#include "DataReadOwner.h"
 
 #include "LookPlayerState.generated.h"
 
@@ -32,5 +32,5 @@ public:
 
 private:
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
-	DataInlineSubOwner<FCharacterInputData> inputData;
+	DataReadOwner<FCharacterInputData> inputData;
 };

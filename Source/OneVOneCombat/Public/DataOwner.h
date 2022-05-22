@@ -4,9 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "DataSubOwner.h"
-
-#include <type_traits>
+#include "DataReadOwner.h"
 
 #include "EditorUtilities.h"
 
@@ -21,13 +19,13 @@ public:
 	DataOwner() = default;
 	DataOwner(DataType* data) : data(data) {}
 
-	void BecomeSubOwner(DataSubOwner<DataType>* dataSubOwner)
+	void BeSubOwner(DataSubOwner<DataType>* dataSubOwner)
 	{
 		checkf(dataSubOwner, TEXT("DataSubOwner is null"));
 
 		if(dataSubOwner->IsDataAvailable())
 		{
-			LOG_TO_SCREEN("ERROR: Data is not null, it may be already a data sub owner! BecomeSubOwner is returned!");
+			LOG_TO_SCREEN("ERROR: Data is not null, it may be already a data sub owner! BeSubOwner is returned!");
 			return;
 		}
 
@@ -49,6 +47,11 @@ public:
 		}
 
 		dataSubOwner->ResetSubOwner(id, data, this);
+	}
+
+	void BeReadOwner(DataReadOwner<DataType>* dataReadOwner)
+	{
+		BeSubOwner(dataReadOwner);
 	}
 
 	void OnSubOwnerDestroyed(DataSubOwner<DataType>* dataSubOwner)

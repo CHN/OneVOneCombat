@@ -4,7 +4,7 @@
 
 #include "PlayerStateBase.h"
 
-#include "DataInlineSubOwner.h"
+#include "DataSubOwner.h"
 
 #include "SwordAttackPlayerState.generated.h"
 
@@ -26,7 +26,7 @@ public:
 	void OnStateBeginPlay() override;
 	void OnStateInitialized() override;
 	void OnStateUpdate(float deltaTime) override;
-	void OnStateEndPlay(bool isInterrupted) override;
+	void OnStateEndPlay(bool isInterrupted, uint32 nextState) override;
 	void OnStateActive() override;
 	void OnStateDeactive() override;
 
@@ -37,7 +37,7 @@ private:
 
 	void OnAttackInputTriggered();
 
-	DataInlineSubOwner<FCharacterStateData> characterStateData;
+	DataSubOwner<FCharacterStateData> characterStateData;
 	FDelegateHandle inputEventHandle;
 
 	TWeakObjectPtr<UPlayerStateBase> basicMovementState;

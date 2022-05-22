@@ -4,7 +4,8 @@
 
 #include "PlayerStateBase.h"
 
-#include "DataInlineSubOwner.h"
+#include "DataSubOwner.h"
+#include "DataReadOwner.h"
 
 #include "MovementPlayerState.generated.h"
 
@@ -27,19 +28,25 @@ public:
 
 	UMovementPlayerState();
 
+	void OnStateBeginPlay() override;
 	void OnStateInitialized() override;
 	void OnStateUpdate(float deltaTime) override;
 	bool IsStateInterruptible(uint32 newState) override;
 	bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState) override;
-	void OnStateEndPlay(bool isInterrupted) override;
+	void OnStateEndPlay(bool isInterrupted, uint32 nextState) override;
 
 private:
 
 	void OnSprintKeyStateChanged(EInputEvent inputEvent);
+	void OnSprintDisableStateChanged(bool state);
+
+	bool isSprintInterrupted;
+	FDelegateHandle sprintInputHandle;
+	FDelegateHandle sprintDisableStateOnChangeHandle;
 
 	TWeakObjectPtr<UMainCharacterMovementComponent> movementComponent;
-	DataInlineSubOwner<FAnimationRelatedData> animationRelatedData;
-	DataInlineSubOwner<FCharacterStateData> characterStateData;
-	DataInlineSubOwner<FCharacterInputData> characterInputData;
-	DataInlineSubOwner<FMovementComponentData> movementComponentData;
+	DataReadOwner<FAnimationRelatedData> animationRelatedData;
+	DataReadOwner<FMovementComponentData> movementComponentData;
+	DataSubOwner<FCharacterStateData> characterStateData;
+	DataSubOwner<FCharacterInputData> characterInputData;
 };

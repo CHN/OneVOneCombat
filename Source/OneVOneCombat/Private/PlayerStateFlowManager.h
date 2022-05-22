@@ -22,8 +22,10 @@ public:
 
 	GENERATED_BODY()
 
-	void Init(uint32 stateCount);
+	void Init(uint32 stateCount, uint32 NewIdleState);
+	void SetIdleState(uint32 NewIdleState);
 	void UpdateCurrentState(float deltaTime);
+	void SetReturnState(uint32 NewReturnState);
 
 	bool TryToChangeCurrentState(uint32 nextState, EInputQueueOutputState inputReason);
 	TWeakObjectPtr<UPlayerStateBase> ReuseState(const UPlayerStateBase* ownerState, uint32 state);
@@ -35,6 +37,9 @@ public:
 private:
 
 	void OnCurrentStateEndCallback(uint32 nextState);
+
+	int32 returnState;
+	uint32 idleState;
 
 	UPROPERTY()
 	TArray<UPlayerStateBase*> activeStates;

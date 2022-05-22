@@ -26,6 +26,8 @@ public:
 
 	GENERATED_BODY()
 
+	void BeginPlay() override;
+
 	UFUNCTION(BlueprintPure)
 	TScriptInterface<IInventoryItemInterface> GetItemInterface() const { return itemInterface; }
 
@@ -44,6 +46,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetMeshSocketName(const FName& NewMeshSocketName) { meshSocketName = NewMeshSocketName; }
 
+	UDataAsset* GetExtraData() const { return extraData; }
+	const UDataAsset* GetExtraGlobalData() const { return extraGlobalData; }
+
 private:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = "GetItemType", BlueprintSetter = "SetItemType")
@@ -54,4 +59,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintGetter = "GetItemInterface", BlueprintSetter = "SetItemInterface")
 	TScriptInterface<IInventoryItemInterface> itemInterface;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UDataAsset* extraData;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UDataAsset* extraGlobalData;
 };
