@@ -28,7 +28,7 @@ public:
 	UAttackWeaponPlayerState();
 
 
-	bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState) override;
+	bool IsStateInterruptibleByCommand(const FString& command, uint32 newState) override;
 
 private:
 	void OnStateInitialized() override;
@@ -37,7 +37,8 @@ private:
 	void OnStateEndPlay(bool isInterrupted, uint32 nextState) override;
 
 
-	void OnAttackInputTriggered(EInputEvent inputEvent);
+	void OnAttackInputPressed();
+	void OnAttackInputReleased();
 
 	FInventoryItemInfo& GetCurrentItemInfo() const;
 

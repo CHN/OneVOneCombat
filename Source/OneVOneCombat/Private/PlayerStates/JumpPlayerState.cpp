@@ -29,7 +29,7 @@ void UJumpPlayerState::OnStateInitialized()
 	characterData = mainCharacter->GetCharacterData();
 	characterData->characterStateDataOwner.BeSubOwner(&characterStateData);
 
-	handle = mainCharacter->GetInputQueueSystem()->BindQueueEvent(EInputQueueOutputState::JUMP, this, &UJumpPlayerState::OnJumpActionExecuted);
+	handle = mainCharacter->GetInputQueueSystem()->BindCommand("+jump", this, &UJumpPlayerState::OnJumpActionExecuted);
 }
 
 void UJumpPlayerState::OnStateBeginPlay()
@@ -45,7 +45,7 @@ void UJumpPlayerState::OnStateBeginPlay()
 	inAirMovementState = playerStateFlowManager->ReuseState(this, EPlayerState::IN_AIR_MOVEMENT);
 }
 
-bool UJumpPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState)
+bool UJumpPlayerState::IsStateTransitionInAllowedByCommand(const FString& command, uint32 previousState)
 {
 	return previousState != EPlayerState::JUMP && characterData->IsGrounded();
 }
@@ -57,7 +57,7 @@ bool UJumpPlayerState::IsStateInterruptible(uint32 newState)
 
 void UJumpPlayerState::OnJumpActionExecuted()
 {
-	playerStateFlowManager->TryToChangeCurrentState(EPlayerState::JUMP, EInputQueueOutputState::JUMP); // FIXME
+	playerStateFlowManager->TryToChangeCurrentState(EPlayerState::JUMP, "+jump"); // FIXME
 }
 
 void UJumpPlayerState::OnStateUpdate(float deltaTime)

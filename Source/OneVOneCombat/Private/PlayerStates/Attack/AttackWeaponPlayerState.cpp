@@ -10,7 +10,7 @@
 #include "CharacterEvents/CharacterEvents.h"
 #include "InventoryItemInterface.h"
 #include "InventoryItem.h"
-#include "PlayerInputPollingSystem.h"
+#include "InputQueueSystem.h"
 #include "WeaponInventoryItemData.h"
 #include "InputQueueOutputState.h"
 
@@ -22,7 +22,7 @@ UAttackWeaponPlayerState::UAttackWeaponPlayerState()
 	playerState = EPlayerState::ATTACK;
 }
 
-bool UAttackWeaponPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState)
+bool UAttackWeaponPlayerState::IsStateInterruptibleByCommand(const FString& command, uint32 newState)
 {
 	return true;
 }
@@ -32,7 +32,8 @@ void UAttackWeaponPlayerState::OnStateInitialized()
 	mainCharacter->GetCharacterData()->inventoryDataOwner.BeSubOwner(&inventoryData);
 	mainCharacter->GetCharacterData()->characterStateDataOwner.BeSubOwner(&characterStateData);
 
-	mainCharacter->GetPlayerInputPollingSystem()->BindInputEvent(EUserInputType::ATTACK_INPUT, this, &UAttackWeaponPlayerState::OnAttackInputTriggered);
+	mainCharacter->GetInputQueueSystem()->BindCommand("+usePrimaryWeapon", this, &UAttackWeaponPlayerState::OnAttackInputPressed);
+	mainCharacter->GetInputQueueSystem()->BindCommand("-usePrimaryWeapon", this, &UAttackWeaponPlayerState::OnAttackInputReleased);
 }
 
 void UAttackWeaponPlayerState::OnStateBeginPlay()
@@ -75,25 +76,23 @@ void UAttackWeaponPlayerState::OnStateEndPlay(bool isInterrupted, uint32 nextSta
 	}
 }
 
-void UAttackWeaponPlayerState::OnAttackInputTriggered(EInputEvent inputEvent)
+void UAttackWeaponPlayerState::OnAttackInputPressed()
+{
+	if (!IsStatePlaying())
+	{
+		if (playerStateFlowManager->TryToChangeCurrentState(EPlayerState::ATTACK, ""))
+		{
+			characterStateData->isAttacking = true;
+		}
+	}
+}
+
+void UAttackWeaponPlayerState::OnAttackInputReleased()
 {
 	if (IsStatePlaying())
 	{
-		if (inputEvent == EInputEvent::IE_Released)
-		{
-			characterStateData->isAttacking = false;
-			EndState(EPlayerState::BASIC_MOVEMENT);
-		}
-	}
-	else
-	{
-		if (inputEvent == EInputEvent::IE_Pressed)
-		{
-			if (playerStateFlowManager->TryToChangeCurrentState(EPlayerState::ATTACK, EInputQueueOutputState::NONE))
-			{
-				characterStateData->isAttacking = true;
-			}
-		}
+		characterStateData->isAttacking = false;
+		EndState(EPlayerState::BASIC_MOVEMENT);
 	}
 }
 

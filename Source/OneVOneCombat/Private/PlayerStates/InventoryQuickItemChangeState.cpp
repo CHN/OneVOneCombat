@@ -29,7 +29,7 @@ void UInventoryQuickItemChangeState::OnStateInitialized()
 
 void UInventoryQuickItemChangeState::OnQuickItemChanged()
 {
-	playerStateFlowManager->TryToChangeCurrentState(EPlayerState::QUICK_ITEM_CHANGED, EInputQueueOutputState::NONE);
+	playerStateFlowManager->TryToChangeCurrentState(EPlayerState::QUICK_ITEM_CHANGED, "");
 }
 
 void UInventoryQuickItemChangeState::OnStateBeginPlay()

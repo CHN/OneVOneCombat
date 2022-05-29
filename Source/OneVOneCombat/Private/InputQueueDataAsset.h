@@ -23,7 +23,7 @@ public:
 	UInputQueueDataAsset(const FObjectInitializer& ObjectInitializer);
 
 	const TArray<FInputQueueAction>& GetInputActions() const;
-	EInputQueueOutputState GetInputQueueOutputState() const;
+	const FString& GetCommand() const;
 	float GetMinQueueTime() const { return minQueueTime; }
 	float GetMaxQueueTime() const { return maxQueueTime; }
 	bool GetRemoveFromPollWhenInputQueueFound() const { return bRemoveFromPollWhenInputQueueFound; }
@@ -34,7 +34,7 @@ private:
 	TArray<FInputQueueAction> inputActions;
 
 	UPROPERTY(EditAnywhere)
-	EInputQueueOutputState inputQueueOutputState;
+	FString command;
 
 	UPROPERTY(EditAnywhere)
 	float minQueueTime;

@@ -50,7 +50,7 @@ bool UInAirMovementState::IsStateInterruptible(uint32 newState)
 	return true;
 }
 
-bool UInAirMovementState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState)
+bool UInAirMovementState::IsStateInterruptibleByCommand(const FString& command, uint32 newState)
 {
 	return true;
 }

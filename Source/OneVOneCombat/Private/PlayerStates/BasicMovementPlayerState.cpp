@@ -28,7 +28,7 @@ bool UBasicMovementPlayerState::IsStateInterruptible(uint32 newState)
 	return true;
 }
 
-bool UBasicMovementPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState)
+bool UBasicMovementPlayerState::IsStateInterruptibleByCommand(const FString& command, uint32 newState)
 {
 	return true;
 }

@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "InputQueueOutputState.generated.h"
+//#include "InputQueueOutputState.generated.h"
 
-UENUM(BlueprintType)
+/*UENUM(BlueprintType)
 enum class EInputQueueOutputState : uint8
 {
 	WALK,
@@ -14,4 +14,4 @@ enum class EInputQueueOutputState : uint8
 
 	END_OF_ENUM,
 	NONE
-};
+};*/

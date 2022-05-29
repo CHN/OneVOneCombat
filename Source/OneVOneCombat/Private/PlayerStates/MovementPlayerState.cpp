@@ -3,11 +3,12 @@
 
 #include "PlayerStates/MovementPlayerState.h"
 
+#include "MainCharacterPlayerState.h"
 #include "MainCharacterMovementComponent.h"
 #include "MainCharacter/MainCharacterDataAsset.h"
 #include "MainCharacter.h"
 #include "PlayerStateManager.h"
-#include "PlayerInputPollingSystem.h"
+#include "InputQueueSystem.h"
 #include "CharacterEvents/CharacterEvents.h"
 
 #include "MainCharacter/AnimationRelatedData.h"
@@ -32,7 +33,8 @@ void UMovementPlayerState::OnStateInitialized()
 
 void UMovementPlayerState::OnStateBeginPlay()
 {
-	sprintInputHandle = mainCharacter->GetPlayerInputPollingSystem()->BindInputEvent(EUserInputType::SPRINT, this, &UMovementPlayerState::OnSprintKeyStateChanged);
+	sprintInputHandle = mainCharacter->GetInputQueueSystem()->BindCommand("+sprint", this, &UMovementPlayerState::OnSprintKeyPressed);
+	sprintInputHandle = mainCharacter->GetInputQueueSystem()->BindCommand("-sprint", this, &UMovementPlayerState::OnSprintKeyReleased);
 
 	sprintDisableStateOnChangeHandle = mainCharacter->GetCharacterEvents()->onSprintDisableStateChanged.AddUObject(this, &UMovementPlayerState::OnSprintDisableStateChanged);
 }
@@ -49,7 +51,7 @@ void UMovementPlayerState::OnStateUpdate(float deltaTime)
 		{
 			const auto* characterAttributeData = mainCharacter->GetCharacterAttributeDataAsset();
 
-			FVector moveDelta = characterInputData->rawMoveInput.GetClampedToMaxSize(1.f) * (characterInputData->isSprintInputInitiated ? characterAttributeData->GetSprintSpeed() : characterAttributeData->GetWalkSpeed()) * deltaTime;
+			FVector moveDelta = -mainCharacter->GetPlayerState()->rawMoveInput.GetClampedToMaxSize(1.f) * (characterInputData->isSprintInputInitiated ? characterAttributeData->GetSprintSpeed() : characterAttributeData->GetWalkSpeed()) * deltaTime;
 			movementComponent->MoveByDelta(deltaTime, mainCharacter->GetActorQuat() * moveDelta); // FIXME: Refactor, just testing
 		}
 
@@ -62,7 +64,7 @@ bool UMovementPlayerState::IsStateInterruptible(uint32 newState)
 	return true;
 }
 
-bool UMovementPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState)
+bool UMovementPlayerState::IsStateInterruptibleByCommand(const FString& command, uint32 newState)
 {
 	return true;
 }
@@ -74,9 +76,15 @@ void UMovementPlayerState::OnStateEndPlay(bool isInterrupted, uint32 nextState)
 	mainCharacter->GetCharacterEvents()->onSprintDisableStateChanged.Remove(sprintDisableStateOnChangeHandle);
 }
 
-void UMovementPlayerState::OnSprintKeyStateChanged(EInputEvent inputEvent)
+void UMovementPlayerState::OnSprintKeyPressed()
 {
-	characterInputData->isSprintInputInitiated = !characterStateData->isSprintDisabled && inputEvent == EInputEvent::IE_Pressed;
+	characterInputData->isSprintInputInitiated = !characterStateData->isSprintDisabled;
+	characterStateData->isSprinting = false;
+}
+
+void UMovementPlayerState::OnSprintKeyReleased()
+{
+	characterInputData->isSprintInputInitiated = false;
 	characterStateData->isSprinting = false;
 }
 

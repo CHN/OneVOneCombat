@@ -27,7 +27,7 @@ public:
 	void UpdateCurrentState(float deltaTime);
 	void SetReturnState(uint32 NewReturnState);
 
-	bool TryToChangeCurrentState(uint32 nextState, EInputQueueOutputState inputReason);
+	bool TryToChangeCurrentState(uint32 nextState, const FString& commandReason);
 	TWeakObjectPtr<UPlayerStateBase> ReuseState(const UPlayerStateBase* ownerState, uint32 state);
 
 	TWeakObjectPtr<UPlayerStateBase> ClearState(uint32 stateType);

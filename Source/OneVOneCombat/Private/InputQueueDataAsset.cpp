@@ -14,7 +14,7 @@ const TArray<FInputQueueAction>& UInputQueueDataAsset::GetInputActions() const
 	return inputActions;
 }
 
-EInputQueueOutputState UInputQueueDataAsset::GetInputQueueOutputState() const
+const FString& UInputQueueDataAsset::GetCommand() const
 {
-	return inputQueueOutputState;
+	return command;
 }

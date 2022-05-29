@@ -3,24 +3,37 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UserActionAndAxisInputHandler.h"
 #include "GameFramework\PlayerController.h"
 
 #include "PlayerMainController.generated.h"
+
+class AMainCharacterPlayerState;
+class UUserActionAndAxisInputHandler;
 
 UCLASS()
 class APlayerMainController : public APlayerController
 {
 	GENERATED_BODY()
 
-public:
+private:
 
-	APlayerMainController();
-
-	void PreInitializeComponents() override;
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 	virtual void PlayerTick(float DeltaTime) override;
+	void InitPlayerState() override;
+	void SetupInputComponent() override;
+
+	UPROPERTY()
+	UUserActionAndAxisInputHandler* moveInputHandler;
+
+	UPROPERTY()
+	UUserActionAndAxisInputHandler* lookInputHandler;
+
+	TObjectPtr<AMainCharacterPlayerState> characterPlayerState;
+
+	void InitMoveInput();
+	void InitLookInput();
+
+	void OnMoveHandled(FVector value);
+	void OnLookHandled(FVector value);
+
+	void ExecCommand(const TCHAR* cmd);
 };

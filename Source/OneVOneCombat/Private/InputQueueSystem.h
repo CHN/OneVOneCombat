@@ -24,7 +24,17 @@ struct FInputQueueData
 	TArray<UInputQueueDataAsset*> inputQueueDataAssets;
 };
 
-DECLARE_EVENT(UInputQueueSystem, FInputQueueSystemEvent)
+DECLARE_EVENT(UInputQueueSystem, FCommandExecuteEvent);
+
+USTRUCT()
+struct FCommandData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere)
+	uint8 blockerCount;
+	FCommandExecuteEvent commandEvent;
+};
 
 UCLASS(Blueprintable)
 class UInputQueueSystem : public UActorComponent
@@ -37,16 +47,24 @@ public:
 	UInputQueueSystem();
 
 	void BeginPlay() override;
+	bool ProcessConsoleExec(const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor) override;
 
 	void ConsumeInputs(UPlayerInputPollingSystem* inputPollingSystem);
 
-	template<typename UserClass>
-	FDelegateHandle BindQueueEvent(EInputQueueOutputState state, UserClass* object, typename TMemFunPtrType<false, UserClass, void()>::Type function)
+	template<typename UserClass, typename ...VarTypes>
+	FDelegateHandle BindCommand(const FString& command, UserClass* object, typename FCommandExecuteEvent::FDelegate::TMethodPtr<UserClass, VarTypes...> function, VarTypes... vars)
 	{
-		return queueEvents[state].AddUObject(object, function);
+		FCommandExecuteEvent& executeEvent = commandDataMap.FindOrAdd(command).commandEvent;
+		return executeEvent.AddUObject(object, function, vars...);
 	}
 
-	void UnbindQueueEvent(EInputQueueOutputState state, const FDelegateHandle& handle);
+	void RemoveCommand(const FString& command, const FDelegateHandle& delegateHandle);
+
+	UFUNCTION(BlueprintCallable)
+	void BlockCommand(const FString& cmd);
+
+	UFUNCTION(BlueprintCallable)
+	void UnblockCommand(const FString& cmd);
 
 private:
 
@@ -60,8 +78,9 @@ private:
 	};
 
 	TArray<DiscardInputPair> discardInputPairs;
-	TEnumArray<FInputQueueSystemEvent, EInputQueueOutputState> queueEvents;
+	TMap<FString, FCommandData> commandDataMap;
 
+	void InvokeCommand(const FString& command);
 	void SortInputQueueDataArray();
 	void UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset);
 	bool WillCurrentInputBeDiscarded(const FUserInput& userInput);

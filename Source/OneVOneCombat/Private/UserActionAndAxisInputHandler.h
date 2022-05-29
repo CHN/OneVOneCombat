@@ -4,11 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "UserInput.h"
-
 #include "UserActionAndAxisInputHandler.generated.h"
-
-DECLARE_DELEGATE_OneParam(FInputAxisHandlerSignature, float);
 
 UCLASS()
 class UUserActionAndAxisInputHandler : public UObject
@@ -18,31 +14,32 @@ class UUserActionAndAxisInputHandler : public UObject
 
 public:
 
-	void HandleNegativeInputPressed();
-	void HandleNegativeInputReleased();
-	void HandlePositiveInputPressed();
-	void HandlePositiveInputReleased();
-	void HandleAxisInput(float value);
-	void HandleAxisInputWithDeltaTime(float value);
+	void HandleXAxisNegativeInputPressed();
+	void HandleXAxisNegativeInputReleased();
+	void HandleXAxisPositiveInputPressed();
+	void HandleXAxisPositiveInputReleased();
+
+	void HandleYAxisNegativeInputPressed();
+	void HandleYAxisNegativeInputReleased();
+	void HandleYAxisPositiveInputPressed();
+	void HandleYAxisPositiveInputReleased();
+
+	void HandleXAxisInput(float value);
+	void HandleYAxisInput(float value);
+	void HandleXAxisInputWithDeltaTime(float value);
+	void HandleYAxisInputWithDeltaTime(float value);
 	void ResetAxisAccumulation();
 
 	template<typename UserClass>
-	void BindAxisFunction(UserClass* object, typename FInputAxisHandlerSignature::template TUObjectMethodDelegate<UserClass>::FMethodPtr method)
+	void BindAxisFunction(UserClass* object, typename FInputVectorAxisHandlerSignature::template TUObjectMethodDelegate<UserClass>::FMethodPtr method)
 	{
 		axisHandler.BindUObject(object, method);
 	}
 
 private:
 
-	inline float GetAxisValue()
-	{
-		return UserInputUtilities::ConvertActionToAxisInputByBools(bIsNegativePressed, bIsPositivePressed);
-	}
+	FVector axisActionValue = FVector::ZeroVector;
+	FVector axisValue = FVector::ZeroVector;
 
-	bool bIsNegativePressed = false;
-	bool bIsPositivePressed = false;
-
-	float axisValue = 0.f;
-
-	FInputAxisHandlerSignature axisHandler;
+	FInputVectorAxisHandlerSignature axisHandler;
 };

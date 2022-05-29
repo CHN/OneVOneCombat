@@ -30,8 +30,8 @@ public:
 	void OnStateActive() override;
 	void OnStateDeactive() override;
 
-	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState) override;
-	bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState) override;
+	bool IsStateTransitionInAllowedByCommand(const FString& command, uint32 previousState) override;
+	bool IsStateInterruptibleByCommand(const FString& command, uint32 newState) override;
 
 private:
 

@@ -32,8 +32,8 @@ private:
 	UPROPERTY()
 	AMainCharacter* mainCharacter;
 
-	void OnNextItemSelectInputTriggered(EInputEvent inputEvent);
-	void OnPreviousItemSelectInputTriggered(EInputEvent inputEvent);
+	void OnNextItemSelectInputTriggered();
+	void OnPreviousItemSelectInputTriggered();
 
 	void CreateStartingInventoryItems();
 

@@ -21,7 +21,7 @@ void UPlayerStateFlowManager::SetIdleState(uint32 NewIdleState)
 	idleState = NewIdleState;
 }
 
-bool UPlayerStateFlowManager::TryToChangeCurrentState(uint32 nextState, EInputQueueOutputState inputReason)
+bool UPlayerStateFlowManager::TryToChangeCurrentState(uint32 nextState, const FString& commandReason)
 {
 	if (nextState == idleState && returnState >= 0)
 	{
@@ -37,7 +37,7 @@ bool UPlayerStateFlowManager::TryToChangeCurrentState(uint32 nextState, EInputQu
 	if (isCurrentStatePlaying)
 	{
 		const bool isInterruptible = currentState->IsStateInterruptible(nextState);
-		const bool isInputInterruptible = currentState->IsStateInterruptibleByInputStateOutput(inputReason, nextState);
+		const bool isInputInterruptible = currentState->IsStateInterruptibleByCommand(commandReason, nextState);
 
 		if (!isInterruptible && !isInputInterruptible)
 		{
@@ -50,7 +50,7 @@ bool UPlayerStateFlowManager::TryToChangeCurrentState(uint32 nextState, EInputQu
 	const uint32 currentPlayerState = isCurrentStateValid ? currentState->GetPlayerState() : EPlayerState::NONE;
 
 	const bool isTransitionAllowed = newState->IsStateTransitionInAllowed(currentPlayerState);
-	const bool isInputTransitionAllowed = newState->IsStateTransitionInAllowedByInputStateOutput(inputReason, currentPlayerState);
+	const bool isInputTransitionAllowed = newState->IsStateTransitionInAllowedByCommand(commandReason, currentPlayerState);
 
 	if (!isTransitionAllowed || !isInputTransitionAllowed)
 	{
@@ -120,5 +120,5 @@ void UPlayerStateFlowManager::SetReturnState(uint32 NewReturnState)
 
 void UPlayerStateFlowManager::OnCurrentStateEndCallback(uint32 nextState)
 {
-	TryToChangeCurrentState(nextState, EInputQueueOutputState::NONE);
+	TryToChangeCurrentState(nextState, "");
 }

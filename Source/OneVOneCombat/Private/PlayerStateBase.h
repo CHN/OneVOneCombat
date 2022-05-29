@@ -6,7 +6,6 @@
 
 #include "PlayerStateBase.generated.h"
 
-enum class EInputQueueOutputState : uint8;
 class AMainCharacter;
 class UPlayerStateManager;
 class UPlayerStateFlowManager;
@@ -27,8 +26,8 @@ public:
 	virtual bool IsStateInterruptible(uint32 newState) { return false; }
 	virtual bool IsStateTransitionInAllowed(uint32 previousState) { return true; }
 
-	virtual bool IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState) { return false; }
-	virtual bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState) { return true; }
+	virtual bool IsStateInterruptibleByCommand(const FString& command, uint32 newState) { return false; }
+	virtual bool IsStateTransitionInAllowedByCommand(const FString& command, uint32 previousState) { return true; }
 
 	virtual void OnStateInitialized() {}
 	virtual void OnStateReused(uint32 ownerState) { OnStateBeginPlay(); }

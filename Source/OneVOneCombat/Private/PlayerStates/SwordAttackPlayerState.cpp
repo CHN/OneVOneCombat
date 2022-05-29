@@ -29,12 +29,12 @@ void USwordAttackPlayerState::OnStateBeginPlay()
 
 void USwordAttackPlayerState::OnStateActive()
 {
-	inputEventHandle = mainCharacter->GetInputQueueSystem()->BindQueueEvent(EInputQueueOutputState::MELEE_ATTACK, this, &USwordAttackPlayerState::OnAttackInputTriggered);
+	inputEventHandle = mainCharacter->GetInputQueueSystem()->BindCommand("+attack", this, &USwordAttackPlayerState::OnAttackInputTriggered);
 }
 
 void USwordAttackPlayerState::OnStateDeactive()
 {
-	mainCharacter->GetInputQueueSystem()->UnbindQueueEvent(EInputQueueOutputState::MELEE_ATTACK, inputEventHandle);
+	mainCharacter->GetInputQueueSystem()->RemoveCommand("+attack", inputEventHandle);
 }
 
 void USwordAttackPlayerState::OnAttackInputTriggered()
@@ -45,16 +45,16 @@ void USwordAttackPlayerState::OnAttackInputTriggered()
 	}
 	else
 	{
-		playerStateFlowManager->TryToChangeCurrentState(EPlayerState::ATTACK, EInputQueueOutputState::MELEE_ATTACK);
+		playerStateFlowManager->TryToChangeCurrentState(EPlayerState::ATTACK, "+attack");
 	}
 }
 
-bool USwordAttackPlayerState::IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState)
+bool USwordAttackPlayerState::IsStateTransitionInAllowedByCommand(const FString& command, uint32 previousState)
 {
 	return previousState == EPlayerState::BASIC_MOVEMENT;
 }
 
-bool USwordAttackPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState)
+bool USwordAttackPlayerState::IsStateInterruptibleByCommand(const FString& command, uint32 newState)
 {
 	return newState == EPlayerState::JUMP;
 }

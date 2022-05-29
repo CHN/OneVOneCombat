@@ -31,7 +31,7 @@ void UPlayerStateManager::Init(AMainCharacter* NewMainCharacter)
 	PushStateGroup(EPlayerStateGroup::DEFAULT_GROUP);
 	//PushStateGroup(EPlayerStateGroup::MELEE_ATTACK);
 
-	stateFlowManager->TryToChangeCurrentState(EPlayerState::BASIC_MOVEMENT, EInputQueueOutputState::NONE);
+	stateFlowManager->TryToChangeCurrentState(EPlayerState::BASIC_MOVEMENT, "");
 }
 
 void UPlayerStateManager::CreateStateGroups()

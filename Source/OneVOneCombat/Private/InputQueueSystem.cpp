@@ -139,14 +139,63 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 
 	UpdateDiscardInputPair(currentInputQueueData);
 
-	LOG_TO_SCREEN("Current Action is {0}", EditorUtilities::EnumToString(TEXT("EInputQueueOutputState"), currentInputQueueData->GetInputQueueOutputState()));
+	LOG_TO_SCREEN("Current Command is {0}", currentInputQueueData->GetCommand());
 
-	queueEvents[currentInputQueueData->GetInputQueueOutputState()].Broadcast();
+	InvokeCommand(currentInputQueueData->GetCommand());
 }
 
-void UInputQueueSystem::UnbindQueueEvent(EInputQueueOutputState state, const FDelegateHandle& handle)
+bool UInputQueueSystem::ProcessConsoleExec(const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor)
 {
-	queueEvents[state].Remove(handle);
+	if (Super::ProcessConsoleExec(Cmd, Ar, Executor))
+	{
+		return true;
+	}
+
+	FCommandData* commandData = commandDataMap.Find(Cmd);
+
+	if (commandData && commandData->blockerCount == 0)
+	{
+		commandData->commandEvent.Broadcast();
+
+		return true;
+	}
+
+	return false;
+}
+
+void UInputQueueSystem::InvokeCommand(const FString& command)
+{
+	auto* commandData = commandDataMap.Find(command);
+
+	if (commandData && commandData->blockerCount == 0)
+	{
+		commandData->commandEvent.Broadcast();
+	}
+}
+
+void UInputQueueSystem::RemoveCommand(const FString& command, const FDelegateHandle& delegateHandle)
+{
+	commandDataMap[command].commandEvent.Remove(delegateHandle);
+}
+
+void UInputQueueSystem::BlockCommand(const FString& cmd)
+{
+	FCommandData* commandData = commandDataMap.Find(cmd);
+
+	if (commandData)
+	{
+		++commandData->blockerCount;
+	}
+}
+
+void UInputQueueSystem::UnblockCommand(const FString& cmd)
+{
+	FCommandData* commandData = commandDataMap.Find(cmd);
+
+	if (commandData && commandData->blockerCount > 0)
+	{
+		--commandData->blockerCount;
+	}
 }
 
 void UInputQueueSystem::UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset)

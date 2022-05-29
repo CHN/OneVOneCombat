@@ -31,7 +31,7 @@ public:
 	void OnStateUpdate(float deltaTime) override;
 	void OnStateEndPlay(bool isInterrupted, uint32 nextState) override;
 
-	bool IsStateTransitionInAllowedByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 previousState) override;
+	bool IsStateTransitionInAllowedByCommand(const FString& command, uint32 previousState) override;
 
 	bool IsStateInterruptible(uint32 newState) override;
 

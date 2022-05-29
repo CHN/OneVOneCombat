@@ -3,6 +3,7 @@
 
 #include "LookPlayerState.h"
 
+#include "MainCharacterPlayerState.h"
 #include "MainCharacterMovementComponent.h"
 #include "MainCharacter/MainCharacterDataAsset.h"
 #include "MainCharacter.h"
@@ -22,8 +23,8 @@ void ULookPlayerState::OnStateInitialized()
 
 void ULookPlayerState::OnStateUpdate(float deltaTime)
 {
-	movementComponent->RotateByDelta(FQuat(FVector::UpVector, inputData->scaledRotateInput.X));
-	movementComponent->RotateVerticalRotationComponent(FQuat(FVector::ForwardVector, inputData->scaledRotateInput.Y));
+	movementComponent->RotateByDelta(FQuat(FVector::UpVector, mainCharacter->GetPlayerState()->rawLookInput.X));
+	movementComponent->RotateVerticalRotationComponent(FQuat(FVector::ForwardVector, mainCharacter->GetPlayerState()->rawLookInput.Y));
 }
 
 bool ULookPlayerState::IsStateInterruptible(uint32 newState)
@@ -31,7 +32,7 @@ bool ULookPlayerState::IsStateInterruptible(uint32 newState)
 	return true;
 }
 
-bool ULookPlayerState::IsStateInterruptibleByInputStateOutput(EInputQueueOutputState inputOutputState, uint32 newState)
+bool ULookPlayerState::IsStateInterruptibleByCommand(const FString& command, uint32 newState)
 {
 	return true;
 }

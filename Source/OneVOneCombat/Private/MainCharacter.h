@@ -11,6 +11,7 @@
 
 class UDataTable;
 
+class AMainCharacterPlayerState;
 class UPlayerInputPollingSystem;
 class UInputQueueSystem;
 class UMainCharacterDataAsset;
@@ -40,21 +41,7 @@ public:
 
 	AMainCharacter();
 
-	void CreateInputHandlers();
-
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	void BindInputHandlerFunctions();
-	void BindMovementInputs();
-	void BindLookInputs();
-	void BindPlayerActionInputs();
-
-	void SetHorizontalMoveAxis(float value);
-	void SetVerticalMoveAxis(float value);
-
-	void SetHorizontalLookAxis(float value);
-	void SetVerticalLookAxis(float value);
-
+	inline AMainCharacterPlayerState* GetPlayerState() const { return mainCharacterPlayerState; }
 	inline UMainCharacterDataAsset* GetCharacterData() const { return data; }
 	inline UMainCharacterMovementComponent* GetMainMovementComponent() const { return movementComponent; }
 	UFUNCTION(BlueprintPure)
@@ -85,21 +72,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	void ResetInputHandlerAccumulations();
-
 private:
 
-	UPROPERTY()
-	UUserActionAndAxisInputHandler* horizontalMovementInputHandler;
-
-	UPROPERTY()
-	UUserActionAndAxisInputHandler* verticalMovementInputHandler;
-
-	UPROPERTY()
-	UUserActionAndAxisInputHandler* horizontalLookInputHandler;
-
-	UPROPERTY()
-	UUserActionAndAxisInputHandler* verticalLookInputHandler;
+	TObjectPtr<AMainCharacterPlayerState> mainCharacterPlayerState;
 
 	UPROPERTY(VisibleAnywhere, BlueprintGetter = "GetPlayerStateManager")
 	UPlayerStateManager* playerStateManager;
@@ -151,6 +126,8 @@ private:
 	DataSubOwner<FCharacterStateData> characterStateData;
 
 	float lastDeltaTime;
+
+	bool ProcessConsoleExec(const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor) override;
 
 	void OnSprintDisableStateChanged(bool state);
 };

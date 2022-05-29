@@ -4,49 +4,89 @@
 #include "UserActionAndAxisInputHandler.h"
 #include "Misc/App.h"
 
-void UUserActionAndAxisInputHandler::HandleNegativeInputPressed()
+void UUserActionAndAxisInputHandler::HandleXAxisNegativeInputPressed()
 {
-	bIsNegativePressed = true;
-
-	axisHandler.Execute(GetAxisValue());
+	axisActionValue.X = FMath::Max(axisActionValue.X - 1, -1);
+	axisHandler.Execute(axisActionValue);
 }
 
-void UUserActionAndAxisInputHandler::HandleNegativeInputReleased()
+void UUserActionAndAxisInputHandler::HandleXAxisNegativeInputReleased()
 {
-	bIsNegativePressed = false;
-
-	axisHandler.Execute(GetAxisValue());
+	axisActionValue.X = FMath::Min(axisActionValue.X + 1, 1);
+	axisHandler.Execute(axisActionValue);
 }
 
-void UUserActionAndAxisInputHandler::HandlePositiveInputPressed()
+void UUserActionAndAxisInputHandler::HandleXAxisPositiveInputPressed()
 {
-	bIsPositivePressed = true;
-
-	axisHandler.Execute(GetAxisValue());
+	axisActionValue.X = FMath::Min(axisActionValue.X + 1, 1);
+	axisHandler.Execute(axisActionValue);
 }
 
-void UUserActionAndAxisInputHandler::HandlePositiveInputReleased()
+void UUserActionAndAxisInputHandler::HandleXAxisPositiveInputReleased()
 {
-	bIsPositivePressed = false;
-
-	axisHandler.Execute(GetAxisValue());
+	axisActionValue.X = FMath::Max(axisActionValue.X - 1, -1);
+	axisHandler.Execute(axisActionValue);
 }
 
-void UUserActionAndAxisInputHandler::HandleAxisInput(float value)
+void UUserActionAndAxisInputHandler::HandleYAxisNegativeInputPressed()
 {
-	if (FMath::Abs(axisValue) < 1.f)
+	axisActionValue.Y = FMath::Max(axisActionValue.Y - 1, -1);
+	axisHandler.Execute(axisActionValue);
+}
+
+void UUserActionAndAxisInputHandler::HandleYAxisNegativeInputReleased()
+{
+	axisActionValue.Y = FMath::Min(axisActionValue.Y + 1, 1);
+	axisHandler.Execute(axisActionValue);
+}
+
+void UUserActionAndAxisInputHandler::HandleYAxisPositiveInputPressed()
+{
+	axisActionValue.Y = FMath::Min(axisActionValue.Y + 1, 1);
+	axisHandler.Execute(axisActionValue);
+}
+
+void UUserActionAndAxisInputHandler::HandleYAxisPositiveInputReleased()
+{
+	axisActionValue.Y = FMath::Max(axisActionValue.Y - 1, -1);
+	axisHandler.Execute(axisActionValue);
+}
+
+void UUserActionAndAxisInputHandler::HandleXAxisInput(float value)
+{
+	if (FMath::Abs(axisValue.X) < 1.f)
 	{
-		axisValue += GetAxisValue() + value;
+		axisValue.X += axisActionValue.X + value;
 	}
 
 	axisHandler.Execute(axisValue);
 }
 
-void UUserActionAndAxisInputHandler::HandleAxisInputWithDeltaTime(float value)
+void UUserActionAndAxisInputHandler::HandleYAxisInput(float value)
 {
-	if (FMath::Abs(axisValue) < 1.f)
+	if (FMath::Abs(axisValue.Y) < 1.f)
 	{
-		axisValue += GetAxisValue() + value * FApp::GetDeltaTime();
+		axisValue.Y += axisActionValue.Y + value;
+	}
+
+	axisHandler.Execute(axisValue);
+}
+
+void UUserActionAndAxisInputHandler::HandleXAxisInputWithDeltaTime(float value)
+{
+	if (FMath::Abs(axisValue.X) < 1.f)
+	{
+		axisValue.X += axisActionValue.X + value * FApp::GetDeltaTime();
+	}
+
+	axisHandler.Execute(axisValue);
+}
+
+void UUserActionAndAxisInputHandler::HandleYAxisInputWithDeltaTime(float value)
+{
+	if (FMath::Abs(axisValue.Y) < 1.f)
+	{
+		axisValue.Y += axisActionValue.Y + value * FApp::GetDeltaTime();
 	}
 
 	axisHandler.Execute(axisValue);
@@ -54,5 +94,5 @@ void UUserActionAndAxisInputHandler::HandleAxisInputWithDeltaTime(float value)
 
 void UUserActionAndAxisInputHandler::ResetAxisAccumulation()
 {
-	axisValue = 0.f;
+	axisValue = FVector::ZeroVector;
 }

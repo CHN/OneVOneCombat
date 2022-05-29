@@ -4,6 +4,7 @@
 #include "InventoryComponent.h"
 #include "MainCharacter.h"
 #include "PlayerInputPollingSystem.h"
+#include "InputQueueSystem.h"
 #include "UserInputType.h"
 #include "MainCharacter/MainCharacterDataAsset.h"
 #include "InventoryItem.h"
@@ -23,9 +24,8 @@ void UInventoryComponent::Init(AMainCharacter* NewMainCharacter)
 
 	UPlayerInputPollingSystem* inputPollingSystem = mainCharacter->GetPlayerInputPollingSystem();
 
-	inputPollingSystem->BindInputEvent(EUserInputType::CHANGE_WEAPON_NEXT, this, &UInventoryComponent::OnNextItemSelectInputTriggered);
-
-	inputPollingSystem->BindInputEvent(EUserInputType::CHANGE_WEAPON_PREVIOUS, this, &UInventoryComponent::OnPreviousItemSelectInputTriggered);
+	mainCharacter->GetInputQueueSystem()->BindCommand("+weaponNext", this, &UInventoryComponent::OnNextItemSelectInputTriggered);
+	mainCharacter->GetInputQueueSystem()->BindCommand("+weaponPrev", this, &UInventoryComponent::OnPreviousItemSelectInputTriggered);
 
 	mainCharacter->GetCharacterData()->inventoryDataOwner.BeSubOwner(&inventoryData);
 	mainCharacter->GetCharacterData()->characterStateDataOwner.BeReadOwner(&characterStateData);
@@ -56,10 +56,9 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UInventoryComponent::OnNextItemSelectInputTriggered(EInputEvent inputEvent)
+void UInventoryComponent::OnNextItemSelectInputTriggered()
 {
-	if (inputEvent != IE_Pressed || 
-		inventoryData->quickItems.Num() == 0 ||
+	if (inventoryData->quickItems.Num() == 0 ||
 		characterStateData->isQuickItemChanging)
 	{
 		return;
@@ -75,10 +74,9 @@ void UInventoryComponent::OnNextItemSelectInputTriggered(EInputEvent inputEvent)
 	mainCharacter->GetCharacterEvents()->onInventoryQuickItemChanged.Broadcast();
 }
 
-void UInventoryComponent::OnPreviousItemSelectInputTriggered(EInputEvent inputEvent)
+void UInventoryComponent::OnPreviousItemSelectInputTriggered()
 {
-	if (inputEvent != IE_Pressed ||
-		inventoryData->quickItems.Num() == 0 ||
+	if (inventoryData->quickItems.Num() == 0 ||
 		characterStateData->isQuickItemChanging)
 	{
 		return;
