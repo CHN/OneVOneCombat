@@ -2,6 +2,9 @@
 
 
 #include "InputQueueSystem.h"
+#include "CommandMap.h"
+#include "InputQueueDataAsset.h"
+#include "UserInput.h"
 
 #include "EditorUtilities.h"
 
@@ -9,54 +12,28 @@
 UInputQueueSystem::UInputQueueSystem()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	commandMap = CreateDefaultSubobject<UCommandMap>("Command Map");
 }
 
-void UInputQueueSystem::BeginPlay()
+bool UInputQueueSystem::ConsumeInputs()
 {
-	Super::BeginPlay();
-
-	SortInputQueueDataArray();
-}
-
-void UInputQueueSystem::SortInputQueueDataArray()
-{
-	TArray<FInputQueueData> sortedArray;
-
-	sortedArray.SetNum(static_cast<uint8>(EUserInputType::END_OF_ENUM));
-
-	for (const FInputQueueData& inputQueueData : inputQueueDataArray)
+	if (commandPoll.IsEmpty())
 	{
-		if (inputQueueData.inputType < EUserInputType::END_OF_ENUM)
-		{
-			sortedArray[static_cast<uint8>(inputQueueData.inputType.GetValue())] = inputQueueData;
-		}
+		return false;
 	}
 
-	inputQueueDataArray = std::move(sortedArray);
-}
-
-void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSystem)
-{
-	const auto& currentInputPoll = inputPollingSystem->GetInputPoll();
-
-	if (currentInputPoll.IsEmpty())
+	if (WillCurrentInputBeDiscarded(commandPoll[0]))
 	{
-		return;
-	}
-
-	if (WillCurrentInputBeDiscarded(currentInputPoll[0]))
-	{
-		inputPollingSystem->RemoveFromPolling(1);
-		return;
+		commandPoll.RemoveAt(0, 1);
+		return false;
 	}
 
 	TArray<UInputQueueDataAsset*> inputQueueDataCandidates;
 
-	const TArray<UInputQueueDataAsset*>& selectedInputQueueDataAssets = inputQueueDataArray[static_cast<uint8>(currentInputPoll[0].inputType)].inputQueueDataAssets;
-
-	for (UInputQueueDataAsset* const inputQueueDataAsset : selectedInputQueueDataAssets)
+	for (UInputQueueDataAsset* const inputQueueDataAsset : inputQueueDataArray)
 	{
-		if (inputQueueDataAsset->GetInputActions().Num() <= currentInputPoll.Num())
+		if (inputQueueDataAsset->GetInputActions().Num() <= commandPoll.Num())
 		{
 			inputQueueDataCandidates.Add(inputQueueDataAsset);
 		}
@@ -64,18 +41,18 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 
 	if (inputQueueDataCandidates.IsEmpty())
 	{
-		return;
+		return false;
 	}
 
-	for (int32 i = 0; i < currentInputPoll.Num(); ++i)
+	for (int32 i = 0; i < commandPoll.Num(); ++i)
 	{
-		const FUserInput& currentUserInput = currentInputPoll[i];
+		const FUserInput& currentUserInput = commandPoll[i];
 
 		double lastTwoInputInterval = 0.0;
 
-		if (currentInputPoll.Num() > 1 && i < currentInputPoll.Num() - 1)
+		if (commandPoll.Num() > 1 && i < commandPoll.Num() - 1)
 		{
-			const FUserInput& afterCurrentUserInput = currentInputPoll[i + 1];
+			const FUserInput& afterCurrentUserInput = commandPoll[i + 1];
 			lastTwoInputInterval = (currentUserInput.timeStamp - afterCurrentUserInput.timeStamp).GetTotalMilliseconds();
 		}
 
@@ -92,8 +69,7 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 			const int32 actionIndex = inputActions.Num() - i - 1;
 			const FInputQueueAction& currentQueueAction = inputActions[actionIndex];
 
-			if (currentQueueAction.inputType != currentUserInput.inputType ||
-				currentQueueAction.inputEvent != currentUserInput.inputEvent)
+			if (currentQueueAction.command != currentUserInput.command)
 			{
 				// TODO: Remove elements after for-loop ends
 				inputQueueDataCandidates.RemoveAt(inputQueueIndex);
@@ -109,9 +85,8 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 			}
 
 			const bool willPreviousTimeCheckBeDiscarded = actionIndex > 0 && 
-														  currentInputPoll.Num() > 1 &&
-														 (currentInputPoll[1].inputType == inputActions[actionIndex - 1].inputType &&
-														  currentInputPoll[1].inputEvent == inputActions[actionIndex - 1].inputEvent);
+														  commandPoll.Num() > 1 &&
+														 (commandPoll[1].command == inputActions[actionIndex - 1].command);
 
 			if (willPreviousTimeCheckBeDiscarded &&
 				(currentQueueAction.minPreviousInputTime > lastTwoInputInterval ||
@@ -126,7 +101,7 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 
 		if (inputQueueDataCandidates.IsEmpty())
 		{
-			return;
+			return false;
 		}
 	}
 
@@ -134,14 +109,16 @@ void UInputQueueSystem::ConsumeInputs(UPlayerInputPollingSystem* inputPollingSys
 
 	if (inputQueueDataCandidates[0]->GetRemoveFromPollWhenInputQueueFound())
 	{
-		inputPollingSystem->RemoveFromPolling(currentInputQueueData->GetInputActions().Num());
+		commandPoll.RemoveAt(0, currentInputQueueData->GetInputActions().Num());
 	}
 
 	UpdateDiscardInputPair(currentInputQueueData);
 
 	LOG_TO_SCREEN("Current Command is {0}", currentInputQueueData->GetCommand());
 
-	InvokeCommand(currentInputQueueData->GetCommand());
+	commandMap->InvokeCommand(currentInputQueueData->GetCommand());
+
+	return true;
 }
 
 bool UInputQueueSystem::ProcessConsoleExec(const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor)
@@ -151,51 +128,19 @@ bool UInputQueueSystem::ProcessConsoleExec(const TCHAR* Cmd, FOutputDevice& Ar, 
 		return true;
 	}
 
-	FCommandData* commandData = commandDataMap.Find(Cmd);
-
-	if (commandData && commandData->blockerCount == 0)
+	if (commandPoll.Num() == maxPollSize - 1)
 	{
-		commandData->commandEvent.Broadcast();
+		commandPoll.RemoveAt(commandPoll.Num() - 1);
+	}
 
+	commandPoll.Insert(FUserInput(Cmd), 0);
+
+	if (ConsumeInputs())
+	{
 		return true;
 	}
 
 	return false;
-}
-
-void UInputQueueSystem::InvokeCommand(const FString& command)
-{
-	auto* commandData = commandDataMap.Find(command);
-
-	if (commandData && commandData->blockerCount == 0)
-	{
-		commandData->commandEvent.Broadcast();
-	}
-}
-
-void UInputQueueSystem::RemoveCommand(const FString& command, const FDelegateHandle& delegateHandle)
-{
-	commandDataMap[command].commandEvent.Remove(delegateHandle);
-}
-
-void UInputQueueSystem::BlockCommand(const FString& cmd)
-{
-	FCommandData* commandData = commandDataMap.Find(cmd);
-
-	if (commandData)
-	{
-		++commandData->blockerCount;
-	}
-}
-
-void UInputQueueSystem::UnblockCommand(const FString& cmd)
-{
-	FCommandData* commandData = commandDataMap.Find(cmd);
-
-	if (commandData && commandData->blockerCount > 0)
-	{
-		--commandData->blockerCount;
-	}
 }
 
 void UInputQueueSystem::UpdateDiscardInputPair(const UInputQueueDataAsset* const inputQueueDataAsset)
@@ -205,9 +150,9 @@ void UInputQueueSystem::UpdateDiscardInputPair(const UInputQueueDataAsset* const
 	for (const FInputQueueAction& inputAction : inputActions)
 	{
 		if (inputAction.bDiscardReleaseInputOfPressEvent &&
-			inputAction.inputEvent == EInputEvent::IE_Pressed)
+			inputAction.command[0] == '+')
 		{
-			discardInputPairs.Add({ inputAction.inputType, EInputEvent::IE_Released });
+			discardInputPairs.Add(inputAction.command);
 		}
 	}
 }
@@ -216,8 +161,8 @@ bool UInputQueueSystem::WillCurrentInputBeDiscarded(const FUserInput& userInput)
 {
 	for (int32 i = 0; i < discardInputPairs.Num(); ++i)
 	{
-		if (discardInputPairs[i].inputType == userInput.inputType &&
-			discardInputPairs[i].inputEvent == userInput.inputEvent)
+		if (discardInputPairs[i] == userInput.command &&
+			discardInputPairs[i][0] == '-')
 		{
 			discardInputPairs.RemoveAt(i);
 			return true;

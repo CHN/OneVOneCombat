@@ -3,30 +3,8 @@
 
 #include "UserInput.h"
 
-FUserInput UserInputUtilities::ConvertActionToUserInput(EUserInputType inputType, EInputEvent inputEvent)
+FUserInput::FUserInput(const FString& command)
 {
-	FUserInput userInput;
-
-	userInput.inputType = inputType;
-	userInput.inputValue = inputEvent == EInputEvent::IE_Pressed ? 1 : 0.f;
-	userInput.inputEvent = inputEvent;
-	userInput.timeStamp = FDateTime::Now();
-
-	return userInput;
-}
-
-float UserInputUtilities::ConvertActionToAxisInput(EInputEvent negativeInputEvent, EInputEvent positiveInputEvent)
-{
-	float negativeInput = negativeInputEvent == EInputEvent::IE_Pressed ? -1.f : 0.f;
-	float positiveInput = positiveInputEvent == EInputEvent::IE_Pressed ? 1.f : 0.f;
-
-	return negativeInput + positiveInput;
-}
-
-float UserInputUtilities::ConvertActionToAxisInputByBools(bool negativeInputEvent, bool positiveInputEvent)
-{
-	float negativeInput = negativeInputEvent ? -1.f : 0.f;
-	float positiveInput = positiveInputEvent ? 1.f : 0.f;
-
-	return (negativeInput + positiveInput);
+	this->command = command;
+	timeStamp = FDateTime::Now();
 }

@@ -8,29 +8,18 @@
 
 #include "UserInput.generated.h"
 
+// FIXME: Can be renamed for command
 USTRUCT(BlueprintType)
 struct FUserInput
 {
 	GENERATED_BODY();
 
-	UPROPERTY(VisibleAnywhere)
-	EUserInputType inputType;
+	FUserInput() = default;
+	FUserInput(const FString& command);
 
 	UPROPERTY(VisibleAnywhere)
-	float inputValue;
-		
-	UPROPERTY(VisibleAnywhere)
-	TEnumAsByte<EInputEvent> inputEvent;
+	FString command;
 
 	UPROPERTY(VisibleAnywhere)
 	FDateTime timeStamp;
-};
-
-class UserInputUtilities
-{
-public:
-		
-	static FUserInput ConvertActionToUserInput(EUserInputType inputType, EInputEvent inputEvent);
-	static float ConvertActionToAxisInput(EInputEvent negativeInputEvent, EInputEvent positiveInputEvent);
-	static float ConvertActionToAxisInputByBools(bool negativeInputEvent, bool positiveInputEvent);
 };

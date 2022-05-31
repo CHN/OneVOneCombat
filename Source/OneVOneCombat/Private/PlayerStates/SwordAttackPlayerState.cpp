@@ -8,6 +8,7 @@
 #include "MainCharacter.h"
 #include "PlayerStateFlowManager.h"
 #include "InputQueueSystem.h"
+#include "CommandMap.h"
 #include "PlayerStateManager.h"
 
 USwordAttackPlayerState::USwordAttackPlayerState()
@@ -29,12 +30,12 @@ void USwordAttackPlayerState::OnStateBeginPlay()
 
 void USwordAttackPlayerState::OnStateActive()
 {
-	inputEventHandle = mainCharacter->GetInputQueueSystem()->BindCommand("+attack", this, &USwordAttackPlayerState::OnAttackInputTriggered);
+	inputEventHandle = mainCharacter->commandMap->BindCommand("+attack", this, &USwordAttackPlayerState::OnAttackInputTriggered);
 }
 
 void USwordAttackPlayerState::OnStateDeactive()
 {
-	mainCharacter->GetInputQueueSystem()->RemoveCommand("+attack", inputEventHandle);
+	mainCharacter->commandMap->RemoveCommand("+attack", inputEventHandle);
 }
 
 void USwordAttackPlayerState::OnAttackInputTriggered()

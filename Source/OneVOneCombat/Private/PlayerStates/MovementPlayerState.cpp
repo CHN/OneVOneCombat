@@ -9,6 +9,7 @@
 #include "MainCharacter.h"
 #include "PlayerStateManager.h"
 #include "InputQueueSystem.h"
+#include "CommandMap.h"
 #include "CharacterEvents/CharacterEvents.h"
 
 #include "MainCharacter/AnimationRelatedData.h"
@@ -33,8 +34,8 @@ void UMovementPlayerState::OnStateInitialized()
 
 void UMovementPlayerState::OnStateBeginPlay()
 {
-	sprintInputHandle = mainCharacter->GetInputQueueSystem()->BindCommand("+sprint", this, &UMovementPlayerState::OnSprintKeyPressed);
-	sprintInputHandle = mainCharacter->GetInputQueueSystem()->BindCommand("-sprint", this, &UMovementPlayerState::OnSprintKeyReleased);
+	sprintInputHandle = mainCharacter->commandMap->BindCommand("+sprint", this, &UMovementPlayerState::OnSprintKeyPressed);
+	sprintInputHandle = mainCharacter->commandMap->BindCommand("-sprint", this, &UMovementPlayerState::OnSprintKeyReleased);
 
 	sprintDisableStateOnChangeHandle = mainCharacter->GetCharacterEvents()->onSprintDisableStateChanged.AddUObject(this, &UMovementPlayerState::OnSprintDisableStateChanged);
 }
@@ -72,7 +73,7 @@ bool UMovementPlayerState::IsStateInterruptibleByCommand(const FString& command,
 void UMovementPlayerState::OnStateEndPlay(bool isInterrupted, uint32 nextState)
 {
 	characterStateData->isSprinting = false;
-	mainCharacter->GetPlayerInputPollingSystem()->UnbindInputEvent(EUserInputType::SPRINT, sprintInputHandle);
+	mainCharacter->commandMap->RemoveCommand("+sprint", sprintInputHandle);
 	mainCharacter->GetCharacterEvents()->onSprintDisableStateChanged.Remove(sprintDisableStateOnChangeHandle);
 }
 

@@ -19,10 +19,7 @@ struct FInputQueueAction
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	EUserInputType inputType;
-
-	UPROPERTY(EditAnywhere)
-	TEnumAsByte<EInputEvent> inputEvent;
+	FString command;
 
 	// TODO: Convert to double
 	UPROPERTY(EditAnywhere, meta = (ClampMin = "0", ToolTip = "Discards this queue if duration between current and previous input action time is less than this value. (If index is 0, this will be discarded.)"))

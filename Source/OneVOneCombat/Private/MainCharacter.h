@@ -12,7 +12,6 @@
 class UDataTable;
 
 class AMainCharacterPlayerState;
-class UPlayerInputPollingSystem;
 class UInputQueueSystem;
 class UMainCharacterDataAsset;
 class UPlayerStateManager;
@@ -23,6 +22,7 @@ class UCharacterEvents;
 class UStateEvents;
 class UInventoryComponent;
 class UCharacterAttributeDataAsset;
+class UCommandMap;
 
 struct FCharacterInputData;
 struct FAnimationRelatedData;
@@ -47,7 +47,6 @@ public:
 	UFUNCTION(BlueprintPure)
 	inline UPlayerStateManager* GetPlayerStateManager() const { return playerStateManager; }
 	inline UInputQueueSystem* GetInputQueueSystem() const { return inputQueueSystem; }
-	inline UPlayerInputPollingSystem* GetPlayerInputPollingSystem() const { return playerInputPollingSystem; }
 	inline UCharacterAnimInstance* GetAnimInstance() const { return characterAnimInstance; }
 	inline UCharacterEvents* GetCharacterEvents() const { return characterEvents; }
 	inline UStateEvents* GetStateEvents() const { return stateEvents; }
@@ -59,6 +58,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	USceneComponent* cameraBoom;
+
+	UPROPERTY()
+	TObjectPtr<UCommandMap> commandMap;
 
 	void PreRegisterAllComponents() override;
 
@@ -78,9 +80,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintGetter = "GetPlayerStateManager")
 	UPlayerStateManager* playerStateManager;
-
-	UPROPERTY(VisibleAnywhere)
-	UPlayerInputPollingSystem* playerInputPollingSystem;
 
 	UPROPERTY(VisibleAnywhere)
 	UInputQueueSystem* inputQueueSystem;

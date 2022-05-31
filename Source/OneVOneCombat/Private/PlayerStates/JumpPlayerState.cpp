@@ -11,6 +11,7 @@
 #include "PlayerStateManager.h"
 #include "PlayerStateFlowManager.h"
 #include "InputQueueOutputState.h"
+#include "CommandMap.h"
 #include "MainCharacter.h"
 #include "InputQueueSystem.h"
 #include "CharacterEvents/CharacterEvents.h"
@@ -29,7 +30,7 @@ void UJumpPlayerState::OnStateInitialized()
 	characterData = mainCharacter->GetCharacterData();
 	characterData->characterStateDataOwner.BeSubOwner(&characterStateData);
 
-	handle = mainCharacter->GetInputQueueSystem()->BindCommand("+jump", this, &UJumpPlayerState::OnJumpActionExecuted);
+	handle = mainCharacter->commandMap->BindCommand("+jump", this, &UJumpPlayerState::OnJumpActionExecuted);
 }
 
 void UJumpPlayerState::OnStateBeginPlay()

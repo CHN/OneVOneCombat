@@ -3,8 +3,8 @@
 #include "MainCharacter.h"
 
 #include "MainCharacterPlayerState.h"
-#include "PlayerInputPollingSystem.h"
 #include "InputQueueSystem.h"
+#include "CommandMap.h"
 #include "MainCharacterMovementComponent.h"
 #include "PlayerStateManager.h"
 #include "InventoryComponent.h"
@@ -26,7 +26,6 @@ AMainCharacter::AMainCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = TG_PrePhysics;
 
-	playerInputPollingSystem = CreateDefaultSubobject<UPlayerInputPollingSystem>("PlayerInputPollingSystem");
 	inputQueueSystem = CreateDefaultSubobject<UInputQueueSystem>("InputQueueSystem");
 	playerStateManager = CreateDefaultSubobject<UPlayerStateManager>("PlayerStateManager");
 
@@ -45,6 +44,8 @@ AMainCharacter::AMainCharacter()
 	stateEvents = CreateDefaultSubobject<UStateEvents>("StateEvents");
 
 	inventoryComponent = CreateDefaultSubobject<UInventoryComponent>("InventoryComponent");
+
+	commandMap = CreateDefaultSubobject<UCommandMap>("Command Map");
 }
 
 void AMainCharacter::PreRegisterAllComponents()
@@ -77,8 +78,6 @@ void AMainCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	mainCharacterPlayerState = Cast<AMainCharacterPlayerState>(APawn::GetPlayerState());
-
-	playerInputPollingSystem->onAnInputTriggered.BindUObject(inputQueueSystem, &UInputQueueSystem::ConsumeInputs);
 
 	movementComponent->SetMoveableComponent(capsuleCollider);
 
@@ -137,12 +136,9 @@ bool AMainCharacter::ProcessConsoleExec(const TCHAR* Cmd, FOutputDevice& Ar, UOb
 		return true;
 	}
 
-	if (inputQueueSystem->ProcessConsoleExec(Cmd, Ar, Executor))
-	{
-		return true;
-	}
+	bool isCommandHandled = commandMap->InvokeCommand(Cmd);
 
-	return false;
+	return inputQueueSystem->ProcessConsoleExec(Cmd, Ar, Executor) || isCommandHandled;
 }
 
 void AMainCharacter::OnSprintDisableStateChanged(bool state)

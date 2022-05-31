@@ -3,7 +3,7 @@
 
 #include "InventoryComponent.h"
 #include "MainCharacter.h"
-#include "PlayerInputPollingSystem.h"
+#include "CommandMap.h"
 #include "InputQueueSystem.h"
 #include "UserInputType.h"
 #include "MainCharacter/MainCharacterDataAsset.h"
@@ -22,10 +22,8 @@ void UInventoryComponent::Init(AMainCharacter* NewMainCharacter)
 {
 	mainCharacter = NewMainCharacter;
 
-	UPlayerInputPollingSystem* inputPollingSystem = mainCharacter->GetPlayerInputPollingSystem();
-
-	mainCharacter->GetInputQueueSystem()->BindCommand("+weaponNext", this, &UInventoryComponent::OnNextItemSelectInputTriggered);
-	mainCharacter->GetInputQueueSystem()->BindCommand("+weaponPrev", this, &UInventoryComponent::OnPreviousItemSelectInputTriggered);
+	mainCharacter->commandMap->BindCommand("+weaponNext", this, &UInventoryComponent::OnNextItemSelectInputTriggered);
+	mainCharacter->commandMap->BindCommand("+weaponPrev", this, &UInventoryComponent::OnPreviousItemSelectInputTriggered);
 
 	mainCharacter->GetCharacterData()->inventoryDataOwner.BeSubOwner(&inventoryData);
 	mainCharacter->GetCharacterData()->characterStateDataOwner.BeReadOwner(&characterStateData);

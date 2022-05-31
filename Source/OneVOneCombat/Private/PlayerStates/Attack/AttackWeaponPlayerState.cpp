@@ -13,6 +13,7 @@
 #include "InputQueueSystem.h"
 #include "WeaponInventoryItemData.h"
 #include "InputQueueOutputState.h"
+#include "CommandMap.h"
 
 #include "MainCharacter/InventoryData.h"
 #include "MainCharacter/CharacterStateData.h"
@@ -32,8 +33,8 @@ void UAttackWeaponPlayerState::OnStateInitialized()
 	mainCharacter->GetCharacterData()->inventoryDataOwner.BeSubOwner(&inventoryData);
 	mainCharacter->GetCharacterData()->characterStateDataOwner.BeSubOwner(&characterStateData);
 
-	mainCharacter->GetInputQueueSystem()->BindCommand("+usePrimaryWeapon", this, &UAttackWeaponPlayerState::OnAttackInputPressed);
-	mainCharacter->GetInputQueueSystem()->BindCommand("-usePrimaryWeapon", this, &UAttackWeaponPlayerState::OnAttackInputReleased);
+	mainCharacter->commandMap->BindCommand("+usePrimaryWeapon", this, &UAttackWeaponPlayerState::OnAttackInputPressed);
+	mainCharacter->commandMap->BindCommand("-usePrimaryWeapon", this, &UAttackWeaponPlayerState::OnAttackInputReleased);
 }
 
 void UAttackWeaponPlayerState::OnStateBeginPlay()
