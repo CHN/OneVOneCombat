@@ -116,9 +116,7 @@ bool UInputQueueSystem::ConsumeInputs()
 
 	LOG_TO_SCREEN("Current Command is {0}", currentInputQueueData->GetCommand());
 
-	commandMap->InvokeCommand(currentInputQueueData->GetCommand());
-
-	return true;
+	return commandMap->InvokeCommand(currentInputQueueData->GetCommand());
 }
 
 bool UInputQueueSystem::ProcessConsoleExec(const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor)
@@ -152,7 +150,9 @@ void UInputQueueSystem::UpdateDiscardInputPair(const UInputQueueDataAsset* const
 		if (inputAction.bDiscardReleaseInputOfPressEvent &&
 			inputAction.command[0] == '+')
 		{
-			discardInputPairs.Add(inputAction.command);
+			FString discardCommand = inputAction.command;
+			discardCommand[0] = '-';
+			discardInputPairs.Add(discardCommand);
 		}
 	}
 }
@@ -161,8 +161,8 @@ bool UInputQueueSystem::WillCurrentInputBeDiscarded(const FUserInput& userInput)
 {
 	for (int32 i = 0; i < discardInputPairs.Num(); ++i)
 	{
-		if (discardInputPairs[i] == userInput.command &&
-			discardInputPairs[i][0] == '-')
+		if (userInput.command[0] == '-' &&
+			discardInputPairs[i] == userInput.command)
 		{
 			discardInputPairs.RemoveAt(i);
 			return true;

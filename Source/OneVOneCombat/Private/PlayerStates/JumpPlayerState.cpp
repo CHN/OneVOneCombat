@@ -30,7 +30,7 @@ void UJumpPlayerState::OnStateInitialized()
 	characterData = mainCharacter->GetCharacterData();
 	characterData->characterStateDataOwner.BeSubOwner(&characterStateData);
 
-	handle = mainCharacter->commandMap->BindCommand("+jump", this, &UJumpPlayerState::OnJumpActionExecuted);
+	handle = mainCharacter->GetInputQueueSystem()->commandMap->BindCommand("+jumpQueue", this, &UJumpPlayerState::OnJumpActionExecuted);
 }
 
 void UJumpPlayerState::OnStateBeginPlay()
